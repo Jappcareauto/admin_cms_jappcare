@@ -1,0 +1,5 @@
+export enum TypeMessageEnum {
+    TEXT_SIMPLE = "TEXT_SIMPLE",
+    TEXT_RICH = "TEXT_RICH",
+    ATTACHMENT_APPOINTMENT = "ATTACHMENT_APPOINTMENT",
+}
