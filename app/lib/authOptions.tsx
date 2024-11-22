@@ -5,7 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // import { https } from 'follow-redirects';
 // import axios from "axios";
 export const authOptions: NextAuthOptions = {
-  secret: "UbGixY9cnFBvzwUxXK9F\cCCVsmLyCmBzZSqFBfvocQ=",
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt"
   },
