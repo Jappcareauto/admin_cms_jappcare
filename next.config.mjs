@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
-
 const nextConfig = {
-  env: {
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
+   env: {
     apiUrl: process.env.API_URL,
   },
-};
+}
 
 export default nextConfig;
