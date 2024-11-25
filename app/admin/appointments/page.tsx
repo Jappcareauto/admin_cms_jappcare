@@ -7,11 +7,8 @@ import AppointmentCalendarModal from "@/components/UI/AppointmentCalendarModal";
 import AppointmentDetailModal from "@/components/UI/AppointmentDetailModal";
 import { Button } from "@/components/UI/Button";
 import CardAppointmentAdmin from "@/components/UI/CardAppointmentAdmin";
-// import { Button } from "@/components/UI/Button";
-// import CardAppointmentAdmin  from "@/components/UI/CardAppointmentAdmin";
 import CardBasic from "@/components/UI/CardBasic";
 import CardChartBar from "@/components/UI/CardChartBar";
-// import CardChartLine from "@/components/UI/CardChartLine";
 import CardListItem from "@/components/UI/CardListItem";
 import CardStat from "@/components/UI/CardStat";
 import FilterBy from "@/components/UI/FilterBy";
@@ -147,8 +144,6 @@ export default function Page() {
                                                             )) : (
                                                                 <div>
                                                                     <div className=" animate-pulse min-h-52  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div>
-                                                                    {/* <div className=" animate-pulse  min-h-52  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div> */}
-
                                                                 </div>
                                                             )
                                                     }
