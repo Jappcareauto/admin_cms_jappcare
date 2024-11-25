@@ -95,7 +95,7 @@ export default function Page() {
                                 <div className="flex items-center gap-4 font-bold">
                                     <CalendarIcon stroke="black" fill="black"></CalendarIcon>
                                     <span>
-                                        Appointments    
+                                        Appointm  
                                     </span>
                                 </div>
                                 <Button onClick={() => setOpenCalendar(true)} typeButton="dark" className="w-fit rounded-full px-4" label="Calendar"></Button>
