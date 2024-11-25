@@ -1,5 +1,5 @@
 "use client"
-import { TITLE_WEBSITE } from "@/app/lib/constantes";
+
 import CalendarIcon from "@/components/Icones/calendarIcon";
 import GridIcon from "@/components/Icones/GridIcon";
 import ListIcon from "@/components/Icones/ListIcon";
@@ -186,7 +186,7 @@ export default function Page() {
                 (openDetailAppointment && itemData) ? <AppointmentDetailModal onClose={setOpenDetailAppointment} item={itemData} /> : null
             }
              {
-                (openCalendar) ? <AppointmentCalendarModal onClose={setOpenCalendar}  /> : null
+                (openCalendar) ? <AppointmentCalendarModal onClose={setOpenCalendar} appointmentList={[]}  /> : null
             }
         </section>
     )
