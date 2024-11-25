@@ -15,7 +15,6 @@ interface IPrams {
     id?: string
 }
 export default function Page({ params }: { params: IPrams }) {
-    // const [state, setState] = useState<string>("")
     const [dataItem, setDataItem] = useState<AppointmentInterface | undefined>();
     const session = useSession();
     useEffect(() => {
@@ -27,11 +26,6 @@ export default function Page({ params }: { params: IPrams }) {
                         const data = await res.json();
                         setDataItem(data.data);
                     }
-                    // const resChatRoom = await fetch('/api/chat?token=' + session?.data?.user?.accessToken);
-                    // if (resChatRoom.ok) {
-                    //     const dataChat = await resChatRoom.json();
-                    //     setMessages(dataChat.data);
-                    // }
                 } catch (err) {
                     console.log(err)
                 }
@@ -41,7 +35,6 @@ export default function Page({ params }: { params: IPrams }) {
     }, [session])
     return (
         <section className="w-full relative container px-4 flex flex-row bg-white">
-            {/* <title>{TITLE_WEBSITE} | Appointment Details</title> */}
             <div className="w-full" >
                 {
                     dataItem ? (
@@ -57,7 +50,6 @@ export default function Page({ params }: { params: IPrams }) {
                                     <img width="48" height="48" className="rounded-full"
                                         src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt="" />
                                     <span className="text-sm">
-                                        {/* James Mann */}
                                     </span>
                                 </div>
                                 <div className="appointement-statut ">
