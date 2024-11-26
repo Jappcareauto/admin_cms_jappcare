@@ -1,3 +1,22 @@
+# syntax=docker.io/docker/dockerfile:1
+
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+# Install additional system dependencies if needed
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy package manager files and install dependencies
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm install --frozen-lockfile; \
+  else echo "No lockfile found, unable to install dependencies" && exit 1; \
+  fi
+
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
@@ -11,7 +30,12 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the application
-RUN npm run build  # Ensure next build is run and .next is created
+RUN \
+  if [ -f yarn.lock ]; then yarn build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then pnpm run build; \
+  else echo "No lockfile found, unable to build application" && exit 1; \
+  fi
 
 # Production image: minimal runtime
 FROM base AS runner
@@ -30,7 +54,7 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./ .next  # Copy the production build
+COPY --from=builder /app/.next ./  # Ensure the build directory is included
 
 # Use non-root user for security
 USER nextjs
