@@ -54,7 +54,7 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./  # Ensure the build directory is included
+COPY --from=builder /app/.next ./.next
 
 # Use non-root user for security
 USER nextjs
