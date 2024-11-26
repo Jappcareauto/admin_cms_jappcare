@@ -31,9 +31,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the application
 RUN \
-  if [ -f yarn.lock ]; then yarn build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then pnpm run build; \
+  if [ -f yarn.lock ]; then yarn build && ls -l .next; \
+  elif [ -f package-lock.json ]; then npm run build && ls -l .next; \
+  elif [ -f pnpm-lock.yaml ]; then pnpm run build && ls -l .next; \
   else echo "No lockfile found, unable to build application" && exit 1; \
   fi
 
@@ -50,10 +50,11 @@ ENV PORT=3000
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy necessary files and directories
+# Copy necessary files and directories from the builder stage
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./ .next  # Make sure to copy the production build
 
 # Use non-root user for security
 USER nextjs
@@ -62,4 +63,4 @@ USER nextjs
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["npm", "start"]  # Ensure your start script runs the app in production mode
