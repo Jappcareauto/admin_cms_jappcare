@@ -66,10 +66,10 @@ export default function Page() {
             }
         }
         getDataAndStat();
-    }, [session])
+    }, [session, ,noAppointment])
     const onStateChange = (e: number) => {
         setTabStateAppointment([]);
-        let tab: { actived: boolean, label: string }[] = [];
+        const tab: { actived: boolean, label: string }[] = [];
         TabStateAppointement.map((item: { actived: boolean; label: string; }, index: number) => {
             if (e == index) {
                 item.actived = true;
@@ -82,7 +82,7 @@ export default function Page() {
     }
     return (
         <section className="w-full relative container px-4 flex flex-row bg-white">
-            {/* <title>{TITLE_WEBSITE} | Appointment</title> */}
+
             <div className="w-full" >
                 {
                     !isList ? (
@@ -121,9 +121,9 @@ export default function Page() {
                                         <div className="mt-8 ">
                                             {
                                                 appointments ?
-                                                    appointments.map((item, index) => (
-                                                        <CardListItem key={index}
-                                                            item={item} onShow={(e) => { setOpenDetailAppointment(true); setItemData(item) }}></CardListItem>
+                                                    appointments.map((item) => (
+                                                        <CardListItem key={item.id}
+                                                            item={item} onShow={(e) => { setOpenDetailAppointment(e); setItemData(item) }}></CardListItem>
                                                     )) : (
                                                         <div>
                                                             <div className=" animate-pulse min-h-10  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div>
@@ -141,14 +141,13 @@ export default function Page() {
                                                 <div className='mt-4'>
                                                     {
                                                         appointments ?
-                                                            appointments.map((item, index) => (
-                                                                <CardAppointmentAdmin key={index}
+                                                            appointments.map((item) => (
+                                                                <CardAppointmentAdmin key={item.id}
                                                                     item={item} onShow={(e) => { setOpenDetailAppointment(e); setItemData(item) }}></CardAppointmentAdmin>
                                                             )) : (
                                                                 <div>
                                                                     <div className=" animate-pulse min-h-52  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div>
-                                                                    {/* <div className=" animate-pulse  min-h-52  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div> */}
-
+                                                                   
                                                                 </div>
                                                             )
                                                     }
@@ -159,8 +158,8 @@ export default function Page() {
                                                 <div className='mt-4'>
                                                     {
                                                         appointments ?
-                                                            appointments.map((item, index) => (
-                                                                <CardAppointmentAdmin key={index}
+                                                            appointments.map((item) => (
+                                                                <CardAppointmentAdmin key={item.id}
                                                                     item={item} onShow={setOpenDetailAppointment}></CardAppointmentAdmin>
                                                             )) : (
                                                                 <div>

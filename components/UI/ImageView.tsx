@@ -1,6 +1,7 @@
 import { useState } from "react"
 import CloseIcon from "../Icones/CloseIcon"
 import { MediaItemInterface } from "@/interfaces/MediaItemInterface"
+import Image from "next/image";
 
 const ImagesView = (props: { item: MediaItemInterface[] }) => {
     const [hiddenFullScreenView, setHiddenFullScreenView] = useState<boolean>(false);
@@ -9,9 +10,9 @@ const ImagesView = (props: { item: MediaItemInterface[] }) => {
         <>
             <div className="flex w-full gap-2 overflow-hidden">
                 {
-                    props.item.map((element, key) => (
-                        <img key={key} onClick={() => {setCurrentUrl(element.sourceUrl); setHiddenFullScreenView(true)}} src={element.sourceUrl} width="140"
-                            height="140" className="cursor-pointer rounded-xl " alt="" />
+                    props.item.map((element) => (
+                        <Image key={element.id} onClick={() => { setCurrentUrl(element.sourceUrl); setHiddenFullScreenView(true) }} src={element.sourceUrl} width="140"
+                            height="140" className="cursor-pointer rounded-xl " alt="Image japccare" />
                     ))
                 }
             </div>
@@ -24,14 +25,14 @@ const ImagesView = (props: { item: MediaItemInterface[] }) => {
                                 <CloseIcon stroke="#000"></CloseIcon>
                                 <span className="sr-only">Close modal</span>
                             </button>
-                            <img id="imageFullScreen" src={currentUrl}
-                                className="w-full h-full rounded-xl imageFullScreen" alt=""
+                            <Image id="imageFullScreen" src={currentUrl}
+                                className="w-full h-full rounded-xl imageFullScreen" alt="Image japccare"
                             />
                             <div className="flex justify-center w-full gap-2 mt-4 overflow-hidden">
                                 {
-                                    props.item.map((item, index) => (
-                                        <img src={item.sourceUrl} onClick={() => setCurrentUrl(item.sourceUrl)} key={index} width="140" height="140"
-                                            className="cursor-pointer rounded-xl imageFullScreen" alt="" />
+                                    props.item.map((item) => (
+                                        <Image src={item.sourceUrl} onClick={() => setCurrentUrl(item.sourceUrl)} key={item.id} width="140" height="140"
+                                            className="cursor-pointer rounded-xl imageFullScreen" alt="Image japccare" />
                                     ))
                                 }
                             </div>

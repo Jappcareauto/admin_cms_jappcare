@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
-import { https } from "follow-redirects";
-import { AnyNaptrRecord } from "dns";
 import axios from "axios";
 
 export const POST = async (req: NextRequest) => {
     const body = await req.json();
     const { code } = body;
     
-    var data = JSON.stringify({
+    const data = JSON.stringify({
         "code": `${code}`,
     });
    
     try {
-        var config = {
+        const config = {
             method: 'post',
             url:  process.env.API_URL + 'auth/verify/'+ code,
             headers: {

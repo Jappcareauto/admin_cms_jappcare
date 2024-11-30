@@ -7,14 +7,13 @@ export const GET = async (req: NextRequest) => {
     const token = searchParams.get("token");
   
     try {
-        var config = {
+        const config = {
             method: 'get',
             url: process.env.API_URL + 'vehicle/list',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            // data: data
         };
 
     

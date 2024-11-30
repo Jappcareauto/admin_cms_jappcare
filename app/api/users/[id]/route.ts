@@ -6,7 +6,7 @@ export const GET = async (req: NextRequest, { params }: { params: { id: string }
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     try {
-        var config = {
+        const config = {
             method: 'GET',
             url:  process.env.API_URL + 'user/by-id/' + id,
             headers: {

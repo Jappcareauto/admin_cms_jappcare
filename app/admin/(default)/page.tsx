@@ -2,12 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-// import { useRouter } from 'next/navigation'
-// import AuthentificationImage from "@/public/images/authentification.svg"
 import React from 'react';
-// import { Input } from '@/components/UI/Input';
-// import { Select } from '@/components/UI/Select';
-// import { signIn } from 'next-auth/react';
 import { Button } from '@/components/UI/Button';
 import CardBasic from '@/components/UI/CardBasic';
 import ImageProfile from "@/public/images/profil7.png"
@@ -18,7 +13,6 @@ import Link from 'next/link';
 import OrderIcon from '@/components/Icones/OrderIcon';
 import CardEmergencyAdmin from '@/components/UI/CardEmergencyAdmin';
 import Alert from '@/components/UI/Alert';
-// import { SERVER_PROPS_GET_INIT_PROPS_CONFLICT } from 'next/dist/lib/constants';
 import CardAppointmentAdmin from '@/components/UI/CardAppointmentAdmin';
 import FilterBy from '@/components/UI/FilterBy';
 import { StateEnum } from '@/enums/statusEnum';
@@ -26,7 +20,6 @@ import { AppointmentInterface } from '@/interfaces/AppointmentInterface';
 import ServiceCreateModal from '@/components/UI/ServiceCreateModal';
 import LoadingIcon from '@/components/Icones/LoadingIcon';
 import AppointmentDetailModal from '@/components/UI/AppointmentDetailModal';
-// import CardEmergencyAdmin from '@/components/UI/CardEmergencyAdmin';
 import { ServiceInterface } from '@/interfaces/ServiceInterface';
 export default function Page() {
     const session = useSession();
@@ -40,11 +33,7 @@ export default function Page() {
     const [itemData, setItemData] = useState<AppointmentInterface | undefined>()
     const [openDetailAppointment, setOpenDetailAppointment] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [alertMessage, setAlertMessage] = useState<string>('')
-    const [alertDetails, setAlertDetails] = useState<string>('')
-    const [alertStatus, setAlertStatus] = useState<string>('')
-    const [showAlert, setShowAlert] = useState<boolean>(false)
-    //
+ 
     useEffect(() => {
         const getDataAndStat = async () => {
             try {
@@ -82,12 +71,11 @@ export default function Page() {
             setColorAlert('border-l-red-600')
         }
         setIsHiddenAlert(false)
-        // div.current.remove()
+
     }
     const HiddenAlertHandler = (e: boolean) => {
         setIsHiddenAlert(e)
     }
-    // const [state, setState] = useState<string>("")
     const [TabStateAppointement, setTabStateAppointment] = useState<{ actived: boolean, label: string }[]>([
         { label: StateEnum.PENDING.toString(), actived: false },
         { label: StateEnum.CONFIRMED.toString(), actived: false },
@@ -97,7 +85,7 @@ export default function Page() {
     ])
     const onStateChange = (e: number) => {
         setTabStateAppointment([]);
-        let tab: { actived: boolean, label: string }[] = [];
+        const tab: { actived: boolean, label: string }[] = [];
         TabStateAppointement.map((item: { actived: boolean; label: string; }, index: number) => {
             if (e == index) {
                 item.actived = true;
@@ -120,30 +108,18 @@ export default function Page() {
         }
         try {
             const res = await fetch('/api/services?token=' + session.data?.user?.accessToken, { method: 'POST', body: JSON.stringify(data) });
-            const dataCreate = await res.json()
-
+          
             if (res.ok) {
-                // getUsers()
+        
                 setIsHiddenCreateServiceModal(false)
-                handlerAlert(true, "Service", "Service is adding successfully", "green")
-            } else {
-                handlerAlert(true, dataCreate.message, dataCreate.details, "red")
+             
             }
         } catch (err) {
             console.log(err)
-            handlerAlert(true, "err.message", "err.details", "red")
+          
         }
     }
-    const handlerAlert = (show: boolean, message: string, details: string, status: string) => {
-        setAlertDetails(details)
-        setAlertMessage(message)
-        setAlertStatus(status)
-        setShowAlert(show);
-        setIsLoading(false)
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 10000);
-    }
+  
     return (
         <div>
             <title>Admin | home </title>
@@ -176,9 +152,9 @@ export default function Page() {
                                 <div className='mt-4'>
                                     {
                                         appointments ?
-                                            appointments.map((item, index) => (
-                                                <CardAppointmentAdmin key={index}
-                                                    item={item} onShow={(e) => { setOpenDetailAppointment(true); setItemData(item) }}></CardAppointmentAdmin>
+                                            appointments.map((item) => (
+                                                <CardAppointmentAdmin key={item.id}
+                                                    item={item} onShow={(e) => { setOpenDetailAppointment(e); setItemData(item) }}></CardAppointmentAdmin>
                                             )) : (
                                                 <div>
                                                     <div className=" animate-pulse min-h-52  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div>
@@ -201,13 +177,12 @@ export default function Page() {
                                                 services.length > 0 ? (
                                                     <div className='flex flex-col gap-4'>
                                                         {
-                                                            services.map((item, index) => (
-                                                                <Link key={index} href={"/admin/services/" + item.id}>
+                                                            services.map((item) => (
+                                                                <Link key={item.id} href={"/admin/services/" + item.id}>
                                                                     <div
                                                                         className="relative flex items-start p-4 rounded-3xl cursor-pointer bg-purple-100 lg:basis-1/2 xl:w-full basis-full min-h-32">
                                                                         <h2 className="text-2xl font-medium" >{item.title}</h2>
-                                                                        {/* <img src="../../assets/images/search-dashboard.svg"
-                                                                        className="absolute right-4 -bottom-0" alt="" /> */}
+                                                                     
                                                                     </div>
                                                                 </Link>
                                                             ))

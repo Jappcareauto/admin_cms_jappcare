@@ -1,17 +1,8 @@
 
-
-import { useState } from "react";
-import { Button } from "./Button"
-import { Input } from "./Input"
-import { Select } from "./Select";
-import ExpendIcon from "../Icones/ExpendIcon";
-import TargetIcon from "../Icones/TargetIcon";
 import { UserInterface } from "@/interfaces/UserInterface";
 import CloseIcon from "../Icones/CloseIcon";
 
-const UserDetailModal = (props: { user: UserInterface, onSubmit: Function, onClose: Function }) => {
-    const [code, setCode] = useState<string>("");
-    const [phone, setPhone] = useState<string>("");
+const UserDetailModal = (props: { user: UserInterface, onClose: (value: boolean) => void }) => {
     return (
         <div className="fixed top-0 z-50 justify-end right-0 w-full max-w-96 h-full ">
             <div
@@ -24,8 +15,6 @@ const UserDetailModal = (props: { user: UserInterface, onSubmit: Function, onClo
                     <h2 className="font-bold mb-4 mt-8">Users Details</h2>
                     <div className="relative flex items-start justify-start w-full gap-4 rounded-2xl">
                         <div style={{ width: 128, height: 128, }} className="relative border rounded-full border-stone-100 shadow">
-                            {/* <img width="128" height="128" className="rounded-full"
-                    src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt="" srcset=""> */}
                             {
                                 props.user.verified ? (
                                     <button title="Account verified"
@@ -47,9 +36,7 @@ const UserDetailModal = (props: { user: UserInterface, onSubmit: Function, onClo
                     </div>
                     <h3 className="font-bold text-xl">{props.user.name}</h3>
                     <h3 className="font-thin my-2 text-orange-500">{props.user.email}</h3>
-                   
                 </div>
-              
             </div>
         </div>)
 }

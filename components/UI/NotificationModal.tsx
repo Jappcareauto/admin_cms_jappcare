@@ -1,4 +1,3 @@
-// import AddIcon from "../Icones/AddIcon";
 import CloseIcon from "../Icones/CloseIcon";
 const NotificationModal = (props: { onClose: (value: boolean) => void, }) => {
     return (

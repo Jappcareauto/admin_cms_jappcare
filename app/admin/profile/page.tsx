@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/UI/Button";
 import ListCategoriesService from "@/components/UI/ListCategoriesService";
-// import MapComponent from "@/components/UI/Map";
 import { UserInterface } from "@/interfaces/UserInterface";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
 export default function Page() {
@@ -62,7 +62,7 @@ export default function Page() {
             }
         }
         getProfileUser()
-    }, [])
+    }, [session.data])
     const setLatitude = (e: number) => {
         console.log(e)
     }
@@ -77,28 +77,7 @@ export default function Page() {
             ssr: false
         }
     ), [])
-    const getData = async () => {
 
-        try {
-            if (session.data) {
-                if (session?.data?.user) {
-                    const resAppointment = await fetch(`/api/authorities?token=${session?.data?.user.accessToken}`);
-                    if (resAppointment.ok) {
-                        const data = await resAppointment.json();
-                        console.log(data)
-                        // setNoAppointment(true)
-                    } else {
-                       
-                    }
-                }
-            }
-            // if (noAppointment) {
-            //     console.log(1)
-            // }
-        } catch (err) {
-            console.log(err)
-        }
-    }
     const postData = async () => {
 
         const data = {
@@ -114,21 +93,19 @@ export default function Page() {
                     const dataCreate = await res.json()
                     if (res.ok) {
                         console.log(dataCreate)
-                    } else {
-                        // handlerAlert(true, dataCreate.message, dataCreate.details, "red")
                     }
                 }
             }
         } catch (err) {
             console.log(err)
-            // handlerAlert(true, "err.message", "err.details", "red")
+         
         }
     }
     return (
         <section className="w-full py-8 relative container px-4  bg-white" >
             <title>Japcare Admin | Profile</title>
             <div className="flex items-start w-full gap-4 mt-4 rounded-2xl">
-                <img width="72" height="72" className="rounded-full"
+                <Image  width="72" height="72" className="rounded-full"
                     src={user.profileImageUrl} alt="" />
             </div>
             <div className="mt-4">
@@ -143,7 +120,7 @@ export default function Page() {
                                     fill="#FB7C37" />
                             </svg>
                             <span>
-                                {/* //Address */} No Location
+                              No Location
                             </span>
                         </div>
 
@@ -154,19 +131,18 @@ export default function Page() {
             </div>
             <div>
                 <p className="my-4 text-sm max-w-96">
-                    {/* Experience top-notch service at Japtech Auto shop, where we offer a wide range of basic car
-                    services to keep your vehicle running smoothly. */}
+                  
                     No description
                 </p>
             </div>
             <h1 className="text-xl font-bold">Gallery</h1>
             <div className="flex w-full gap-2 mt-4 overflow-hidden">
-                {/* <div className=" animate-pulse  bg-gray-200 h-52  rounded-2xl dark:bg-gray-700 w-full  mb-4"></div> */}
+             
                 No Gallery
             </div>
             <h1 className="mt-8  text-xl font-bold">Specialized Services</h1>
             <div>
-                <ListCategoriesService itemActived={() => { }}></ListCategoriesService>
+                <ListCategoriesService itemActive={(e) => {console.log(e) }}></ListCategoriesService>
             </div>
             {
                 user.location ? (

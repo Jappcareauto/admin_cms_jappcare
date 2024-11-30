@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-// import { https } from "follow-redirects";
-// import { AnyNaptrRecord } from "dns";
 import axios from "axios";
 
 export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
@@ -8,14 +6,13 @@ export const GET = async (req: NextRequest, { params }: { params: { id: string }
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     try {
-        var config = {
+        const config = {
             method: 'delete',
             url: process.env.API_URL + 'chat-message/' + id,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            // data: data
         };
         const sender = await axios(config);
       

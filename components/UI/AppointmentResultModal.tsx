@@ -1,4 +1,3 @@
-import { AppointmentInterface } from "@/interfaces/AppointmentInterface"
 import { Button } from "./Button"
 
 const AppointmentResultModal = () => {

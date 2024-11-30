@@ -64,9 +64,7 @@ export default function Page() {
                     }
                 }
             }
-            // if (noAppointment) {
-            //     console.log(1)
-            // }
+    
         } catch (err) {
             console.log(err)
         }
@@ -151,7 +149,7 @@ export default function Page() {
 
     const onStateChange = (e: number) => {
         setTabStateAppointment([]);
-        let tab: { actived: boolean, label: string }[] = [];
+        const tab: { actived: boolean, label: string }[] = [];
         TabStateAppointement.map((item: { actived: boolean; label: string; }, index: number) => {
             if (e == index) {
                 item.actived = true;
@@ -207,7 +205,7 @@ export default function Page() {
                                         {
                                             !dataRequestOrder ? (<></>) : dataRequestOrder.length > 0 ?
                                                 dataRequestOrder.map((item, index) => (
-                                                    (index < 1) ? <div className="text-sm py-2 border-b w-full" key={index}>New Order From <span className="font-medium">{item.user.name}</span></div> : <></>
+                                                    (index < 1) ? <div className="text-sm py-2 border-b w-full" key={item.id}>New Order From <span className="font-medium">{item.user.name}</span></div> : <></>
                                                 )) : (<></>)
                                         }
                                     </div>
@@ -232,7 +230,7 @@ export default function Page() {
                                 {!dataRequest ? (<></>) : dataRequest.length > 0 ?
                                     dataRequest.map((item, index) => (
                                         (index < 6) ?
-                                            <CardProduct key={index} item={item} onSubmit={(e) => { setOpenProductDetailModal(true); setItemData(e) }}></CardProduct>
+                                            <CardProduct key={item.id} item={item} onSubmit={(e) => { setOpenProductDetailModal(true); setItemData(e) }}></CardProduct>
                                             : <></>
                                     )) : (<></>)
                                 }
@@ -252,7 +250,7 @@ export default function Page() {
                                 <div className="flex flex-col gap-2">
                                     {!dataRequestOrder ? (<></>) : dataRequestOrder.length > 0 ?
                                         dataRequestOrder.map((item, index) => (
-                                            (index < 5) ? <CardOrderShop key={index} id={item.id} image={""} userName={""} productName={item.user.name}></CardOrderShop> : <></>
+                                            (index < 5) ? <CardOrderShop key={item.id} id={item.id} image={""} userName={""} productName={item.user.name}></CardOrderShop> : <></>
                                         )) : (<></>)
                                     }
                                 </div>

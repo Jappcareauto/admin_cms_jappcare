@@ -1,16 +1,14 @@
 
 import axios from "axios";
-import { DefaultUser, NextAuthOptions } from "next-auth";
+import {  NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-// import { https } from 'follow-redirects';
-// import axios from "axios";
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt"
   },
   pages: {
-    signIn: '/signin',
+    signIn: '/',
   },
   providers: [
     CredentialsProvider({
@@ -71,22 +69,30 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      return { ...token, ...user }
-    },
-    async signIn({ user, account, profile, email, credentials }) {
-      const isAllowedToSignIn = true
-      if (isAllowedToSignIn) {
-        return true
-      } else {
-        // Return false to display a default error message
-        // return false
-        // Or you can return a URL to redirect to:
-        return '/'
+      if (user) {
+        token.id = user.id;
+        token.accessToken = user.accessToken;
+        token.name = user.name;
       }
+      return token;
     },
-    async session({ session, token, user }) {
-      session.user = token as any;
+    async signIn() {
+      const isAllowedToSignIn = true;
+      if (isAllowedToSignIn) {
+        return true;
+      }
+      return "/";
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user = {
+          ...session.user,
+          id: token.id as string,
+          accessToken: token.accessToken as string,
+          name: token.name as string,
+        };
+      }
       return session;
-    }
+    },
   }
 }

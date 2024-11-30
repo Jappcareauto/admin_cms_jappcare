@@ -48,7 +48,7 @@ const ServiceCreateModal = (props: { onSubmit: (value: ServiceInterface) => void
                         </div>
                         <div className="my-3">
                             <label htmlFor="email" className="text-sm">Service center</label>
-                            {/* <Select value={service.serviceCenterId} onChange={e => { setService({ ...service, serviceCenterId: e.target.value }) }} options={[]}></Select> */}
+                           
                         </div>
 
                     </div>

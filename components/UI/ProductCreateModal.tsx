@@ -17,26 +17,18 @@ const ProductCreateModal = (props: {file: (value: File | null) => void, fileFeat
     const [discountPrice, setDiscountPrice] = useState<number>(0);
     const [file, setFile] = useState<File | null>(null);
     const [fileFeatured, setFileFeatured] = useState<File | null>(null);
-    // const TabRoleUser: { value: string, label: string }[] = [
-    //     { label: "ADMIN", value: "ROLE_ADMIN" },
-    //     { label: "GARAGE MANAGER", value: "ROLE_GARAGE_MANAGER" },
-    //     { label: "SERVICE MANAGER", value: "ROLE_SERVICE_MANAGER" },
-    //     { label: "TECHNICIAN", value: "ROLE_TECHNICIAN" },
-    //     { label: "CUSTOMER", value: "ROLE_CUSTOMER" },
-    //     { label: "RECEPTIONIST", value: "ROLE_RECEPTIONIST" },
-    // ]
     const onSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (name == "" || description == "" || category == "" || price <= 0) {
             setMessage("Fields is empty")
         } else {
             
-            // if (file) {
-            //     props.file(file);
-            // }
-            // if (fileFeatured) {
-            //     props.file(fileFeatured);
-            // }
+            if (file) {
+                props.file(file);
+            }
+            if (fileFeatured) {
+                props.file(fileFeatured);
+            }
             const data: ProductInterface = {
                 name: name,
                 description: description,

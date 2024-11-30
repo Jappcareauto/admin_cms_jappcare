@@ -1,21 +1,9 @@
 "use client"
 import LoadingIcon from "@/components/Icones/LoadingIcon";
-// import ArrowRight from "@/components/Icones/ArrowRight";
-// import CalendarIcon from "@/components/Icones/calendarIcon";
-// import GridIcon from "@/components/Icones/GridIcon";
-// import ListIcon from "@/components/Icones/ListIcon";
-// import TrashIcon from "@/components/Icones/TrashIcon";
 import UserIcon from "@/components/Icones/UserIcon";
 import UsersIcon from "@/components/Icones/UsersIcon";
 import AccountItem from "@/components/UI/AccountItem";
 import { Button } from "@/components/UI/Button";
-// import CardAppointmentAdmin from "@/components/UI/CardAppointmentAdmin";
-// // import { Button } from "@/components/UI/Button";
-// // import CardAppointmentAdmin  from "@/components/UI/CardAppointmentAdmin";
-// import CardBasic from "@/components/UI/CardBasic";
-// import CardChartBar from "@/components/UI/CardChartBar";
-// // import CardChartLine from "@/components/UI/CardChartLine";
-// import CardListItem from "@/components/UI/CardListItem";
 import CardStat from "@/components/UI/CardStat";
 import FilterBy from "@/components/UI/FilterBy";
 import ModalDelete from "@/components/UI/ModalDelete";
@@ -31,9 +19,8 @@ import { useEffect, useState } from "react";
 
 
 export default function Page() {
-    // const [state, setState] = useState<string>("")
+  
     const session = useSession();
-    // const [isList, setIsList] = useState(false)
     const [openModalUserDetail, setOpenModalUserDetail] = useState<boolean>(false)
     const [openModalUserCreate, setOpenModalUserCreate] = useState<boolean>(false)
     const [openDrawServiceProvider, setOpenDrawServiceProvider] = useState<boolean>(false)
@@ -41,7 +28,6 @@ export default function Page() {
     const [alertDetails, setAlertDetails] = useState<string>('')
     const [alertStatus, setAlertStatus] = useState<string>('')
     const [showAlert, setShowAlert] = useState<boolean>(false)
-    // const [token, setToken] = useState<string>('')
     const [isInit, setIsInit] = useState<boolean>(false)
     const [item, setItem] = useState<UserInterface>({
         name: "",
@@ -146,7 +132,7 @@ export default function Page() {
         if (!isInit) {
             getDataAndStat();
         }
-    }, [session])
+    }, [session, isInit])
 
     const [TabStateAppointement, setTabStateAppointment] = useState<{ actived: boolean, label: string }[]>([
         { label: "User", actived: true },
@@ -154,7 +140,7 @@ export default function Page() {
     ])
     const onStateChange = (e: number) => {
         setTabStateAppointment([]);
-        let tab: { actived: boolean, label: string }[] = [];
+        const tab: { actived: boolean, label: string }[] = [];
         TabStateAppointement.map((item: { actived: boolean; label: string; }, index: number) => {
             if (e == index) {
                 item.actived = true;
@@ -270,22 +256,7 @@ export default function Page() {
                 {
                     showModalDelete ? (
                         <div className="flex w-full h-full justify-center items-center bg-black/10 z-30 top-0 left-0 fixed">
-                            <ModalDelete onSubmit={(e) => {
-                                if (e) {
-                                    if (users) {
-                                        setShowModalDelete(false)
-                                        setIsLoading(true)
-                                        setTimeout(() => {
-                                            setUsers(users.filter((r) => {
-                                                if (item) { r.id != item.id } {
-
-                                                }
-                                            }))
-                                            handlerAlert(true, "User", "User is deleted successfully", "green")
-                                        }, 2000);
-                                    }
-                                }
-                            }} onClose={setShowModalDelete} title={"Delete " + item?.name} message="Do you want to delete this user?"></ModalDelete>
+                           
                         </div>
                     ) : null
                 }
@@ -315,8 +286,8 @@ export default function Page() {
                             {
                                 users ? (
                                     users.length > 0 ? (
-                                        users.map((item, index) => (
-                                            <AccountItem key={index} item={item} onDelete={(e) => { { setShowModalDelete(true); setItem(e) } }} onShow={(e) => { setOpenModalUserDetail(true); setItem(e) }}></AccountItem>
+                                        users.map((item) => (
+                                            <AccountItem key={item.id} item={item} onDelete={(e) => { { setShowModalDelete(true); setItem(e) } }} onShow={(e) => { setOpenModalUserDetail(true); setItem(e) }}></AccountItem>
                                         ))
                                     ) : (
                                         <p>No user find</p>
@@ -334,8 +305,8 @@ export default function Page() {
                             {
                                 serviceProvider ? (
                                     serviceProvider.length > 0 ? (
-                                        serviceProvider.map((item, index) => (
-                                            <AccountItem key={index} item={item} onDelete={(e) => { { setShowModalDelete(true); setItem(e) } }} onShow={(e) => { setOpenModalUserDetail(true); setItem(e) }}></AccountItem>
+                                        serviceProvider.map((item) => (
+                                            <AccountItem key={item.id} item={item} onDelete={(e) => { { setShowModalDelete(true); setItem(e) } }} onShow={(e) => { setOpenModalUserDetail(true); setItem(e) }}></AccountItem>
                                         ))
                                     ) : (
                                         <p>No user find</p>
@@ -348,7 +319,7 @@ export default function Page() {
                     ) : null
                 }
                 {
-                    openModalUserDetail ? (<UserDetailModal onClose={setOpenModalUserDetail} onSubmit={() => { }} user={item}></UserDetailModal>) : (<></>)
+                    openModalUserDetail ? (<UserDetailModal onClose={setOpenModalUserDetail} user={item}></UserDetailModal>) : (<></>)
                 }
                 {
                     openModalUserCreate ? (<UserCreateModal roles={roles} onClose={() => setOpenModalUserCreate(false)} onSubmit={createUser}></UserCreateModal>) : (<></>)

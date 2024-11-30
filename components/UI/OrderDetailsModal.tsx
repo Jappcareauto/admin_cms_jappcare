@@ -3,6 +3,7 @@ import { OrderInterface } from "@/interfaces/OrderInterface"
 import CloseIcon from "../Icones/CloseIcon"
 import CalendarIcon from "../Icones/calendarIcon"
 import { changeDateForm } from "@/functions/boostrapFunctions"
+import Image from "next/image"
 
 const OrderDetailsModal = (props: { item: OrderInterface, onClose: (value: boolean) => void, }) => {
 
@@ -18,7 +19,7 @@ const OrderDetailsModal = (props: { item: OrderInterface, onClose: (value: boole
                     <h2 className="font-bold mb-4">Order Details</h2>
                     <div className="flex py-2 items-center justify-between">
                         <div className="flex items-center w-56 gap-4 rounded-2xl">
-                            <img width="64" height="64" className="rounded-full"
+                            <Image width="64" height="64" className="rounded-full"
                                 src={props.item.user.profileImage.container} alt="" />
                             <span className="max-md:text-xs font-semibold">{props.item.user.name}</span>
                         </div>

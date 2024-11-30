@@ -3,8 +3,6 @@
 import SearchIcon from "@/components/Icones/SearchIcon";
 import { Button } from "@/components/UI/Button";
 import CardMessageUser from "@/components/UI/CardMessageUser";
-// import Header from "@/components/UI/Header";
-// import Navbar from "@/components/UI/Navbar";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import profilImage from "@/public/images/profil7.png"
@@ -12,7 +10,6 @@ import ChatRoomCreateModal from "@/components/UI/ChatRoomCreateModal";
 import { useSession } from "next-auth/react";
 import { UserInterface } from "@/interfaces/UserInterface";
 import LoadingIcon from "../Icones/LoadingIcon";
-// import { SessionProvider } from "next-auth/react";
 import { changeDateForm } from "@/functions/boostrapFunctions"
 
 interface ChatRoomInterface {
@@ -40,7 +37,6 @@ const ChatNavBar = () => {
     const [alertDetails, setAlertDetails] = useState<string>('')
     const [alertStatus, setAlertStatus] = useState<string>('')
     const [showAlert, setShowAlert] = useState<boolean>(false)
-    // const [discusionsUserCurrent, setDiscusionsUser] = useState<{ chatRoomId: string; userName: string; lastMessage: string; time: string; countNewMessage: string; }[]>([])
     const onFadeOut = (item: ChatRoomInterface) => {
 
         setUser(item);
@@ -72,17 +68,14 @@ const ChatNavBar = () => {
         try {
             const res = await fetch('/api/chat?token=' + session.data?.user?.accessToken, { method: 'POST', body: JSON.stringify(data) });
             const dataCreate = await res.json()
-
             if (res.ok) {
                 getData()
                 handlerAlert(true, "User", "User is adding successfully", "green")
             } else {
                 handlerAlert(true, dataCreate.message, dataCreate.details, "red")
             }
-           
         } catch (err) {
             console.log(err)
-            // handlerAlert(true, "err.message", "err.details", "red")
         }
         setIsLoading(false)
     }
@@ -125,7 +118,7 @@ const ChatNavBar = () => {
             setDiscusionsUser(chatRoomList)
             return
         }
-        let tab: ChatRoomInterface[] = []
+        const tab: ChatRoomInterface[] = []
         discusionsUser.map((item) => {
             if (item.name.trim().toLocaleLowerCase().search(searchInputValue.toLocaleLowerCase()) != -1) {
                 tab.push(item);
@@ -137,7 +130,7 @@ const ChatNavBar = () => {
         if (!activedButton) {
             setDiscusionsUser(chatRoomList)
         } else {
-            let tab: ChatRoomInterface[] = []
+            const tab: ChatRoomInterface[] = []
             discusionsUser.map((item) => {
                 if (item.participantIds.length.toString() != "0") {
                     tab.push(item);
@@ -149,7 +142,7 @@ const ChatNavBar = () => {
     return (
         <>
             <div style={{ maxWidth: 450, width: "100%" }} className="border-r min-h-screen">
-            {
+                {
                     showAlert ? (
                         <div className={`p-4 w-fit min-w-96 mb-4 text-sm  rounded-lg bg-${alertStatus}-50`} role="alert">
                             <span className="font-medium">{alertMessage}:</span> {alertDetails}.
@@ -222,8 +215,8 @@ const ChatNavBar = () => {
                     </form>
                     <div className="mt-5">
                         {
-                            discusionsUser ? discusionsUser.map((item, index) => (
-                                <div key={index} onClick={() => { onFadeOut(item) }}>
+                            discusionsUser ? discusionsUser.map((item) => (
+                                <div key={item.id} onClick={() => { onFadeOut(item) }}>
                                     <CardMessageUser image={""} chatRoomId={item.id} userName={item.name} lastMessage={""} time={changeDateForm(item.updatedAt)} countNewMessage={item.participantIds.length.toString()}  ></CardMessageUser>
                                 </div>
                             )) : (<div className=" animate-pulse  bg-gray-200 h-full min-h-28 rounded-2xl dark:bg-gray-700 w-full mb-4"></div>)

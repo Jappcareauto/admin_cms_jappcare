@@ -3,12 +3,13 @@ import ArrowRight from "../Icones/ArrowRight"
 import CalendarIcon from "../Icones/calendarIcon"
 import TrashIcon from "../Icones/TrashIcon"
 import { UserInterface } from "@/interfaces/UserInterface"
+import Image from "next/image"
 
 const AccountItem = (props: { item: UserInterface, onDelete: (value: UserInterface) => void, onShow: (value: UserInterface) => void, }) => {
     return (
         <div className="grid grid-cols-5 border-b py-2 items-center justify-between">
             <div className="flex items-center w-56 gap-4 rounded-2xl">
-                <img width="48" height="48" className="rounded-full"
+                <Image width="48" height="48" className="rounded-full"
                         src={props.item.profileImageUrl} alt=""
                         />
                 <span className=" text-sm font-semibold">{props.item.name}</span>

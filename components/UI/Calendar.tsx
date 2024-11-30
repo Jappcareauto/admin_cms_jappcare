@@ -4,46 +4,26 @@
 
 import React, { useState } from 'react';
 
-// type Event = {
-//     name: string;
-//     date: string;
-//     day: number;
-//     month: number;
-//     year: number;
-//     time: string;
-// };
-
 type CalendarProps = {
     isWeekView: boolean
 };
 
 const Calendar: React.FC<CalendarProps> = ({ isWeekView }) => {
-    const [view, setView] = useState("month");
-    const [layout, setLayout] = useState("grid");
+    const view = "month";
+    const layout = "grid";
     const [selectedDay, setSelectedDay] = useState(new Date().getDate());
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const daysOfWeekMobile = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-    // const events = [{ day: 29, time: "10:30", name: "Boxe anglaise" }];
 
-    // Calculer le nombre de jours dans le mois actuel
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-    // Déterminer le jour de la semaine du premier jour du mois
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
-    const offset = (firstDayOfMonth + 6) % 7; // Ajuster pour commencer par lundi
+    const offset = (firstDayOfMonth + 6) % 7; 
 
-    const handleViewChange = (newView: React.SetStateAction<string>) => setView(newView);
-    const handleLayoutChange = (newLayout: React.SetStateAction<string>) => setLayout(newLayout);
     const date = new Date();
-    const currentDay = date.getDate()
 
-    const getDay = (da: number) => {
-        const dateLetter = new Date(currentYear, currentMonth, da);
-        return daysOfWeekMobile[dateLetter.getDay() - 1];
-    }
 
-    // Fonctions de navigation entre les mois
     const goToPreviousMonth = () => {
         if (currentMonth === 0) {
             setCurrentMonth(11);
@@ -60,6 +40,7 @@ const Calendar: React.FC<CalendarProps> = ({ isWeekView }) => {
         } else {
             setCurrentMonth(currentMonth + 1);
         }
+        console.log(selectedDay)
     };
 
     return (
@@ -92,8 +73,8 @@ const Calendar: React.FC<CalendarProps> = ({ isWeekView }) => {
                 <div className={` ${isWeekView ? '' : 'border rounded-lg p-1'} grid grid-cols-7 gap-1 text-center`}>
 
                     <div className={` ${isWeekView ? ' gap-1' : 'border-b'} col-span-7 grid grid-cols-7`}>
-                        {daysOfWeekMobile.map((day, index) => (
-                            <div key={index} className={` ${isWeekView ? 'text-orange-600 font-semibold  text-right' : 'text-stone-700 font-bold text-center'} uppercase text-sm  p-2`}>
+                        {daysOfWeekMobile.map((day) => (
+                            <div key={day} className={` ${isWeekView ? 'text-orange-600 font-semibold  text-right' : 'text-stone-700 font-bold text-center'} uppercase text-sm  p-2`}>
                                 {day}
                             </div>
                         ))}
@@ -105,7 +86,7 @@ const Calendar: React.FC<CalendarProps> = ({ isWeekView }) => {
                     }
 
                     {
-                        isWeekView ? Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day, index) => (
+                        isWeekView ? Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
 
                             <div
                                 key={day}

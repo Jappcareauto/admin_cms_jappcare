@@ -7,7 +7,6 @@ import FilterBy from "@/components/UI/FilterBy"
 import OrderDetailsModal from "@/components/UI/OrderDetailsModal"
 import OrderItem from "@/components/UI/OrderItem"
 import { OrderInterface } from "@/interfaces/OrderInterface"
-import { UserInterface } from "@/interfaces/UserInterface"
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 
@@ -18,14 +17,13 @@ export default function Page() {
         { label: "In Progress", actived: false },
         { label: "Delivered", actived: false },
     ])
-    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [openOrderDetailsModal, setOpenOrderDetailsModal] = useState<boolean>(false)
     const session = useSession();
     const [dataRequest, setDataRequest] = useState<OrderInterface[] | null>(null);
     const [itemData, setItemData] = useState<OrderInterface | undefined>()
     const onStateChange = (e: number) => {
         setTabStateOrder([]);
-        let tab: { actived: boolean, label: string }[] = [];
+        const tab: { actived: boolean, label: string }[] = [];
         TabStateOrder.map((item: { actived: boolean; label: string; }, index: number) => {
             if (e == index) {
                 item.actived = true;
@@ -45,7 +43,7 @@ export default function Page() {
                         if (resAppointment.ok) {
                             const data = await resAppointment.json();
                             setDataRequest(data);
-                            // setNoAppointment(true)
+
                         }
 
                     }
@@ -79,8 +77,8 @@ export default function Page() {
                             {
                                 dataRequest ? (
                                     dataRequest.length > 0 ? (
-                                        dataRequest.map((item, index) => (
-                                            <OrderItem item={item} key={index} onDelete={(e) => { console.log(e) }} onShow={(e) => { setItemData(e) }}></OrderItem>
+                                        dataRequest.map((item) => (
+                                            <OrderItem item={item} key={item.id} onDelete={(e) => { console.log(e) }} onShow={(e) => { setItemData(e) }}></OrderItem>
                                         ))
                                     ) : (
                                         <p>No Order find</p>

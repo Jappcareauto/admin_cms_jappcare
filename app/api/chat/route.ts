@@ -7,13 +7,13 @@ export const POST = async (req: NextRequest) => {
     const { userId, participantUserIds, name } = body;
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
-    var data = JSON.stringify({
+    const data = JSON.stringify({
         "id": `${userId}`,
         "name": `${name}`,
         "participantUserIds": participantUserIds
     });
     try {
-        var config = {
+        const config = {
             method: 'post',
             url: process.env.API_URL + 'chatroom',
             headers: {
@@ -41,7 +41,7 @@ export const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     try {
-        var config = {
+        const config = {
             method: 'get',
             url:  process.env.API_URL + 'chatroom',
             headers: {

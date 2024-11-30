@@ -248,7 +248,7 @@ export default function Page() {
                     {
                         OverViewData.map((item, index) => (
                             <CardBasic
-                                key={index}
+                                key={item.title + "-" + index}
                                 color={item.color}
                                 icon={item.icon}
                                 subTitle={item.subTitle}
@@ -282,7 +282,7 @@ export default function Page() {
                     {
                         AppointmentData.map((item, index) => (
                             <CardStat
-                                key={index}
+                                key={item.title + "-" + index}
                                 color={item.color}
                                 icon={item.icon}
                                 title={item.title}
@@ -300,7 +300,7 @@ export default function Page() {
                     {
                         OrderData.map((item, index) => (
                             <CardStat
-                                key={index}
+                                key={item.title + "-" + index}
                                 color={item.color}
                                 icon={item.icon}
                                 title={item.title}
@@ -318,7 +318,7 @@ export default function Page() {
                     {
                         EmergencyData.map((item, index) => (
                             <CardStat
-                                key={index}
+                                key={item.title + "-" + index}
                                 color={item.color}
                                 icon={item.icon}
                                 title={item.title}
@@ -336,7 +336,7 @@ export default function Page() {
                     {
                         VinRequestData.map((item, index) => (
                             <CardStat
-                                key={index}
+                                key={item.title + "-" + index}
                                 color={item.color}
                                 icon={item.icon}
                                 title={item.title}
@@ -354,7 +354,7 @@ export default function Page() {
                     {
                         UserData.map((item, index) => (
                             <CardStat
-                                key={index}
+                                key={item.title + "-" + index}
                                 color={item.color}
                                 icon={item.icon}
                                 title={item.title}

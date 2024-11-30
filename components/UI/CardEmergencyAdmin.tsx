@@ -1,49 +1,12 @@
 import * as React from "react"
-
-import { cn } from "@/app/lib/utils"
-// import { StateEnum } from "@/app/admin/appointments/page"
-import { Button } from "./Button"
-import ImageProfile from "@/public/images/profil7.png"
-import Image from 'next/image'
-// enum StateEnum {
-//     PENDING = "Pending",
-//     CONFIRMED = "Confirmed",
-//     CANCELLED = "Cancelled",
-//     COMPLETED = "Completed",
-//     NO_SHOW = "No show",
-//     COUNT = 4
-// }
 const CardEmergencyAdmin =
-    (props: { carName: string, emitHandler: Function, cause: string, prix: string, distance: string, nameManager: string, nameClient: string }) => {
-        // const selectState = (type: string) => {
-        //     let cls
-        //     switch (type) {
-        //         case StateEnum.CANCELLED:
-        //             cls = " border-red-100 bg-red-50 text-red-500 border";
-        //             break;
-        //         case StateEnum.CONFIRMED:
-        //             cls = " border-blue-100 bg-blue-50 text-blue-500 border";
-        //             break;
-        //         case StateEnum.COMPLETED:
-        //             cls = " border-green-100 bg-green-50 text-green-500 border";
-        //             break;
-        //         case StateEnum.NO_SHOW:
-        //             cls = " border-stone-100 bg-stone-50 text-stone-500 border";
-        //             break;
-        //         case StateEnum.PENDING:
-        //             cls = " border-yellow-100 bg-yellow-50 text-yellow-500 border";
-        //             break;
-        //         default:
-        //             cls = " border-stone-100 bg-stone-50 text-stone-500 border";
-        //             break;
-        //     }
-        //     return cls;
-        // }
+    (props: { carName: string, emitHandler: (value: boolean) => void, cause: string, prix: string, distance: string, nameManager: string, nameClient: string }) => {
+
         const [isHidden, setIsHidden] = React.useState<boolean>(true)
         return (
             <div className="w-full"
             >
-                <div className="p-5  bg-rose-50 rounded-xl ">
+                <div onClick={() => props.emitHandler(true)} className="p-5  bg-rose-50 rounded-xl ">
                     <div className="flex justify-between">
                         <div className="flex gap-2">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -68,37 +31,12 @@ const CardEmergencyAdmin =
                             </svg>
                         </button>
                     </div>
-                    {/* <div>
-                        <div className="flex justify-start gap-2">
-                            <div className="flex items-center gap-4 py-3 pr-3 rounded-2xl">
-                                <Image width="48" height="48" className="rounded-full"
-                                    src={ImageProfile.src}
-                                    alt="" />
-                                <span className="text-sm">{props.nameClient}</span>
-                            </div>
-                            <div className="flex items-center gap-4 py-3 pl-3 border-l">
-                                <Image width="48" height="48" className="rounded-full"
-                                    src={ImageProfile.src}
-                                    alt="" />
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-stone-500">Handled by</span>
-                                    <span className="text-sm">{props.nameManager}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap items-center justify-between lg:flex-nowrap">
-                            <div className="flex items-center gap-4 text-xs font-medium lg:text-sm">
-                                <span>{props.carName}</span>
-                                <span>{props.cause}</span>
-                                <span>{props.prix} Frs</span>
-                                <span>{props.distance} Away</span>
-                            </div>
-                            <div className="flex items-center mt-4 lg:gap-4 lg:mt-0">
-                                <Button  typeButton={'outline'} onClick={() => props.emitHandler(false)} className='rounded-full px-3' label={'Decline'}></Button>
-                                <Button typeButton={'dark'} onClick={() => props.emitHandler(true)} className='rounded-full px-3' label={'Accept'}></Button>
-                            </div>
-                        </div>
-                    </div> */}
+                    {props.carName}
+                    {props.cause}
+                    {props.prix}
+                    {props.distance}
+                    {props.nameManager}
+                    {props.nameClient}
                     <div className=" animate-pulse  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div>
                     {
                         isHidden ? (<></>) : (

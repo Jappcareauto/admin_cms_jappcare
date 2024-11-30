@@ -5,7 +5,6 @@ import { Input } from "./Input";
 import { Button } from "./Button";
 
 const ExportDataDraw = (props: { onSubmit: (value: boolean) => void, onClose: (value: boolean) => void, }) => {
-
     const [TabStateAppointement, setTabStateAppointment] = useState<{ actived: boolean, label: string }[]>([
         { label: "This Week", actived: false },
         { label: "This Month", actived: false },
@@ -14,7 +13,7 @@ const ExportDataDraw = (props: { onSubmit: (value: boolean) => void, onClose: (v
     ])
     const onStateChange = (e: number) => {
         setTabStateAppointment([]);
-        let tab: { actived: boolean, label: string }[] = [];
+        const tab: { actived: boolean, label: string }[] = [];
         TabStateAppointement.map((item: { actived: boolean; label: string; }, index: number) => {
             if (e == index) {
                 item.actived = true;

@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-// import { https } from "follow-redirects";
-// import { AnyNaptrRecord } from "dns";
 import axios from "axios";
 
 export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
@@ -8,35 +6,32 @@ export const GET = async (req: NextRequest, { params }: { params: { id: string }
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     try {
-        var config = {
+        const config = {
             method: 'get',
             url: process.env.API_URL + 'appointment/' + id,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            // data: data
         };
         const sender = await axios(config);
-        var config2 = {
+        const config2 = {
             method: 'get',
             url: process.env.API_URL + 'vehicle/' + sender.data.vehicleId,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            // data: data
         };
         const sender2 = await axios(config2);
 
-        var config3 = {
+        const config3 = {
             method: 'get',
             url: process.env.API_URL + 'service/' + sender.data.serviceId,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            // data: data
         };
         const sender3 = await axios(config3);
 
@@ -82,9 +77,8 @@ export const PUT = async (req: NextRequest, { params }: { params: { id: string }
         "status": `${status}`,
     });
 
-
     try {
-        var config = {
+        const config = {
             method: 'get',
             url: process.env.API_URL + 'appointment/' + id,
             headers: {
@@ -92,7 +86,6 @@ export const PUT = async (req: NextRequest, { params }: { params: { id: string }
                 'Authorization': `Bearer ${token}`,
             },
             data: data
-            // data: data
         };
 
         const sender = await axios(config);

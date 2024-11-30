@@ -1,12 +1,6 @@
-// import { useState } from "react";
-// import { Button } from "./Button"
-// import { Input } from "./Input"
-// import { Select } from "./Select";
-// import ExpendIcon from "../Icones/ExpendIcon";
-// import defaultImageProfile from "@/public/images/profil7.png"
+
 import { useState } from "react";
 import CloseIcon from "../Icones/CloseIcon";
-// import { ProductInterface } from "@/interfaces/ProductInterface";
 import { Button } from "./Button";
 import { Input } from "./Input";
 import { Textarea } from "./Textarea";

@@ -2,8 +2,6 @@ import { FormEvent, useState } from "react";
 import { Button } from "./Button"
 import { Input } from "./Input"
 import { Select } from "./Select";
-// import ExpendIcon from "../Icones/ExpendIcon";
-// import TargetIcon from "../Icones/TargetIcon";
 import { UserInterface } from "@/interfaces/UserInterface";
 import CloseIcon from "../Icones/CloseIcon";
 
@@ -14,14 +12,6 @@ const UserCreateModal = (props: { onSubmit: (value: UserInterface) => void, onCl
     const [password, setPassword] = useState<string>("");
     const [role, setRole] = useState<string>("");
     const [message, setMessage] = useState<string>("");
-    // const TabRoleUser: { value: string, label: string }[] = [
-    //     { label: "ADMIN", value: "ROLE_ADMIN" },
-    //     { label: "GARAGE MANAGER", value: "ROLE_GARAGE_MANAGER" },
-    //     { label: "SERVICE MANAGER", value: "ROLE_SERVICE_MANAGER" },
-    //     { label: "TECHNICIAN", value: "ROLE_TECHNICIAN" },
-    //     { label: "CUSTOMER", value: "ROLE_CUSTOMER" },
-    //     { label: "RECEPTIONIST", value: "ROLE_RECEPTIONIST" },
-    // ]
     const onSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (nameUser == "" || email == "" || password == "" || role == "") {
@@ -79,8 +69,6 @@ const UserCreateModal = (props: { onSubmit: (value: UserInterface) => void, onCl
                     <h2 className="font-bold mb-4 mt-8">New User</h2>
                     <div className="relative flex items-start justify-center w-full gap-4 rounded-2xl">
                         <div style={{ width: 128, height: 128, }} className="relative border rounded-full border-stone-100 shadow">
-                            {/* <img width="128" height="128" className="rounded-full"
-                    src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt="" srcset=""> */}
                             <button type="button"
                                 className="absolute flex items-center justify-center bg-orange-500 rounded-full size-8 -bottom-0 -right-0">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"

@@ -8,9 +8,7 @@ const OrderItem = (props: { item: OrderInterface, onDelete: (value: OrderInterfa
     return (
         <div className="grid grid-cols-5 border-b py-2 items-center justify-between">
             <div className="flex items-center w-56 gap-4 rounded-2xl">
-                {/* <img width="48" height="48" className="rounded-full"
-                        src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt=""
-                        srcset=""> */}
+
                 <span className=" text-sm font-semibold">{props.item.user.name}</span>
             </div>
             <div className="font-semibold text-sm ">

@@ -5,7 +5,7 @@ export const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     try {
-        var config = {
+        const config = {
             method: 'get',
             url: process.env.API_URL + 'authorities/permissions',
             headers: {
@@ -32,15 +32,15 @@ export const POST = async (req: NextRequest) => {
     const { authorityType, authorities, users } = body;
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
-    var data = JSON.stringify({
+    const data = JSON.stringify({
         "toggle": true,
-        "authorityType": `ROLE`,
+        "authorityType": `${authorityType}`,
         "authorities": [`${authorities}`, "57272d6e-84f5-4034-b0a2-a0abb4f71288"],
         "users": [`${users}`],
     
     });
     try {
-        var config = {
+        const config = {
             method: 'post',
             url: process.env.API_URL + 'authorities/toggle',
             headers: {

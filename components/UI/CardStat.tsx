@@ -1,4 +1,4 @@
-// import Image from "next/image";
+
 const CardStat = (props: { color: string, icon: JSX.Element | null, title: string, stat: string | number }) => {
     const getThemeBackground = (color: string) => {
         let backgroundColor = ""

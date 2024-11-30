@@ -1,19 +1,13 @@
 import { FormEvent, useEffect, useState } from "react";
-// import { Button } from "./Button"
 import { Input } from "./Input"
 import { Select } from "./Select";
-// import ExpendIcon from "../Icones/ExpendIcon";
-// import defaultImageProfile from "@/public/images/profil7.png"
 import CloseIcon from "../Icones/CloseIcon";
-// import { dataListCategoryServiceCenterEnum } from "@/enums/dataList";
 import { ServiceCenterInterface } from "@/interfaces/ServiceCenterInterface";
 import { UserInterface } from "@/interfaces/UserInterface";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import { Button } from "./Button";
-// import Image from "next/image";
 import ListCategoriesService from "./ListCategoriesService";
-// import Map
 const center = {
     lat: 51.505,
     lng: -0.09,
@@ -29,7 +23,6 @@ const ServiceProviderCreateDraw = (props: { onSubmit: (value: ServiceCenterInter
     const [latitude, setLatitude] = useState<number>(0);
     const [longitude, setLongitude] = useState<number>(0);
     const [password, setPassword] = useState<string>("");
-    // const [location, setLocation] = useState<string>("");
 
     const Map = useMemo(() => dynamic(
         () => import('@/components/UI/Map'),
@@ -96,7 +89,7 @@ const ServiceProviderCreateDraw = (props: { onSubmit: (value: ServiceCenterInter
     useEffect(() => {
         setLatitude(0)
         setLongitude(0)
-    })
+    }, [setLatitude, setLongitude])
     return (
         <div className="fixed top-0 z-50 justify-end right-0 w-full max-w-96 h-full ">
             <form onSubmit={onSubmit}
@@ -142,8 +135,8 @@ const ServiceProviderCreateDraw = (props: { onSubmit: (value: ServiceCenterInter
                         </div>
                         <div className="my-3">
                             <label htmlFor="address" className="text-sm">Category</label>
-                            <ListCategoriesService itemActived={setCategory}></ListCategoriesService>
-                            {/* <Select value={category} onChange={e => { setCategory(e.target.value) }} options={dataListCategoryServiceCenterEnum}></Select> */}
+                            <ListCategoriesService itemActive={setCategory}></ListCategoriesService>
+                         
                         </div>
                      
                         <div className="my-3">

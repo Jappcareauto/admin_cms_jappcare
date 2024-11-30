@@ -1,5 +1,5 @@
 "use client"
-import { TITLE_WEBSITE } from "@/app/lib/constantes";
+
 import CalendarIcon from "@/components/Icones/calendarIcon";
 import LoadingIcon from "@/components/Icones/LoadingIcon";
 import AppointmentResultModal from "@/components/UI/AppointmentResultModal";
@@ -9,7 +9,6 @@ import { changeDateForm } from "@/functions/boostrapFunctions";
 import { AppointmentInterface } from "@/interfaces/AppointmentInterface";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
 
 interface IPrams {
     id?: string
@@ -38,7 +37,7 @@ export default function Page({ params }: { params: IPrams }) {
             }
         }
         getDataAndStat()
-    }, [session])
+    }, [session, params.id])
     return (
         <section className="w-full relative container px-4 flex flex-row bg-white">
             {/* <title>{TITLE_WEBSITE} | Appointment Details</title> */}
@@ -54,8 +53,7 @@ export default function Page({ params }: { params: IPrams }) {
                             </div>
                             <div className="flex items-center justify-between mt-1">
                                 <div className="flex items-center w-full gap-4 rounded-2xl">
-                                    <img width="48" height="48" className="rounded-full"
-                                        src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt="" />
+                                    
                                     <span className="text-sm">
                                         {/* James Mann */}
                                     </span>
@@ -65,8 +63,8 @@ export default function Page({ params }: { params: IPrams }) {
                                         className="p-2 px-3 text-xs text-center text-orange-500 rounded-full w-28 bg-rose-50 lg:text-sm">{dataItem.status}</div>
                                 </div>
                             </div>
-                            <img className="w-1/2" src="./../../assets/images/5e8173900d54188840dcc505afaab0b3.png" alt=""
-                            />
+                           
+                            
                             <h3 className="text-2xl font-semibold ">
                                 {dataItem.vehicle?.name}
                             </h3>
@@ -101,8 +99,8 @@ export default function Page({ params }: { params: IPrams }) {
                             </p>
                             <h3 className="my-4 font-semibold">Images</h3>
                             {
-                                dataItem.vehicle?.media.map((item, index) => (
-                                    <ImagesView item={item.items} key={index}></ImagesView>
+                                dataItem.vehicle?.media.map((item) => (
+                                    <ImagesView item={item.items} key={item.id}></ImagesView>
                                 ))
                             }
                             <AppointmentResultModal />

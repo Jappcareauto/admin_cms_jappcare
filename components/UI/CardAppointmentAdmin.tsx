@@ -1,7 +1,5 @@
 import * as React from "react"
 
-// import { cn } from "@/app/lib/utils"
-// import { StateEnum } from "@/app/admin/appointments/page"
 import { Button } from "./Button"
 import { StateEnum } from "@/enums/statusEnum"
 import { AppointmentInterface } from "@/interfaces/AppointmentInterface"
@@ -43,19 +41,8 @@ const CardAppointmentAdmin = (props: { item: AppointmentInterface, onShow: (valu
             <div className="flex items-center justify-between">
                 <div className="flex justify-start gap-2">
                     <div className="flex items-center gap-4 py-3 pr-3 rounded-2xl">
-                        {/* <img width="48" height="48" className="rounded-full"
-                                src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png"
-                                alt="" srcset=""> */}
+                      
                         <span className="text-xs"></span>
-                    </div>
-                    <div className="flex items-center gap-4 py-3 pl-3 border-l">
-                        {/* <img width="48" height="48" className="rounded-full"
-                                src="../../assets/images/e251d71c3423db0397a03934f2d1c3ee.png"
-                                alt="" srcset=""> */}
-                        <div>
-                            <div className="text-xs font-medium text-stone-500">Handled by</div>
-                            <div className="text-xs"></div>
-                        </div>
                     </div>
                 </div>
                 <div className="appointement-statut ">
@@ -65,7 +52,7 @@ const CardAppointmentAdmin = (props: { item: AppointmentInterface, onShow: (valu
             </div>
             <div className="flex items-end justify-between">
                 <div className="">
-                    <Link href={"/admin/appointments" + props.item.id}
+                    <Link href={"/service_center/appointments" + props.item.id}
                         className="text-lg font-medium text-orange-500 hover:text-orange-400 cursor-pointer">
                         {props.item.service?.title} appointement</Link>
                     <h4 className=" font-medium text-sm">{props.item.vehicle?.name}</h4>

@@ -5,14 +5,14 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json();
     const { email, password } = body;
     
-    var data = JSON.stringify({
+    const data = JSON.stringify({
         "email": `${email}`,
         "password": `${password}`,
         "extend": true
     });
    
     try {
-        var config = {
+        const config = {
             method: 'post',
             url:  process.env.API_URL + 'auth/login',
             headers: {

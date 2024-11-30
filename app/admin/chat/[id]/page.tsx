@@ -1,6 +1,5 @@
 
 "use client"
-import { TypeMessageEnum } from "@/enums/typeMessage"
 import { ChatMessageInterface } from "@/interfaces/ChatMessageInterface"
 import { useSession } from "next-auth/react"
 import { FormEvent, useEffect, useState } from "react"
@@ -27,7 +26,7 @@ export default function Page({ params }: { params: IPrams }) {
            
         } catch (err) {
             console.log(err)
-            // handlerAlert(true, "err.message", "err.details", "red")
+          
         }
         setMessage("")
         getData()
@@ -44,11 +43,7 @@ export default function Page({ params }: { params: IPrams }) {
                         const data = await res.json();
                         setMessages(data.data);
                     }
-                    // const resChatRoom = await fetch('/api/chat?token=' + session?.data?.user?.accessToken);
-                    // if (resChatRoom.ok) {
-                    //     const dataChat = await resChatRoom.json();
-                    //     setMessages(dataChat.data);
-                    // }
+                 
                 } catch (err) {
                     console.log(err)
                 }
@@ -56,7 +51,7 @@ export default function Page({ params }: { params: IPrams }) {
         }
 
         getDataAndStat()
-    }, [session])
+    }, [session, params.id])
 
     const getData = async () => {
         const resChatRoom = await fetch('/api/messages?chatRoomId=' + params.id + '?token=' + session.data?.user?.accessToken);
@@ -70,8 +65,7 @@ export default function Page({ params }: { params: IPrams }) {
         <div className="flex w-full flex-col justify-between min-h-screen col-span-3 px-8 text-sm border-l">
             <div className="py-8">
                 <div className="flex items-start w-full gap-4 rounded-2xl">
-                    {/* <img width="48" height="48" className="rounded-full"
-                        src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt="" /> */}
+                 
                     <div>
                         <h1 className="text-sm font-bold max-md:text-xs">Sara</h1>
                         <span className="text-sm max-md:text-xs">Last Sent Message</span>
@@ -79,7 +73,7 @@ export default function Page({ params }: { params: IPrams }) {
                 </div>
                 <div className="mt-8">
                     {messages.map((item, index) => (
-                        <div className="flex flex-col items-end gap-1 mt-5" key={index}>
+                        <div className="flex flex-col items-end gap-1 mt-5" key={item.senderId + "" + index}>
                             <div className="p-2 rounded-lg bg-rose-50 w-fit max-w-80">{item.content}</div>
                         </div>
                     ))

@@ -4,7 +4,6 @@ import TipIcon from "@/components/Icones/TipsIcon";
 import TrashIcon from "@/components/Icones/TrashIcon";
 import { Button } from "@/components/UI/Button";
 import CardStat from "@/components/UI/CardStat";
-import ProductDetailModal from "@/components/UI/ProductDetailModal";
 import TipsCreateModal from "@/components/UI/TipsCreateModal";
 import TipsDetailModal from "@/components/UI/TipsDetailModal";
 import { useState } from "react";
@@ -63,7 +62,7 @@ export default function Page() {
                     <ul>
                         {
                             DataTips.map((item, index) => (
-                                <li key={index} className="py-3 px-2 border-b flex items-center justify-between">
+                                <li key={item.label + "" + index} className="py-3 px-2 border-b flex items-center justify-between">
                                     {item.label}
                                     <div className="flex items-center gap-1">
 

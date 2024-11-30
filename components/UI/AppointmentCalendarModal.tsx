@@ -26,7 +26,7 @@ const AppointmentCalendarModal = ({ appointmentList, onClose }: AppointmentCalen
                     </button>
                     <div className="flex mt-10 px-2  justify-between">
                         <h2 className="font-semibold">Today&apos;s Calendar</h2>
-                        <Link href={"/manager/appointments/calendar"} className="text-gray-400 float-end relative bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                        <Link href={"/service_center/appointments/calendar"} className="text-gray-400 float-end relative bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -38,19 +38,14 @@ const AppointmentCalendarModal = ({ appointmentList, onClose }: AppointmentCalen
                    
                     <Calendar isWeekView={true}></Calendar>
                     <Button label="Show schedule" className="w-fit px-4" typeButton="outline" onClick={() => setShowCalendar(!showCalendar)} type="button"></Button>
-                    {/* <button id="buttonScheduleAndCalendar"
-                        className="p-2 px-4 mt-4 text-xs transition-colors border rounded-full border-stone-900 lg:text-sm hover:bg-stone-900 hover:text-white">Show
-                        Schedule</button> */}
-                    {/* <div className="hidden mt-6" id="scheduleToCalendar">
-                        <img src="./../../assets/images/small-schedule.svg" alt="" />
-                    </div> */}
+         
                     {
                         showCalendar ? (
                             <div className="flex flex-col gap-4 mt-8" id="calendarToSchedule">
                             {
                                 appointmentList ?
-                                    appointmentList.map((item, index) => (
-                                        <ScheduleItem key={index} name={""} serviceName={item.service.title} vehicleName={item.vehicle.name} date={item.date} dateEnd={item.date} />
+                                    appointmentList.map((item) => (
+                                        <ScheduleItem key={item.id} name={""} serviceName={item.service.title} vehicleName={item.vehicle.name} date={item.date} dateEnd={item.date} />
                                     )) : (
                                         <div>
                                             <div className=" animate-pulse min-h-20  bg-gray-200 h-full rounded-2xl dark:bg-gray-700 w-full mb-4"></div>

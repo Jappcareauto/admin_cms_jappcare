@@ -5,7 +5,7 @@ import Chart from "chart.js"
 const CardChartLine = (props: { labels: string[], height: number, subTitle: string, maxWidth: string, data: number[] }) => {
 
     useEffect(() => {
-        var config = {
+        const config = {
             type: "line",
             data: {
                 labels: props.labels,
@@ -90,14 +90,14 @@ const CardChartLine = (props: { labels: string[], height: number, subTitle: stri
                 },
             },
         };
-        var ctx: HTMLCanvasElement | null = document.querySelector("canvas#line-chart")
+        const ctx: HTMLCanvasElement | null = document.querySelector("canvas#line-chart")
 
         if (ctx) {
             ctx.getContext("2d");
-            //@ts-ignore
+            //@ts-expect-error "CHart js" 
             window.myLine = new Chart(ctx, config);
         }
-    }, [])
+    }, [props.data, props.labels])
 
     return (
         <>
@@ -109,7 +109,6 @@ const CardChartLine = (props: { labels: string[], height: number, subTitle: stri
                     </div>
                 </div>
                 <div className=" flex-auto w-full">
-                    {/* Chart */}
                     <div className="relative w-full ">
                         <canvas id="line-chart" style={{ height: "100%", width: "100%" }}></canvas>
                     </div>

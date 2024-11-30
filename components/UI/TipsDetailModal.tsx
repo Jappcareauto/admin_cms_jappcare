@@ -1,12 +1,5 @@
-// import { useState } from "react";
-// import { Button } from "./Button"
-// import { Input } from "./Input"
-// import { Select } from "./Select";
-// import ExpendIcon from "../Icones/ExpendIcon";
-// import defaultImageProfile from "@/public/images/profil7.png"
 
 import CloseIcon from "../Icones/CloseIcon";
-// import { ProductInterface } from "@/interfaces/ProductInterface";
 import { Button } from "./Button";
 
 const TipsDetailModal = (props: { item: { label: string, description: string }, onSubmit: (value: { label: string, description: string }) => void, onClose: (value: boolean) => void }) => {

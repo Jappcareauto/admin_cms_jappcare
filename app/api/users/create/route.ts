@@ -6,7 +6,7 @@ export const POST = async (req: NextRequest) => {
     const { email, password, name, verified, role } = body;
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
-    var data = JSON.stringify({
+    const data = JSON.stringify({
         "email": `${email}`,
         "password": `${password}`,
         "name": `${name}`,
@@ -15,7 +15,7 @@ export const POST = async (req: NextRequest) => {
     });
 
     try {
-        var config = {
+        const config = {
             method: 'post',
             url: process.env.API_URL + 'user/create',
             headers: {

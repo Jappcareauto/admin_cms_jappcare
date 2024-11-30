@@ -3,7 +3,7 @@ import Chart from "chart.js";
 
 const CardChartBar = (props: { subTitle: string, maxWidth: string, height: string, data: number[] }) => {
     React.useEffect(() => {
-        let config = {
+        const config = {
             type: "bar",
             data: {
                 labels: [
@@ -88,15 +88,18 @@ const CardChartBar = (props: { subTitle: string, maxWidth: string, height: strin
                 },
             },
         };
-        //@ts-ignore
-        let ctx = document.getElementById("bar-chart").getContext("2d");
-         //@ts-ignore
-        window.myBar = new Chart(ctx, config);
-    }, []);
+
+        const ctx: HTMLCanvasElement | null = document.querySelector("canvas#bar-chart")
+
+        if (ctx) {
+            ctx.getContext("2d");
+            //@ts-expect-error "CHart js"
+            window.myBar = new Chart(ctx, config);
+        }
+    }, [props.data])
     return (
         <>
-            <div className={"flex flex-col  min-h-52 w-full justify-between text  h-full border border-stone-200 max-md:pb-4 max-md:min-h-24 rounded-3xl  p-4  px-4 " + props.maxWidth }>
-
+            <div className={"flex flex-col  min-h-52 w-full justify-between text  h-full border border-stone-200 max-md:pb-4 max-md:min-h-24 rounded-3xl  p-4  px-4 " + props.maxWidth}>
                 <div className="rounded-t mb-0 bg-transparent">
                     <div className="flex items-center justify-end">
                         <span className="p-2 px-3 text-sm  rounded-full bg-stone-100 ">{props.subTitle}
@@ -104,7 +107,6 @@ const CardChartBar = (props: { subTitle: string, maxWidth: string, height: strin
                     </div>
                 </div>
                 <div className=" flex-auto w-full">
-                    {/* Chart */}
                     <div className="relative w-full ">
                         <canvas id="bar-chart" style={{ height: "100%", width: "100%" }}></canvas>
                     </div>

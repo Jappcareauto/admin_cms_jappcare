@@ -1,6 +1,5 @@
 import { AppointmentInterface } from "@/interfaces/AppointmentInterface"
 import CloseIcon from "../Icones/CloseIcon"
-import { StateEnum } from "@/enums/statusEnum"
 import CalendarIcon from "../Icones/calendarIcon"
 import { changeDateForm } from "@/functions/boostrapFunctions"
 import { Button } from "./Button"
@@ -11,7 +10,7 @@ interface AppointmentDetailModalProps {
     item: AppointmentInterface,
 }
 const AppointmentDetailModal = (props: AppointmentDetailModalProps) => {
-  
+
     return (
         <div className="fixed top-0 z-50 justify-end right-0 w-full max-w-96 h-full ">
             <div
@@ -22,23 +21,17 @@ const AppointmentDetailModal = (props: AppointmentDetailModalProps) => {
                         <span className="sr-only">Close modal</span>
                     </button>
                     <h2 className="font-bold">Appointment Details</h2>
-                    {/* <button className="absolute text-sm right-5 top-5" id="closeButtonAppointementDetailModal">Close</button> */}
+
                     <div className="flex flex-col gap-4 mt-4">
                         <div>
                             <h3 className="text-2xl font-semibold text-orange-500">
-                                {/* Porsche Taycan Turbo S */}
                             </h3>
                             <h4>2024, RWD</h4>
-                            {/* <img className="w-full" src="./../../assets/images/5e8173900d54188840dcc505afaab0b3.png" alt=""
-                    srcset=""> */}
                         </div>
-
                         <div className="flex items-center justify-between">
                             <div className="flex items-center w-full gap-2 rounded-2xl">
-                                {/* <img width="48" height="48" className="rounded-full"
-                        src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt="" srcset=""> */}
                                 <span className="text-sm">
-                                    {/* James Mann */}
+                                  
                                 </span>
                             </div>
                             <div className="p-2 text-xs text-center text-orange-500 rounded-full p w-28 bg-rose-50 lg:text-sm" >
@@ -50,11 +43,11 @@ const AppointmentDetailModal = (props: AppointmentDetailModalProps) => {
                         <div className="flex items-end justify-between mt-4">
                             <div>
                                 <h3 className="text-xl font-bold text-orange-500 max-md:text-sm">
-                                    {/* {props.item.serviceId} */}
+                                  
                                     appointment
                                 </h3>
                                 <h4 className="mt-2 font-bold">
-                                    {/* Porsche Taycan Turbo S */}
+                                  
                                 </h4>
                                 <div className="flex flex-col gap-2 mt-2 text-stone-500">
                                     <div className="flex gap-1">
@@ -79,21 +72,18 @@ const AppointmentDetailModal = (props: AppointmentDetailModalProps) => {
                             <div className="flex flex-col gap-1">
                                 <span className="text-sm text-stone-500">Revenue</span>
                                 <span className="text-lg font-semibold text-orange-500 ">
-                                    {/* Frs */}
+                                    
                                 </span>
                             </div>
                         </div>
                         <p className="text-sm">
-                            {/* There is a noticeable dent on the rear bumper of my Porsche Taycan, specifically located between
-                            the lower edge of the rear headlight and the rear wheel arch. It is closer to the wheel arch,
-                            situated near the car&apos;s side profile. The dent is below the horizontal line of the rear
-                            headlight and sits closer to the lower third of the rear bumper. */}
+                           
                         </p>
                         <h3 className="font-semibold">Images</h3>
                         <div className="flex w-full gap-2 overflow-hidden">
                             {
-                                props.item.vehicle?.media.map((item, index) => (
-                                    <ImagesView item={item.items} key={index}></ImagesView>
+                                props.item.vehicle?.media.map((item) => (
+                                    <ImagesView item={item.items} key={item.id}></ImagesView>
                                 ))
                             }
                         </div>

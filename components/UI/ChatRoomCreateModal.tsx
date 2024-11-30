@@ -1,9 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Button } from "./Button"
 import { Input } from "./Input"
-import { Select } from "./Select";
-// import ExpendIcon from "../Icones/ExpendIcon";
-// import TargetIcon from "../Icones/TargetIcon";
 import { UserInterface } from "@/interfaces/UserInterface";
 import CloseIcon from "../Icones/CloseIcon";
 
@@ -21,8 +18,6 @@ const ChatRoomCreateModal = (props: { onSubmit: (value: { name: string, particip
             props.onSubmit({ name: name, participant: participantList })
         }
     }
-
-
     return (
         <div className="fixed top-0 z-50 justify-end right-0 w-full max-w-96 h-full ">
             <form onSubmit={onSubmit} method="post"
@@ -43,8 +38,8 @@ const ChatRoomCreateModal = (props: { onSubmit: (value: { name: string, particip
                         <div>
                             <label htmlFor="list" className="text-sm">Add participant</label>
                             {
-                                props.users.map((user, index) => (
-                                    <div key={index} className="flex my-2 items-center ps-4 border border-gray-200 rounded ">
+                                props.users.map((user) => (
+                                    <div key={user.id} className="flex my-2 items-center ps-4 border border-gray-200 rounded ">
                                         <input onChange={(e) => {
                                             if (e.target.checked) {
                                                 setParticipantList([...participantList, user.id]);

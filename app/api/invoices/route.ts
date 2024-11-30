@@ -7,7 +7,7 @@ export const POST = async (req: NextRequest) => {
     const { appointmentId, amount, dueDate } = body;
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
-    var data = JSON.stringify({
+    const data = JSON.stringify({
         "appointmentId": `${appointmentId}`,
         "money": {
             "amount": `${amount}`,
@@ -16,7 +16,7 @@ export const POST = async (req: NextRequest) => {
        "dueDate": `${dueDate}`
     });
     try {
-        var config = {
+        const config = {
             method: 'post',
             url: process.env.API_URL + 'invoice',
             headers: {
@@ -44,7 +44,7 @@ export const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     try {
-        var config = {
+        const config = {
             method: 'get',
             url: process.env.API_URL + 'invoice',
             headers: {

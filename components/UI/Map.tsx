@@ -33,16 +33,16 @@ const MapComponent = (Map: MapProps) => {
             dragend() {
                 const marker = markerRef.current
                 if (marker != null) {
-                    //@ts-ignore
+                    
                     setPosition(marker.getLatLng())
-                    //@ts-ignore
+                   
                     longitude(marker.getLatLng().lng)
-                    //@ts-ignore
+                    
                     latitude(marker.getLatLng().lat)
                 }
             },
         }),
-        [],
+        [latitude, longitude],
     )
     return (
         <MapContainer

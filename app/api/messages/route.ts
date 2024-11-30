@@ -7,7 +7,7 @@ export const POST = async (req: NextRequest) => {
     const { userId, message, chatRoomId, timestamp, type, appointmentId } = body;
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
-    var data = JSON.stringify({
+    const data = JSON.stringify({
         "senderId": `${userId}`,
         "content": `${message}`,
         "chatRoomId": `${chatRoomId}`,
@@ -16,7 +16,7 @@ export const POST = async (req: NextRequest) => {
         "appointmentId": `${appointmentId}`,
     });
     try {
-        var config = {
+        const config = {
             method: 'post',
             url: process.env.API_URL + 'chat-message',
             headers: {
@@ -45,7 +45,7 @@ export const GET = async (req: NextRequest) => {
     const token = searchParams.get("token");
     const chatRoomId = searchParams.get("chatRoomId");
     try {
-        var config = {
+        const config = {
             method: 'get',
             url: process.env.API_URL + 'chat-message/chatroom/' + chatRoomId,
             headers: {

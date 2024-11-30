@@ -5,7 +5,7 @@ export const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     try {
-        var config = {
+        const config = {
             method: 'GET',
             url:  process.env.API_URL + 'user/list',
             headers: {

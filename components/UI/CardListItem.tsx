@@ -4,11 +4,6 @@ import TrashIcon from "../Icones/TrashIcon"
 import CalendarIcon from "../Icones/calendarIcon"
 import TargetIcon from "../Icones/TargetIcon"
 
-// import { cn } from "@/app/lib/utils"
-// import { StateEnum } from "@/app/admin/appointments/page"
-// import { Button } from "./Button"
-// import ImageProfile from "@/public/images/profil7.png"
-// import Image from 'next/image'
 enum StateEnum {
     PENDING = "Pending",
     CONFIRMED = "Confirmed",
@@ -51,20 +46,15 @@ const CardAppointment = (props: CardAppointmentProps) => {
     return (
         <div className="flex items-center justify-between py-2 border-b">
             <div className="flex items-center w-56 gap-4 rounded-2xl">
-                {/* <img width="48" height="48" className="rounded-full"
-        src="../../assets/images/10c6847941b93f45858be7d3ce3ff3ec.png" alt=""
-        srcset=""> */}
                 <span className="font-bold max-md:text-xs">
-                    {/* {props.nameClient} */}
+
                 </span>
             </div>
             <div className="font-semibold">
-                {/* {props.item.nameManager} */}
             </div>
             <div className="font-semibold">
                 {props.item.vehicle.name}
             </div>
-
             <div className="flex items-center gap-1">
                 <CalendarIcon fill="#111111" stroke="#111111"></CalendarIcon>
                 <span className="text-sm">{props.item.date}</span>
@@ -79,7 +69,6 @@ const CardAppointment = (props: CardAppointmentProps) => {
             </div>
             <div className="flex gap-4">
                 <button type="button">
-
                     <TrashIcon fill="#141B34" stroke="#141B34"></TrashIcon>
                     <span className="hidden">Delete</span>
                 </button>
