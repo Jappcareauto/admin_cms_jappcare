@@ -26,6 +26,16 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source files and static assets
 COPY . .
 
+# Accept environment variables as build arguments
+ARG API_URL
+ARG NEXTAUTH_SECRET
+ARG NEXTAUTH_URL
+
+# Write environment variables to .env.production
+RUN echo "API_URL=$API_URL" >> .env.production
+RUN echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> .env.production
+RUN echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env.production
+
 # Disable telemetry during the build process
 ENV NEXT_TELEMETRY_DISABLED=1
 
