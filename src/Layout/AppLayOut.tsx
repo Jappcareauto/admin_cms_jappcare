@@ -14,13 +14,13 @@ import '@fontsource/plus-jakarta-sans/700.css';
 
 const AppLayout = ({ children }: { children?: React.ReactNode }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-    const [mode, setMode] = useState<'light' | 'dark'>('light');
+    // const [mode, setMode] = useState<'light' | 'dark'>('light');
 
     const drawerWidth = isSidebarCollapsed ? 0 : 270;   // in case i can change to 80
 
     const theme = createTheme({
         palette: {
-            mode,
+            // mode,
             primary: {
                 main: '#FF7043',
             },
@@ -88,20 +88,20 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
-    const toggleTheme = () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-    };
+    // const toggleTheme = () => {
+    //     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    // };
 
-    useEffect(() => {
-        const savedMode = localStorage.getItem('theme-mode');
-        if (savedMode) {
-            setMode(savedMode as 'light' | 'dark');
-        }
-    }, []);
+    // useEffect(() => {
+    //     const savedMode = localStorage.getItem('theme-mode');
+    //     if (savedMode) {
+    //         setMode(savedMode as 'light' | 'dark');
+    //     }
+    // }, []);
 
-    useEffect(() => {
-        localStorage.setItem('theme-mode', mode);
-    }, [mode]);
+    // useEffect(() => {
+    //     localStorage.setItem('theme-mode', mode);
+    // }, [mode]);
 
     return (
         <ThemeProvider theme={theme}>
@@ -130,7 +130,7 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                         overflow: 'auto'
                     }}
                 >
-                    <HeaderLayout toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} />
+                    <HeaderLayout toggleSidebar={toggleSidebar} />
                     <BodyLayout>{children}</BodyLayout>
                     <FooterLayout />
                 </Box>

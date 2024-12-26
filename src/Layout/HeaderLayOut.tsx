@@ -14,11 +14,11 @@ import SettingsForm from '../components/Drawer/settingsForm/SettingsForm';
 import Notifications from '../components/Drawer/notifications/Notifications';
 
 interface HeaderLayoutProps {
-    toggleTheme: () => void;
+    // toggleTheme: () => void;
     toggleSidebar: () => void;
 }
 
-const HeaderLayout = ({ toggleTheme, toggleSidebar }: HeaderLayoutProps) => {
+const HeaderLayout = ({ toggleSidebar }: HeaderLayoutProps) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
 
