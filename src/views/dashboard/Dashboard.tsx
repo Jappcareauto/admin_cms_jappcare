@@ -480,7 +480,7 @@ const Dashboard = () => {
                         {/* Orders Section */}
                         <Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <ShopIcon fill='#000' stroke='#000' />
+                                <ShopIcon fill='#000' stroke='' />
                                 <Typography variant="h6" sx={{ ml: 1 }}>Orders</Typography>
 
                             </Box>

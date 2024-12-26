@@ -33,7 +33,7 @@ const NewServiceForm = ({ onSubmit, onCancel }: NewServiceFormProps) => {
 
     return (
         <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={3} sx={{ mb: 16 }}>
+            <Stack spacing={3} sx={{ mb: 21 }}>
                 <TextField
                     fullWidth
                     label="Title"
@@ -111,6 +111,7 @@ const NewServiceForm = ({ onSubmit, onCancel }: NewServiceFormProps) => {
                     sx={{
                         color: 'white',
                         bgcolor: '#000',
+                        py: 1.5,
                         '&:hover': { bgcolor: '#333', borderColor: '#333' }
                     }}
                 >
