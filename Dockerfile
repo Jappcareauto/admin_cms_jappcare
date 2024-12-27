@@ -12,16 +12,27 @@ RUN apk add --no-cache libc6-compat
 RUN addgroup -S vitegroup && adduser -S viteuser -G vitegroup
 USER viteuser
 
-# Copy only necessary files (package manager files for dependencies)
-COPY --chown=viteuser:vitegroup package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# Copy package files
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
 # Install dependencies
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f package-lock.json ]; then npm ci; \
   elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm install --frozen-lockfile; \
-  else echo "No lockfile found, unable to install dependencies" && exit 1; \
+  else echo "No lockfile found, falling back to npm install" && npm install; \
   fi
+
+# # Copy only necessary files (package manager files for dependencies)
+# COPY --chown=viteuser:vitegroup package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+
+# # Install dependencies
+# RUN \
+#   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+#   elif [ -f package-lock.json ]; then npm ci; \
+#   elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm install --frozen-lockfile; \
+#   else echo "No lockfile found, unable to install dependencies" && exit 1; \
+#   fi
 
 # Copy the rest of the application files (source code and assets)
 COPY --chown=viteuser:vitegroup . .
