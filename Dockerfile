@@ -13,26 +13,19 @@ RUN addgroup -S vitegroup && adduser -S viteuser -G vitegroup
 USER viteuser
 
 # Copy package files
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY --chown=viteuser:vitegroup package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
-# Install dependencies
+# Install dependencies with permission fixes
 RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm install --frozen-lockfile; \
-  else echo "No lockfile found, falling back to npm install" && npm install; \
+  if [ -f yarn.lock ]; then \
+    yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then \
+    npm ci --unsafe-perm; \
+  elif [ -f pnpm-lock.yaml ]; then \
+    npm install -g pnpm && pnpm install --frozen-lockfile; \
+  else \
+    echo "No lockfile found, falling back to npm install" && npm install --unsafe-perm; \
   fi
-
-# # Copy only necessary files (package manager files for dependencies)
-# COPY --chown=viteuser:vitegroup package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-
-# # Install dependencies
-# RUN \
-#   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-#   elif [ -f package-lock.json ]; then npm ci; \
-#   elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm install --frozen-lockfile; \
-#   else echo "No lockfile found, unable to install dependencies" && exit 1; \
-#   fi
 
 # Copy the rest of the application files (source code and assets)
 COPY --chown=viteuser:vitegroup . .
