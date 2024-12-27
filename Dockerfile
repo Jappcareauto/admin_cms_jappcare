@@ -17,17 +17,27 @@ USER viteuser
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
 # Install dependencies and capture logs
+# Dockerfile snippet
 RUN \
   if [ -f yarn.lock ]; then \
     yarn --frozen-lockfile || { echo "Yarn installation failed"; exit 1; }; \
   elif [ -f package-lock.json ]; then \
-    npm ci --unsafe-perm || { echo "npm installation failed"; exit 1; }; \
+    npm ci --unsafe-perm || { \
+      echo "npm installation failed"; \
+      cat /home/viteuser/.npm/_logs/*.log; \
+      exit 1; \
+    }; \
   elif [ -f pnpm-lock.yaml ]; then \
-    npm install -g pnpm && pnpm install --frozen-lockfile || { echo "pnpm installation failed"; exit 1; }; \
+    npm install -g pnpm && pnpm install --frozen-lockfile || { \
+      echo "pnpm installation failed"; \
+      exit 1; \
+    }; \
   else \
-    npm install --unsafe-perm || { echo "Fallback npm installation failed"; exit 1; }; \
+    npm install --unsafe-perm || { \
+      echo "Fallback npm installation failed"; \
+      exit 1; \
+    }; \
   fi
-
 # Copy npm logs to a directory
 RUN mkdir -p /tmp/npm-logs && cp /home/viteuser/.npm/_logs/*.log /tmp/npm-logs/
 
