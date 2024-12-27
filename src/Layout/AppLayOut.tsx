@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { Box, CssBaseline, GlobalStyles, ThemeProvider, createTheme } from '@mui/material';
 import NavBar from '../components/NavBar';
 import HeaderLayout from './HeaderLayOut';
 import BodyLayout from './BodyLayOut';
@@ -15,16 +15,16 @@ import '@fontsource/plus-jakarta-sans/700.css';
 const AppLayout = ({ children }: { children?: React.ReactNode }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-    const drawerWidth = isSidebarCollapsed ? 0 : 270;   // in case i can change to 80
+    // const drawerWidth = isSidebarCollapsed ? 0 : 270;   // in case i can change to 80
 
     const theme = createTheme({
         palette: {
-            // mode,
+            mode: 'light',
             primary: {
                 main: '#FF7043',
             },
             background: {
-                default: 'rgba(248, 201, 187, 0.1)',
+                // default: 'rgba(241, 176, 156, 0.1)',
                 paper: 'rgba(241, 176, 156, 0.1)',
             },
             text: {
@@ -48,6 +48,7 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
             MuiButton: {
                 styleOverrides: {
                     root: {
+                        borderRadius: 28,
                         fontFamily: '"Plus Jakarta Sans", sans-serif',
                         textTransform: 'none',
                         '&:hover': {
@@ -87,8 +88,38 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
+    // const toggleTheme = () => {
+    //     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    // };
+
+    // useEffect(() => {
+    //     const savedMode = localStorage.getItem('theme-mode');
+    //     if (savedMode) {
+    //         setMode(savedMode as 'light' | 'dark');
+    //     }
+    // }, []);
+
+    useEffect(() => {
+        localStorage.removeItem('theme-mode');
+    }, []);
+
     return (
         <ThemeProvider theme={theme}>
+            <GlobalStyles
+                styles={{
+                    '*::-webkit-scrollbar': { width: '6px' },
+                    '*::-webkit-scrollbar-track': {
+                        background: 'rgba(0, 0, 0, 0.05)',
+                        borderRadius: '3px',
+                        margin: '8px',
+                    },
+                    '*::-webkit-scrollbar-thumb': {
+                        background: 'rgba(255, 112, 67, 0.3)',
+                        borderRadius: '3px',
+                        '&:hover': { background: 'rgba(255, 112, 67, 0.5)' },
+                    },
+                }}
+            />
             <Box sx={{
                 display: 'flex',
                 // width: '100vw',
@@ -104,7 +135,11 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                         minHeight: '100vh',
                         display: 'flex',
                         flexDirection: 'column',
-                        transition: 'width 300ms cubic-bezier(0, 0, 0.5, 1) 0ms',
+                        // transition: theme.transitions.create(['margin', 'width'], {
+                        //     easing: theme.transitions.easing.sharp,
+                        //     duration: theme.transitions.duration.leavingScreen,
+                        // }),
+                        // transition: '2s cubic-bezier(.17,.67,1,1) 0ms',
                         overflow: 'auto'
                     }}
                 >

@@ -1,4 +1,4 @@
-import React from 'react';
+;
 import { Box } from '@mui/material';
 
 interface BodyLayoutProps {
@@ -12,8 +12,8 @@ const BodyLayout = ({ children }: BodyLayoutProps) => {
             sx={{
                 flexGrow: 1,
                 p: 3,
-                bgcolor: 'background.default',
                 minHeight: 'calc(100vh - 64px - 100px)', // Accounting for header and footer
+                bgcolor: 'rgba(248, 201, 187, 0.1)'
             }}
         >
             {children}

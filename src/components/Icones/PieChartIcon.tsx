@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 const PieChartIcon = (props: { stroke: string, fill: string }) => {
     return (

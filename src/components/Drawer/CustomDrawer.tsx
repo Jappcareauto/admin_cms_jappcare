@@ -1,4 +1,4 @@
-import React from 'react';
+;
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -25,9 +25,10 @@ const CustomDrawer = ({ open, onClose, title, children }: CustomDrawerProps) => 
                         sm: '450px'
                     },
                     bgcolor: 'white',
+                    background: 'background.paper',
                     padding: '24px',
 
-                }
+                },
             }}
         >
             <Box sx={{

@@ -17,6 +17,8 @@ const NewServiceForm = ({ onSubmit, onCancel }: NewServiceFormProps) => {
         definition: 'CUSTOM',
         serviceCenter: ''
     });
+    console.log("close", onCancel);
+
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;

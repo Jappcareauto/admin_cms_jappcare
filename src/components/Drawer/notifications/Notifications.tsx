@@ -1,17 +1,8 @@
-import React from 'react';
+;
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import GroupIcon from '@mui/icons-material/Group';
-import EventIcon from '@mui/icons-material/Event';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
-import NotificationIcon from '../../Icones/NotificationIcon';
 import NotifIcon from '../../Icones/NotifIcon';
 
 interface NotificationItemProps {
@@ -58,6 +49,9 @@ interface NotificationsProps {
 }
 
 const Notifications = ({ onClose }: NotificationsProps) => {
+
+    console.log("Close", onClose);
+
     const notifications = [
         {
             icon: <NotifIcon stroke='#FF6B00' fill='#FF6B00' />,
