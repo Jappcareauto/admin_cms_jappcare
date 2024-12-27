@@ -14,7 +14,6 @@ import '@fontsource/plus-jakarta-sans/700.css';
 
 const AppLayout = ({ children }: { children?: React.ReactNode }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-    // const [mode, setMode] = useState<'light' | 'dark'>('light');
 
     // const drawerWidth = isSidebarCollapsed ? 0 : 270;   // in case i can change to 80
 
@@ -118,8 +117,6 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                     component="main"
                     sx={{
                         flexGrow: 1,
-                        // width: `calc(100% - ${drawerWidth}px)`,
-                        // marginLeft: `${drawerWidth}px`,
                         minHeight: '100vh',
                         display: 'flex',
                         flexDirection: 'column',
