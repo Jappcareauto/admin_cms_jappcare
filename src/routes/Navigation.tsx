@@ -11,6 +11,16 @@ const Navigation = createBrowserRouter(
             {/* <Route element={<ProtectedComponent />}> */}
             <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/shop" element={<AppLayout><Shop /></AppLayout>} />
+            <Route path="/appointments" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/emergency" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/chats" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/statistics" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/invoices" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/profile" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/accounts" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/tips" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/payments" element={<AppLayout><Dashboard /></AppLayout>} />
+
 
             {/* </Route> */}
         </Route>

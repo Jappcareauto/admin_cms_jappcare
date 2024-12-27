@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { Box, CssBaseline, GlobalStyles, ThemeProvider, createTheme } from '@mui/material';
 import NavBar from '../components/NavBar';
 import HeaderLayout from './HeaderLayOut';
 import BodyLayout from './BodyLayOut';
@@ -105,6 +105,21 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
 
     return (
         <ThemeProvider theme={theme}>
+            <GlobalStyles
+                styles={{
+                    '*::-webkit-scrollbar': { width: '6px' },
+                    '*::-webkit-scrollbar-track': {
+                        background: 'rgba(0, 0, 0, 0.05)',
+                        borderRadius: '3px',
+                        margin: '8px',
+                    },
+                    '*::-webkit-scrollbar-thumb': {
+                        background: 'rgba(255, 112, 67, 0.3)',
+                        borderRadius: '3px',
+                        '&:hover': { background: 'rgba(255, 112, 67, 0.5)' },
+                    },
+                }}
+            />
             <Box sx={{
                 display: 'flex',
                 // width: '100vw',

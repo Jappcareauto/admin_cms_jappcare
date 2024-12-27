@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -39,4 +42,33 @@
 
 .read-the-docs {
   color: #888;
+}
+
+
+/* Scrollbar styles */
+.my-scrollable-element {
+  scrollbar-width: thin;
+  /* For Firefox */
+  scrollbar-color: rgba(255, 112, 67, 0.3) rgba(0, 0, 0, 0.05);
+  /* Thumb and track colors for Firefox */
+}
+
+/* For WebKit-based browsers (Chrome, Safari, Edge) */
+.my-scrollable-element::-webkit-scrollbar {
+  width: 6px;
+}
+
+.my-scrollable-element::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  margin: 8px;
+}
+
+.my-scrollable-element::-webkit-scrollbar-thumb {
+  background: rgba(255, 112, 67, 0.3);
+  border-radius: 3px;
+}
+
+.my-scrollable-element::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 112, 67, 0.5);
 }
