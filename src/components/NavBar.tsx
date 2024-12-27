@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Drawer,
-    Toolbar,
     Typography,
     List,
     ListItem,
@@ -74,7 +73,7 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
                     bgcolor: 'rgba(248, 201, 187, 0.1)',
                     border: 'none',
                     boxShadow: '2px 0 8px rgba(0, 0, 0, 0.06)',
-                    transition: 'width 300ms cubic-bezier(0, 0, 0.5, 1) 0ms',
+                    transition: ' 50ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
                     overflowX: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
@@ -89,7 +88,7 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
                         color: '#1A1D1F',
                         fontSize: '14px',
                         fontWeight: 600,
-                        marginTop: '10px',
+                        marginTop: '0px',
                         marginLeft: '15px',
                         fontFamily: 'Arial, Helvetica, sans-serif, Plus Jakarta Sans',
                         paddingTop: '60px',

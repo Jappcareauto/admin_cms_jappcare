@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     Box,
     Card,
@@ -141,7 +141,7 @@ const orders = [
     },
 ];
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(() => ({
 
     borderRadius: 16,
     boxShadow: 'none',
@@ -157,14 +157,17 @@ const CategoryChip = styled(Chip)(({ theme }) => ({
     }
 }));
 
-const StyledSearchField = styled(TextField)(({ theme }) => ({
+const StyledSearchField = styled(TextField)(() => ({
+    width: '360px',
+    height: 44,
     '& .MuiOutlinedInput-root': {
-        borderRadius: 30,
+        borderRadius: 28,
         backgroundColor: '#F5F5F5',
+
     }
 }));
 
-const ProductCard = styled(Card)(({ theme }) => ({
+const ProductCard = styled(Card)(({ }) => ({
     borderRadius: 16,
     overflow: 'hidden',
     boxShadow: 'none',
@@ -313,17 +316,20 @@ const Shop = () => {
                                 </Button>
                             </Box>
 
-                            <StyledSearchField
+                            <Box sx={{ height: '44px', width: '360px' }}
+                            >
+                                <StyledSearchField
+                                    placeholder="Search Centers"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Box>
 
-                                placeholder="Search Centers"
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
                         </Box>
 
                         <Typography variant="h6" sx={{ mb: 2 }}>Category</Typography>

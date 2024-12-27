@@ -25,9 +25,10 @@ const CustomDrawer = ({ open, onClose, title, children }: CustomDrawerProps) => 
                         sm: '450px'
                     },
                     bgcolor: 'white',
+                    background: 'background.paper',
                     padding: '24px',
 
-                }
+                },
             }}
         >
             <Box sx={{

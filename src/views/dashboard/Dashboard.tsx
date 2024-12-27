@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable no-unused-vars */
+import { useState } from 'react';
 import {
     Box,
     Card,
@@ -13,16 +14,10 @@ import {
     Collapse,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { LineChart, Line, XAxis, ResponsiveContainer } from 'recharts';
 import AppointmentIcon from '../../components/Icones/AppointmentIcon';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
-import NotificationIcon from '../../components/Icones/NotificationIcon';
 import NotifIcon from '../../components/Icones/NotifIcon';
-import { ArrowDropDown, LocationOnOutlined } from '@mui/icons-material';
 import DropdownIcon from '../../components/Icones/DropdownIcon';
 import LocationIcon from '../../components/Icones/LocationIcon';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
@@ -68,7 +63,7 @@ const ServiceItem = styled(Box)(({ theme }) => ({
     }
 }));
 
-const StyledChip = styled(Chip)(({ theme }) => ({
+const StyledChip = styled(Chip)(({ }) => ({
     backgroundColor: '#FFF4ED',
     color: '#FF7A00',
     height: '34px',
@@ -96,7 +91,7 @@ const Dashboard = () => {
         setIsExpanded(!isExpanded);
     };
     return (
-        <Box sx={{ p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+        <Box sx={{ p: 3, minHeight: '100vh' }}>
             <Grid container spacing={3}>
                 {/* Main content - Left column (8 units) */}
                 <Grid item xs={12} md={8} sx={{ marginBottom: 3 }}>

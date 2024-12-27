@@ -1,22 +1,12 @@
-import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import Product from '../../../interfaces/Interfaces';
-import image9 from '../../assets/image 9.png'
-import image10 from '../../assets/image 10.png'
-import image11 from '../../assets/image 11.png'
-import image12 from '../../assets/image 12.png'
 import Images from '../../../assets/Images/Images';
 
-interface Review {
-    rating: number;
-    comment: string;
-    user: string;
-    date: string;
-}
+
 
 interface ProductDetailsProps {
     onEdit: () => void;
@@ -25,15 +15,6 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails = ({ product, onEdit, onCancel }: ProductDetailsProps) => {
-    const reviews: Review[] = [
-        {
-            rating: 4,
-            comment: 'These headlights look absolutely amazing! Recommend this product 100%',
-            user: 'Donald',
-            date: 'Yesterday'
-        },
-        // Add more reviews as needed
-    ];
 
     return (
         <Box >

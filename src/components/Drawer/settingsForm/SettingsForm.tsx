@@ -1,16 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import PaymentIcon from '@mui/icons-material/Payment';
 import SecurityIcon from '@mui/icons-material/Security';
 import DescriptionIcon from '@mui/icons-material/Description';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import WalletIcon from '../../Icones/WalletIcon';
 
 interface SettingsFormProps {
     onClose: () => void;
@@ -24,6 +20,9 @@ const SettingsForm = ({ onSubmit, onClose }: SettingsFormProps) => {
         mtnMomo: false,
         orangeMoney: false
     });
+
+    console.log("close", onClose);
+
 
     const handleToggle = (method: 'card' | 'mtnMomo' | 'orangeMoney') => {
         setPaymentMethods(prev => ({

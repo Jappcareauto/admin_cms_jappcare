@@ -16,11 +16,11 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     // const [mode, setMode] = useState<'light' | 'dark'>('light');
 
-    const drawerWidth = isSidebarCollapsed ? 0 : 270;   // in case i can change to 80
+    // const drawerWidth = isSidebarCollapsed ? 0 : 270;   // in case i can change to 80
 
     const theme = createTheme({
         palette: {
-            // mode,
+            mode: 'light',
             primary: {
                 main: '#FF7043',
             },
@@ -49,6 +49,7 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
             MuiButton: {
                 styleOverrides: {
                     root: {
+                        borderRadius: 28,
                         fontFamily: '"Plus Jakarta Sans", sans-serif',
                         textTransform: 'none',
                         '&:hover': {
@@ -99,9 +100,9 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
     //     }
     // }, []);
 
-    // useEffect(() => {
-    //     localStorage.setItem('theme-mode', mode);
-    // }, [mode]);
+    useEffect(() => {
+        localStorage.removeItem('theme-mode');
+    }, []);
 
     return (
         <ThemeProvider theme={theme}>
@@ -126,7 +127,7 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                         //     easing: theme.transitions.easing.sharp,
                         //     duration: theme.transitions.duration.leavingScreen,
                         // }),
-                        transition: 'width 300ms cubic-bezier(0, 0, 0.5, 1) 0ms',
+                        // transition: '2s cubic-bezier(.17,.67,1,1) 0ms',
                         overflow: 'auto'
                     }}
                 >
