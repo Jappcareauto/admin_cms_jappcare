@@ -10,12 +10,22 @@ RUN apk add --no-cache libc6-compat
 
 # Create a non-root user for security
 RUN addgroup -S vitegroup && adduser -S viteuser -G vitegroup
+
+# Set npm global installation path to a user-accessible directory
+RUN mkdir -p /home/viteuser/.npm-global && \
+    npm config set prefix '/home/viteuser/.npm-global' && \
+    echo "export PATH=/home/viteuser/.npm-global/bin:$PATH" >> /home/viteuser/.profile
+
+# Switch to non-root user
 USER viteuser
 
-# Copy package files
-COPY --chown=viteuser:vitegroup package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# Update PATH for the current shell session
+ENV PATH="/home/viteuser/.npm-global/bin:$PATH"
 
-# Install dependencies with permission fixes
+# Copy package files
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+
+# Install dependencies
 RUN \
   if [ -f yarn.lock ]; then \
     yarn --frozen-lockfile; \
