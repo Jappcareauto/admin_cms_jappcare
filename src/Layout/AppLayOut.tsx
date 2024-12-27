@@ -24,7 +24,7 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                 main: '#FF7043',
             },
             background: {
-                default: 'rgba(248, 201, 187, 0.1)',
+                // default: 'rgba(241, 176, 156, 0.1)',
                 paper: 'rgba(241, 176, 156, 0.1)',
             },
             text: {
