@@ -10,10 +10,12 @@ RUN apk add --no-cache libc6-compat
 
 # Create a non-root user for security
 RUN addgroup -S vitegroup && adduser -S viteuser -G vitegroup
-USER viteuser
 
-# Fix permissions for /app directory to ensure the non-root user has write access
-RUN mkdir -p /app/node_modules && chown -R viteuser:vitegroup /app
+# Fix permissions on /app before switching to non-root user
+RUN chown -R viteuser:vitegroup /app
+
+# Switch to the non-root user
+USER viteuser
 
 # Copy package files
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
