@@ -25,16 +25,20 @@ ENV PATH="/home/viteuser/.npm-global/bin:$PATH"
 # Copy package files
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
-# Install dependencies
+# Install dependencies with improved error handling
 RUN \
   if [ -f yarn.lock ]; then \
-    yarn --frozen-lockfile; \
+    echo "Using Yarn to install dependencies"; \
+    yarn --frozen-lockfile || { echo "Yarn installation failed"; exit 1; }; \
   elif [ -f package-lock.json ]; then \
-    npm ci --unsafe-perm; \
+    echo "Using npm to install dependencies"; \
+    npm ci --unsafe-perm || { echo "npm installation failed"; exit 1; }; \
   elif [ -f pnpm-lock.yaml ]; then \
-    npm install -g pnpm && pnpm install --frozen-lockfile; \
+    echo "Using pnpm to install dependencies"; \
+    npm install -g pnpm && pnpm install --frozen-lockfile || { echo "pnpm installation failed"; exit 1; }; \
   else \
-    echo "No lockfile found, falling back to npm install" && npm install --unsafe-perm; \
+    echo "No lockfile found, falling back to npm install"; \
+    npm install --unsafe-perm || { echo "Fallback npm installation failed"; exit 1; }; \
   fi
 
 # Copy the rest of the application files (source code and assets)
