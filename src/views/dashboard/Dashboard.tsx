@@ -24,6 +24,7 @@ import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import NewServiceForm from '../../components/Drawer/serviceForm/NewServiceForm';
 import ShopIcon from '../../components/Icones/ShopIcon';
 import AppointmentDetails from '../../components/Drawer/appointmentDetails/AppointmentDetails';
+import Images from '../../assets/Images/Images';
 
 // Sample data for the revenue chart
 const revenueData = [
@@ -441,14 +442,14 @@ const Dashboard = () => {
                                     <Box>
                                         <Typography variant="h6">Vehicle Reports</Typography>
                                     </Box>
-                                    <Box component="img" src="src\assets\Group 37097.svg" alt="Vehicle Reports" sx={{ width: 200, height: 120 }} />
+                                    <Box component="img" src={Images.vehiclereport} alt="Vehicle Reports" sx={{ width: 200, height: 120 }} />
                                 </ServiceItem>
 
                                 <ServiceItem>
                                     <Box>
                                         <Typography variant="h6">GPS Locator</Typography>
                                     </Box>
-                                    <Box component="img" src="src\assets\Group 37102.svg" alt="GPS Locator" sx={{ width: 200, height: 120 }} />
+                                    <Box component="img" src={Images.GPSLocator} alt="GPS Locator" sx={{ width: 200, height: 120 }} />
                                 </ServiceItem>
 
                                 <Box sx={{ mt: 2 }}>

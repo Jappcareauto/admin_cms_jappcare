@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import Images from '../../assets/Images/Images';
 
 const Logi = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +42,7 @@ const Logi = () => {
                     justifyContent: 'center',
                 }}
             >
-                <img src='src/assets/LoginImgPage.svg' alt='logo' />
+                <img src={Images.LoginImg} alt='logo' />
             </Box>
 
             {/* Right side with login form */}
@@ -60,7 +61,7 @@ const Logi = () => {
                     sx={{
                         width: '100%',
                         maxWidth: '360px',
-                        height: '70%',
+                        // height: '100%',
                         p: 4,
                         borderRadius: 3,
                         bgcolor: 'white',
@@ -189,7 +190,7 @@ const Logi = () => {
                             fullWidth
                             variant="contained"
                             sx={{
-                                bgcolor: '#333',
+                                bgcolor: '#111111',
                                 color: 'white',
                                 paddingTop: "200px",
                                 py: 1.5,
