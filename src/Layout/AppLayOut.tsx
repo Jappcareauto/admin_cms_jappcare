@@ -14,7 +14,6 @@ import '@fontsource/plus-jakarta-sans/700.css';
 
 const AppLayout = ({ children }: { children?: React.ReactNode }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-    // const [mode, setMode] = useState<'light' | 'dark'>('light');
 
     const drawerWidth = isSidebarCollapsed ? 0 : 270;   // in case i can change to 80
 
@@ -88,21 +87,6 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
-    // const toggleTheme = () => {
-    //     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-    // };
-
-    // useEffect(() => {
-    //     const savedMode = localStorage.getItem('theme-mode');
-    //     if (savedMode) {
-    //         setMode(savedMode as 'light' | 'dark');
-    //     }
-    // }, []);
-
-    // useEffect(() => {
-    //     localStorage.setItem('theme-mode', mode);
-    // }, [mode]);
-
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{
@@ -117,15 +101,9 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                     component="main"
                     sx={{
                         flexGrow: 1,
-                        // width: `calc(100% - ${drawerWidth}px)`,
-                        // marginLeft: `${drawerWidth}px`,
                         minHeight: '100vh',
                         display: 'flex',
                         flexDirection: 'column',
-                        // transition: theme.transitions.create(['margin', 'width'], {
-                        //     easing: theme.transitions.easing.sharp,
-                        //     duration: theme.transitions.duration.leavingScreen,
-                        // }),
                         transition: 'width 300ms cubic-bezier(0, 0, 0.5, 1) 0ms',
                         overflow: 'auto'
                     }}
