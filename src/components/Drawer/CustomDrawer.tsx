@@ -18,6 +18,11 @@ const CustomDrawer = ({ open, onClose, title, children }: CustomDrawerProps) => 
             anchor="right"
             open={open}
             onClose={onClose}
+            ModalProps={{
+                BackdropProps: {
+                    style: { display: 'none' }, // Disables the backdrop
+                },
+            }}
             sx={{
                 '& .MuiDrawer-paper': {
                     width: {
