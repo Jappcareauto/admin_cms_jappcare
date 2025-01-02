@@ -427,6 +427,8 @@ const Shop = () => {
                                                 fontWeight: 600,
                                                 color: '#FF7A00',
                                                 border: '2px solid #FF7A00',
+                                                boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                             }}
                                         >{order.customer.split(' ').map(n => n[0]).join('')}</Avatar>
                                         <Box sx={{ flex: 1 }}>

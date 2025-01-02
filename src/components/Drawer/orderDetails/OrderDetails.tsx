@@ -1,6 +1,4 @@
-import React from 'react';
 import { Box, Typography, Avatar, Chip } from '@mui/material';
-import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import CalendarIcon from '../../Icones/calendarIcon';
 
 export interface OrderDetailsInterface {
@@ -38,6 +36,8 @@ const OrderDetails = ({ order }: { order: OrderDetailsInterface }) => {
                         fontWeight: 600,
                         color: '#FF7A00',
                         border: '2px solid #FF7A00',
+                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                     }}>
                         SM
                     </Avatar>

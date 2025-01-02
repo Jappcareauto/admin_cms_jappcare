@@ -6,149 +6,264 @@ import {
     Grid,
     TextField,
     Button,
-    Divider
+    Stack
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Images from '../../assets/Images/Images';
+import AppointmentIcon from '../../components/Icones/AppointmentIcon';
+import LocationIcon from '../../components/Icones/LocationIcon';
+import { useState } from 'react';
+import { ImageViewer } from '../../components/ImageViewer/ImageViewer';
 
 interface ExpandedAppointmentDetailsProps {
     onClose: () => void;
 }
 
 const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps) => {
+    const [viewerOpen, setViewerOpen] = useState(false);
+
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number | undefined>(undefined);
+    const images = [Images.car1, Images.car1, Images.car2, Images.car2, Images.Porsche, Images.test];
+
+    const handleImageClick = (index: number) => {
+        setSelectedImageIndex(index);
+        setViewerOpen(true);
+    };
     return (
         <Box >
             {/* Header */}
             <Box sx={{
-                p: 3,
-                // borderBottom: '1px solid',
-                borderColor: 'grey.200',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                p: 2.5,
+                // borderBottom: '1px solid',
+                borderColor: 'grey.200'
             }}>
-                <Typography variant="h6" sx={{ mb: 3 }}>Appointment Details</Typography>
-                <Button
-                    startIcon={<CloseIcon />}
-                    onClick={onClose}
-                    sx={{ color: 'text.primary' }}
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontSize: '20px',
+                        fontWeight: 600,
+                        color: '#1A1D1F'
+                    }}
                 >
-                    Close
-                </Button>
+                    Appointment Details
+                </Typography>
+                <CloseIcon
+                    onClick={onClose}
+                    sx={{
+                        cursor: 'pointer',
+                        color: '#1A1D1F'
+                    }}
+                />
             </Box>
 
             {/* Main Content */}
-            <Grid container sx={{ p: 3 }} spacing={4}>
+            <Grid container>
                 {/* Left Column */}
-                <Grid item xs={12} md={8}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Avatar sx={{
-                            width: 40,
-                            height: 40,
-                            bgcolor: '#1A1D1F',
-                            fontSize: '16px',
-                            fontWeight: 600,
-                            color: '#FF7A00',
-                            border: '2px solid #FF7A00',
-                        }}>
-                            JM
-                        </Avatar>
-                        <Typography variant="h6">James Mann</Typography>
+                <Grid item xs={12} md={8} sx={{ p: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4, justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                            <Avatar
+                                sx={{
+                                    width: 48,
+                                    height: 48,
+                                    bgcolor: '#1A1D1F',
+                                    fontSize: '16px',
+                                    fontWeight: 600,
+                                    color: '#FF7A00',
+                                    border: '2px solid #FF7A00',
+                                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
+                                }}
+                            >
+                                JM
+                            </Avatar>
+                            <Typography>James Mann</Typography>
+                        </Box>
+
                         <Chip
                             label="In Progress"
                             size="small"
                             sx={{
-                                bgcolor: 'rgba(255, 107, 0, 0.1)',
+                                height: '24px',
+                                bgcolor: 'transparent',
                                 color: '#FF6B00',
+                                border: '1px solid #FF6B00',
+                                borderRadius: '12px',
+                                '& .MuiChip-label': {
+                                    px: 1.5,
+                                    fontSize: '13px',
+                                    fontWeight: 500
+                                }
                             }}
                         />
                     </Box>
 
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="h5" sx={{ color: '#FF6B00', fontWeight: 600, mb: 1 }}>
+                    <Box sx={{ mb: 3 }}>
+                        <Typography sx={{
+                            fontSize: '24px',
+                            fontWeight: 600,
+                            color: '#1A1D1F',
+                            mb: 1
+                        }}>
                             Porsche Taycan Turbo S
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography sx={{
+                            fontSize: '15px',
+                            color: '#6F767E'
+                        }}>
                             2024, RWD
                         </Typography>
                     </Box>
 
                     <Box
                         component="img"
-                        src={Images.Porsche}// Replace with actual image path
+                        src={Images.Porsche}
                         alt="Porsche Taycan"
                         sx={{
-                            width: '50%',
+                            width: '100%',
+                            maxWidth: '400px',
                             height: 'auto',
-                            borderRadius: 2,
-                            mb: 2
+                            borderRadius: '12px',
+                            mb: 3
                         }}
                     />
 
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="body1" sx={{ color: '#FF6B00', mb: 2 }}>
-                            Body shop appointment
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="body2">Oct. 20, 2024</Typography>
-                                <Typography variant="body2">10am</Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="body2">At Home</Typography>
-                            </Box>
+                    <Typography sx={{
+                        fontSize: '15px',
+                        fontWeight: 600,
+                        color: '#FF6B00',
+                        mb: 2
+                    }}>
+                        Body shop appointment
+                    </Typography>
+
+                    <Stack direction="column" spacing={3} sx={{ mb: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <AppointmentIcon fill='' stroke='#6F767E' />
+                            <Typography sx={{ fontSize: '15px', color: '#6F767E' }}>
+                                Oct. 20, 2024 • 10am
+                            </Typography>
                         </Box>
-                    </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <LocationIcon fill='' stroke='#6F767E' />
+                            <Typography sx={{ fontSize: '15px', color: '#6F767E' }}>
+                                At Home
+                            </Typography>
+                        </Box>
+                    </Stack>
 
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="body1" sx={{ mb: 2 }}>
-                            There is a noticeable dent on the rear bumper of my Porsche Taycan, specifically located between the lower edge of the rear headlight and the rear wheel arch. It is closer to the wheel arch, situated near the car's side profile. The dent is below the horizontal line of the rear headlight and sits closer to the lower third of the rear bumper.
-                        </Typography>
-                    </Box>
+                    <Typography sx={{
+                        fontSize: '15px',
+                        color: '#6F767E',
+                        mb: 3,
+                        lineHeight: '24px'
+                    }}>
+                        There is a noticeable dent on the rear bumper of my Porsche Taycan, specifically located between the lower edge of the rear headlight and the rear wheel arch. It is closer to the wheel arch, situated near the car's side profile. The dent is below the horizontal line of the rear headlight and sits closer to the lower third of the rear bumper.
+                    </Typography>
 
-                    <Box sx={{ mb: 4, mr: 3 }}>
-                        <Typography variant="h6" sx={{ mb: 2 }}>Images</Typography>
-                        <Grid container spacing={2}>
-                            {[Images.car1, Images.car1, Images.car2,].map((img) => (
-                                <Grid item xs={4} md={2} key={img}>
-                                    <Box
-                                        component="img"
-                                        src={img}
-                                        alt={`Damage view ${img}`}
-                                        sx={{
-                                            width: '100%',
-                                            height: 'auto',
-                                            borderRadius: 1
-                                        }}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Box>
+                    <Typography sx={{
+                        fontSize: '15px',
+                        fontWeight: 600,
+                        color: '#1A1D1F',
+                        mb: 2
+                    }}>
+                        Images
+                    </Typography>
+
+                    <Grid container spacing={2}>
+                        {images.map((img, index) => (
+                            <Grid item xs={4} md={3} key={index}>
+                                <Box
+                                    component="img"
+                                    src={img}
+                                    alt={`Damage view ${index + 1}`}
+                                    onClick={() => handleImageClick(index)}
+                                    sx={{
+                                        width: '170px', // Fixed width
+                                        height: '100px', // Fixed height
+                                        objectFit: 'cover', // Ensures the image fills the box without distortion
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                    }}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+
+                    {/* Image Viewer Modal */}
+                    <ImageViewer
+                        open={viewerOpen}
+                        onClose={() => setViewerOpen(false)}
+                        images={images}
+                        initialIndex={selectedImageIndex}
+                    />
                 </Grid>
 
-                {/* <Divider orientation="vertical" flexItem sx={{ mx: 3 }} /> */}
                 {/* Right Column */}
-                <Grid item xs={12} md={4} sx={{ borderLeft: '1px solid', borderColor: 'grey.400' }}>
-                    <Typography variant="h6" sx={{ mb: 3 }}>Appointment Results</Typography>
+                <Grid item xs={12} md={4} sx={{
+                    borderLeft: '1px solid #E6E8EC',
+                    // bgcolor: '#FCFCFC',
+                    p: 3
+                }}>
+                    <Typography sx={{
+                        fontSize: '20px',
+                        fontWeight: 600,
+                        color: '#1A1D1F',
+                        mb: 3
+                    }}>
+                        Appointment Results
+                    </Typography>
 
                     <Box sx={{ mb: 4 }}>
-                        <Typography variant="body1" sx={{ mb: 2 }}>Diagnosis & Repairs to be made</Typography>
+                        <Typography sx={{
+                            fontSize: '15px',
+                            color: '#1A1D1F',
+                            mb: 1.5
+                        }}>
+                            Diagnosis & Repairs to be made
+                        </Typography>
                         <TextField
                             multiline
-                            rows={4}
+                            rows={5}
                             fullWidth
-                            placeholder="Summarize what we found on the vehicle and the repairs to be made"
-                            sx={{ mb: 3 }}
+                            placeholder="Summarize what was the issue on the vehicle and the repairs to be made"
+                            sx={{
+                                mb: 3,
+                                '& .MuiOutlinedInput-root': {
+                                    bgcolor: '#fff',
+                                    borderRadius: '12px',
+                                    '& fieldset': {
+                                        borderColor: '#E6E8EC'
+                                    }
+                                }
+                            }}
                         />
 
-                        <Typography variant="body1" sx={{ mb: 2 }}>Repairs made</Typography>
+                        <Typography sx={{
+                            fontSize: '15px',
+                            color: '#1A1D1F',
+                            mb: 1.5
+                        }}>
+                            Repairs made
+                        </Typography>
                         <TextField
                             multiline
-                            rows={4}
+                            rows={5}
                             fullWidth
                             placeholder="Summarize what was done on the vehicle"
-                            sx={{ mb: 3 }}
+                            sx={{
+                                mb: 3,
+                                '& .MuiOutlinedInput-root': {
+                                    bgcolor: '#fff',
+                                    borderRadius: '12px',
+                                    '& fieldset': {
+                                        borderColor: '#E6E8EC'
+                                    }
+                                }
+                            }}
                         />
                     </Box>
 
@@ -157,96 +272,208 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            mb: 2
+                            mb: 3
                         }}>
-                            <Typography variant="body1">Invoice</Typography>
-                            <Chip
-                                label="Pending"
-                                size="small"
-                                sx={{ color: '#FF6B00' }}
-                            />
+                            <Typography sx={{ fontSize: '15px', color: '#1A1D1F' }}>
+                                Invoice
+                            </Typography>
+
                         </Box>
 
-                        <Box sx={{ mb: 2 }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 2,
-                                        mb: 2
+                        <Box sx={{ mb: 3, border: '1px solid #E6E8EC', borderRadius: '12px', p: 3, }}>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1.5,
+                                mb: 3,
+                                justifyContent: 'space-between',
+                            }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                    <Avatar sx={{
+                                        width: 50,
+                                        height: 50,
+                                        bgcolor: '#1A1D1F',
+                                        fontSize: '16px',
+                                        fontWeight: 600,
+                                        color: '#FF7A00',
+                                        border: '2px solid #FF7A00',
+                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                     }}>
-                                        <Avatar sx={{
-                                            width: 40,
-                                            height: 40,
-                                            bgcolor: '#1A1D1F',
-                                            fontSize: '14px',
-                                            color: '#FF7A00',
-                                            border: '2px solid #FF7A00',
+                                        SM
+                                    </Avatar>
+                                    <Box>
+                                        <Typography sx={{ fontSize: '15px', fontWeight: 500, color: '#1A1D1F' }}>
+                                            Sara Maye
+                                        </Typography>
+                                        <Typography sx={{
+                                            fontSize: '13px',
+                                            color: '#6F767E'
                                         }}>
-                                            SM
-                                        </Avatar>
-                                        <Box>
-                                            <Typography variant="body1">Sara Maye</Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                saramaye@gmail.com
-                                            </Typography>
-                                        </Box>
+                                            sarahmaye@gmail.com
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                                <Chip
+                                    label="Pending"
+                                    size="small"
+                                    sx={{
+                                        height: '34px',
+                                        bgcolor: '#FFEDE9',
+                                        padding: '12px 10px',
+                                        color: '#F1351B',
+                                        // border: '1px solid #FF6B00',
+                                        borderRadius: '16px',
+                                        '& .MuiChip-label': {
+                                            px: 1.5,
+                                            fontSize: '15px',
+                                            fontWeight: 600
+                                        }
+                                    }}
+                                />
+                            </Box>
+
+                            <Grid container spacing={2} sx={{ mb: 3 }}>
+                                <Grid item xs={12}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
+
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#6F767E',
+                                            mb: 0.5
+                                        }}>
+                                            Service
+                                        </Typography>
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#1A1D1F',
+                                            fontWeight: 600
+                                        }}>
+                                            Inspection Fee
+                                        </Typography>
+                                    </Box>
+
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
+
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#6F767E',
+                                            mb: 0.5
+                                        }}>
+                                            Invoice Number
+                                        </Typography>
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#1A1D1F',
+                                            fontWeight: 600
+                                        }}>
+                                            JC84727F300
+                                        </Typography>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <Typography variant="body2" color="text.secondary">Service</Typography>
-                                    <Typography variant="body1">Inspection Fee</Typography>
+                                <Grid item xs={12}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
+
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#6F767E',
+                                            mb: 0.5
+                                        }}>
+                                            Date Issued
+                                        </Typography>
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#1A1D1F',
+                                            fontWeight: 600
+                                        }}>
+                                            Oct 20, 2024
+                                        </Typography>
+                                    </Box>
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <Typography variant="body2" color="text.secondary">Invoice Number</Typography>
-                                    <Typography variant="body1">JC84727F300</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography variant="body2" color="text.secondary">Date Issued</Typography>
-                                    <Typography variant="body1">Oct 20, 2024</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography variant="body2" color="text.secondary">Amount</Typography>
-                                    <Typography variant="body1" sx={{ color: '#FF6B00' }}>7,000 Frs</Typography>
+                                <Grid item xs={12}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
+
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#6F767E',
+                                            mb: 0.5
+                                        }}>
+                                            Amount
+                                        </Typography>
+                                        <Typography sx={{
+                                            fontSize: '15px',
+                                            color: '#FF6B00',
+                                            fontWeight: 600
+                                        }}>
+                                            7,000 Frs
+                                        </Typography>
+                                    </Box>
                                 </Grid>
                             </Grid>
+
+                            <Stack direction="row" spacing={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button
+                                    variant="outlined"
+                                    sx={{
+                                        height: '40px',
+                                        borderRadius: '28px',
+                                        borderColor: '#111111',
+                                        color: '#1A1D1F',
+                                        textTransform: 'none',
+                                        '&:hover': {
+                                            borderColor: '#888888',
+                                            bgcolor: 'rgba(230, 232, 236, 0.1)'
+                                        }
+                                    }}
+                                >
+                                    View Invoice
+                                </Button>
+                            </Stack>
                         </Box>
 
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: "center", justifyContent: 'space-between' }}>
+                            <Typography sx={{
+                                fontSize: '15px',
+                                color: '#1A1D1F',
+                                mb: 0.5
+                            }}>
+                                Invoice
+                            </Typography>
                             <Button
                                 variant="outlined"
                                 sx={{
-                                    borderRadius: 2,
-                                    flex: 1,
-                                    borderColor: 'grey.300'
-                                }}
-                            >
-                                View Invoice
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                sx={{
-                                    borderRadius: 2,
-                                    flex: 1,
-                                    borderColor: 'grey.300'
+                                    height: '40px',
+                                    borderRadius: '28px',
+                                    borderColor: '#111111',
+                                    color: '#1A1D1F',
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                        borderColor: '#888888',
+                                        bgcolor: 'rgba(230, 232, 236, 0.1)'
+                                    }
                                 }}
                             >
                                 Create Invoice
                             </Button>
                         </Box>
+
                     </Box>
 
                     <Button
                         fullWidth
                         variant="contained"
                         sx={{
-                            bgcolor: '#000',
+                            height: '48px',
+                            bgcolor: '#1A1D1F',
                             color: 'white',
-                            py: 1.5,
-                            borderRadius: 2,
+                            borderRadius: '12px',
+                            textTransform: 'none',
+                            fontSize: '15px',
+                            fontWeight: 600,
                             '&:hover': {
-                                bgcolor: '#333'
+                                bgcolor: '#000'
                             }
                         }}
                     >
