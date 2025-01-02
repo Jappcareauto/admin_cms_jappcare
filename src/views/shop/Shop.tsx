@@ -26,6 +26,7 @@ import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import ProductDetails from '../../components/Drawer/products/ProductDetails';
 import Product from '../../interfaces/Interfaces';
 import NewProductForm from '../../components/Drawer/products/NewProductForm';
+import { useNavigate } from 'react-router-dom';
 
 // Sample data for the revenue chart
 const revenueData = [
@@ -204,6 +205,7 @@ const Shop = () => {
     const [isProductDetailsDrawerOpen, setisProductDetailsDrawerOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+    const navigate = useNavigate();
     const handleProductClick = (product: Product) => {
         setSelectedProduct(product);
         setisProductDetailsDrawerOpen(true);
@@ -409,7 +411,7 @@ const Shop = () => {
                     <Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                             <Typography variant="h6">Orders</Typography>
-                            <Button variant="outlined" size="small">Order History</Button>
+                            <Button variant="outlined" size="small" onClick={() => navigate("/orderhistory")}>Order History</Button>
                         </Box>
 
                         {orders.map((order) => (

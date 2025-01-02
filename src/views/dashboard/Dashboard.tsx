@@ -92,7 +92,7 @@ const Dashboard = () => {
         setIsExpanded(!isExpanded);
     };
     return (
-        <Box sx={{ p: 3, minHeight: '100vh' }}>
+        <Box sx={{ p: 3, minHeight: '100vh', overflowX: 'hidden' }}>
             <Grid container spacing={3}>
                 {/* Main content - Left column (8 units) */}
                 <Grid item xs={12} md={8} sx={{ marginBottom: 3 }}>

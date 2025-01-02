@@ -8,6 +8,7 @@ import Chip from '@mui/material/Chip';
 import Images from '../../../assets/Images/Images';
 import AppointmentIcon from '../../Icones/AppointmentIcon';
 import LocationIcon from '../../Icones/LocationIcon';
+import { useState } from 'react';
 
 interface AppointmentDetailsProps {
     onExpand: () => void;
@@ -15,6 +16,11 @@ interface AppointmentDetailsProps {
 }
 
 const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsProps) => {
+
+    const handleExpand = () => {
+        onExpand();
+    };
+
     return (
         <Box>
             {/* Header */}
@@ -50,7 +56,7 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
             {/* Car Image */}
             <Box
                 component="img"
-                src="src\assets\porche-car.svg" // Replace with actual image path
+                src={Images.Porsche} // Replace with actual image path
                 alt="Porsche Taycan"
                 sx={{
                     width: '100%',

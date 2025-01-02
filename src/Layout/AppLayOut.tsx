@@ -51,8 +51,26 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                         borderRadius: 28,
                         fontFamily: '"Plus Jakarta Sans", sans-serif',
                         textTransform: 'none',
+                        outline: 'none', // Removes focus outline
+                        boxShadow: 'none', // Prevents box-shadow on click
                         '&:hover': {
                             border: '1px solid #FF7043'
+                        },
+                        '&:focus': {
+                            outline: 'none', // Ensures no focus outline
+                            boxShadow: 'none', // Prevents box-shadow on focus
+                        },
+                    },
+                },
+            },
+            MuiIconButton: {
+                styleOverrides: {
+                    root: {
+                        outline: 'none', // Removes focus outline
+                        boxShadow: 'none', // Prevents box-shadow on click
+                        '&:focus': {
+                            outline: 'none', // Ensures no focus outline
+                            boxShadow: 'none', // Prevents box-shadow on focus
                         },
                     },
                 },
@@ -88,16 +106,7 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
-    // const toggleTheme = () => {
-    //     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-    // };
 
-    // useEffect(() => {
-    //     const savedMode = localStorage.getItem('theme-mode');
-    //     if (savedMode) {
-    //         setMode(savedMode as 'light' | 'dark');
-    //     }
-    // }, []);
 
     useEffect(() => {
         localStorage.removeItem('theme-mode');
@@ -122,12 +131,17 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
             />
             <Box sx={{
                 display: 'flex',
-                // width: '100vw',
+                // width: '151%',
                 minHeight: '100vh',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                overflowX: 'hidden'  // Add this to prevent horizontal scrolling
+
             }}>
                 <CssBaseline />
-                <NavBar isSidebarCollapsed={isSidebarCollapsed} />
+                <Box>
+                    <NavBar isSidebarCollapsed={isSidebarCollapsed} />
+
+                </Box>
                 <Box
                     component="main"
                     sx={{
@@ -135,12 +149,8 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
                         minHeight: '100vh',
                         display: 'flex',
                         flexDirection: 'column',
-                        // transition: theme.transitions.create(['margin', 'width'], {
-                        //     easing: theme.transitions.easing.sharp,
-                        //     duration: theme.transitions.duration.leavingScreen,
-                        // }),
-                        // transition: '2s cubic-bezier(.17,.67,1,1) 0ms',
-                        overflow: 'auto'
+                        overflow: 'auto',
+                        overflowX: 'hidden'  // Add this to prevent horizontal scrolling
                     }}
                 >
                     <HeaderLayout toggleSidebar={toggleSidebar} />
