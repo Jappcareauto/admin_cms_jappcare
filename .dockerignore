@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+# Ensure these are not excluded
+yarn.lock
+package-lock.json
+pnpm-lock.yaml

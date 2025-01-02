@@ -30,7 +30,6 @@ jobs:
             echo "Unable to determine package manager"
             exit 1
           fi
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -47,13 +46,20 @@ jobs:
           else
             npm run build
           fi
-
+          
+      - name: Print npm debug log
+        run: |
+          if [ -f /home/viteuser/.npm/_logs/*.log ]; then
+            cat /home/viteuser/.npm/_logs/*.log
+          else
+            echo "No npm debug log found."
+          fi
+          
       - name: Build Docker Image
         run: |
           docker build \
             --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            -t ${{ secrets.DOCKER_USERNAME }}/vite-app:dev .
-
+            -t ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev .
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -61,7 +67,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker Image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/vite-app:dev
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
 
   deploy:
     needs: build
@@ -69,7 +75,7 @@ jobs:
 
     steps:
       - name: Pull Docker Image
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/vite-app:dev
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
 
       - name: Delete Old Docker Container
         run: sudo docker rm -f vite-app || true
@@ -79,4 +85,52 @@ jobs:
           sudo docker run -d \
             -e VITE_API_URL=${{ secrets.VITE_API_URL }} \
             -p 5173:5173 --name vite-app \
-            ${{ secrets.DOCKER_USERNAME }}/vite-app:dev
+            ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
+
+
+# name: CI/CD Pipeline
+
+# on:
+#   push:
+#     branches:
+#       - master
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+        
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20'
+        
+#       - name: Install dependencies
+#         run: |
+#           if [ -f yarn.lock ]; then
+#             yarn --frozen-lockfile
+#           elif [ -f package-lock.json ]; then
+#             npm ci --unsafe-perm
+#           elif [ -f pnpm-lock.yaml ]; then
+#             npm install -g pnpm && pnpm install --frozen-lockfile
+#           else
+#             npm install --unsafe-perm
+#           fi
+
+      - name: Print npm debug log
+        run: |
+          if [ -f /home/viteuser/.npm/_logs/*.log ]; then
+            cat /home/viteuser/.npm/_logs/*.log
+          else
+            echo "No npm debug log found."
+          fi
+
+#       - name: Upload npm debug log as artifact
+#         if: failure()  # Only upload if the previous steps fail
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: npm-debug-log
+#           path: /home/viteuser/.npm/_logs/*.log

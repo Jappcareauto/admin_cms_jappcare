@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Set working directory
 WORKDIR /app
@@ -10,17 +10,26 @@ RUN apk add --no-cache libc6-compat
 
 # Create a non-root user for security
 RUN addgroup -S vitegroup && adduser -S viteuser -G vitegroup
+
+# Fix permissions on /app before switching to non-root user
+RUN chown -R viteuser:vitegroup /app
+
+# Switch to the non-root user
 USER viteuser
 
-# Copy only necessary files (package manager files for dependencies)
-COPY --chown=viteuser:vitegroup package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# Copy package files
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
-# Install dependencies
+# Install dependencies and capture logs
 RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm install --frozen-lockfile; \
-  else echo "No lockfile found, unable to install dependencies" && exit 1; \
+  if [ -f yarn.lock ]; then \
+    yarn --frozen-lockfile || { echo "Yarn installation failed"; exit 1; }; \
+  elif [ -f package-lock.json ]; then \
+    npm ci --unsafe-perm || { echo "npm installation failed"; cat /home/viteuser/.npm/_logs/*.log; exit 1; }; \
+  elif [ -f pnpm-lock.yaml ]; then \
+    npm install -g pnpm && pnpm install --frozen-lockfile || { echo "pnpm installation failed"; exit 1; }; \
+  else \
+    npm install --unsafe-perm || { echo "Fallback npm installation failed"; exit 1; }; \
   fi
 
 # Copy the rest of the application files (source code and assets)
