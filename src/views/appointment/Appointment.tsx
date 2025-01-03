@@ -13,13 +13,14 @@ import {
 import { styled } from '@mui/material/styles';
 import { XAxis, ResponsiveContainer, BarChart, Bar, CartesianGrid } from 'recharts';
 import AppointmentIcon from '../../components/Icones/AppointmentIcon';
-import PieChartIcon from '../../components/Icones/PieChartIcon';
 import LocationIcon from '../../components/Icones/LocationIcon';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import AppointmentDetails from '../../components/Drawer/appointmentDetails/AppointmentDetails';
 import CalendarIcon from '../../components/Icones/calendarIcon';
 import ExpandedAppointmentDetails from './ExpandedAppointmentDetails ';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import Calendar from '../../components/calendar/Calendar';
+
 
 
 interface StyledCardProps {
@@ -90,14 +91,11 @@ interface AppointmentProps {
 }
 
 const Appointment: React.FC<AppointmentProps> = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [isAppointmentDrawerOpen, setIsAppointmentDrawerOpen] = useState(true);
+    const [isAppointmentDrawerOpen, setIsAppointmentDrawerOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleExpand = () => {
         // Close the drawer and navigate to full page view
-        setIsDrawerOpen(false);
         navigate('/appointments/details/expanded');
     };
     const handleClose = () => {
@@ -227,6 +225,8 @@ const Appointment: React.FC<AppointmentProps> = () => {
                                                         fontWeight: 600,
                                                         color: '#FF7A00',
                                                         border: '2px solid #FF7A00',
+                                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                                     }}
                                                 >
                                                     JM
@@ -252,6 +252,8 @@ const Appointment: React.FC<AppointmentProps> = () => {
                                                         fontWeight: 600,
                                                         color: '#FF7A00',
                                                         border: '2px solid #FF7A00',
+                                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                                     }}
                                                 >
                                                     DG
@@ -342,6 +344,8 @@ const Appointment: React.FC<AppointmentProps> = () => {
                                                         fontWeight: 600,
                                                         color: '#FF7A00',
                                                         border: '2px solid #FF7A00',
+                                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                                     }}
                                                 >
                                                     JM
@@ -367,6 +371,8 @@ const Appointment: React.FC<AppointmentProps> = () => {
                                                         fontWeight: 600,
                                                         color: '#FF7A00',
                                                         border: '2px solid #FF7A00',
+                                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                                     }}
                                                 >
                                                     DG
@@ -439,6 +445,7 @@ const Appointment: React.FC<AppointmentProps> = () => {
 
                 {/* Sidebar - Right column (4 units) */}
                 <Grid item xs={12} md={4}>
+                    <Calendar />
 
                 </Grid>
             </Grid>

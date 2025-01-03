@@ -11,8 +11,6 @@ import {
 } from '@mui/material';
 import ShopIcon from '../../components/Icones/ShopIcon';
 import { styled } from '@mui/material/styles';
-import Product from '../../interfaces/Interfaces';
-import { useNavigate } from 'react-router-dom';
 import CalendarIcon from '../../components/Icones/calendarIcon';
 import TrashIcon from '../../components/Icones/TrashIcon';
 import ArrowRight from '../../components/Icones/ArrowRight';
@@ -25,14 +23,6 @@ const StyledCard = styled(Card)(() => ({
     border: '1px solid rgba(0, 0, 0, 0.05)',
 }));
 
-const CategoryChip = styled(Chip)(({ theme }) => ({
-    borderRadius: 20,
-    padding: '20px 10px',
-    '&.active': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-    }
-}));
 
 // const orders = [
 //     { id: 1, user: 'Sarah Maye', item: '1x Lamborghini Urus Headlight', price: '125,000 Frs', date: 'Oct. 20, 2024', status: 'Completed' },
@@ -199,29 +189,13 @@ const orders = extendedOrders.map(order => ({
     status: order.status
 }));
 
-const sampleOrder = {
-    id: 1,
-    user: "Sarah Maye",
-    status: "Completed",
-    orderedDate: "Oct. 20, 2024",
-    deliveredDate: "Oct. 22, 2024",
-    address: "123 Maplewood Lane, Springfield, IL 62704",
-    items: [
-        { name: "Vehicle Report", price: "5,000 Frs" },
-        { name: "2x Lamborghini Urus Headlight", price: "250,000 Frs" },
-        { name: "4x Michelin Pilot Sport 4S Tires", price: "400,000 Frs" },
-        { name: "Custom Paint Job", price: "200,000 Frs" }
-    ],
-    total: "1,240,000 Frs"
-};
 
 const OrderHistory = () => {
-    const [activeCategory, setActiveCategory] = useState('Body Kits');
-    const [isNewProductsDrawerOpen, setisNewProductsDrawerOpen] = useState(false);
+    // const [activeCategory, setActiveCategory] = useState('Body Kits');
+    // const [isNewProductsDrawerOpen, setisNewProductsDrawerOpen] = useState(false);
     const [isOrderDetailsDrawerOpen, setisOrderDetailsDrawerOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<OrderDetailsInterface | null>(null);
 
-    const navigate = useNavigate();
 
     // const handleOrderClick = (order: OrderDetailsInterface) => {
     //     setSelectedOrder(order);
@@ -356,6 +330,8 @@ const OrderHistory = () => {
                                     fontWeight: 600,
                                     color: '#FF7A00',
                                     border: '2px solid #FF7A00',
+                                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                 }}>
                                     SM
                                 </Avatar>

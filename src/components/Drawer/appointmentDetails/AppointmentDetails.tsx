@@ -1,14 +1,16 @@
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import Images from '../../../assets/Images/Images';
 import AppointmentIcon from '../../Icones/AppointmentIcon';
 import LocationIcon from '../../Icones/LocationIcon';
-import { useState } from 'react';
+import { Tooltip } from '@mui/material';
+import ExpandIcon from '../../Icones/ExpandIcon';
+import { ImageViewer } from '../../ImageViewer/ImageViewer';
 
 interface AppointmentDetailsProps {
     onExpand: () => void;
@@ -16,9 +18,14 @@ interface AppointmentDetailsProps {
 }
 
 const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsProps) => {
+    const [viewerOpen, setViewerOpen] = useState(false);
 
-    const handleExpand = () => {
-        onExpand();
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number | undefined>(undefined);
+    const images = [Images.car1, Images.car1, Images.car2, Images.car2, Images.Porsche, Images.test];
+
+    const handleImageClick = (index: number) => {
+        setSelectedImageIndex(index);
+        setViewerOpen(true);
     };
 
     return (
@@ -26,16 +33,18 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
             {/* Header */}
             <Box sx={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                mb: 2
-            }}>
-                <Box>
+                justifyContent: 'flex-end',
+                // alignItems: 'flex-start',
 
-                </Box>
-                <IconButton onClick={onExpand} size="small">
-                    <OpenInFullIcon />
-                </IconButton>
+            }}>
+                <Tooltip title="View More" sx={{ mr: 1 }}>
+                    <IconButton onClick={onExpand} size="small">
+
+                        <ExpandIcon />
+                    </IconButton>
+                </Tooltip>
+
+
             </Box>
 
             {/* Car Details */}
@@ -81,6 +90,8 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                     fontWeight: 600,
                     color: '#FF7A00',
                     border: '2px solid #FF7A00',
+                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                 }}>SM</Avatar>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
                     Sarah Maye
@@ -169,21 +180,50 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                 gap: 1,
                 mb: 3
             }}>
-                {[Images.car1, Images.car1, Images.car2, Images.car2].map((img) => (
+                {images.map((img, index) => (
                     <Box
-                        key={img}
-                        component="img"
-                        src={img} // Replace with actual image paths
-                        alt={`Damage view ${img}`}
+                        key={index}
+                        onClick={() => handleImageClick(index)}
+                        component="button"
                         sx={{
                             width: '100%',
                             height: '80px',
-                            objectFit: 'cover',
-                            borderRadius: 1
+                            position: 'relative',
+                            p: 0,
+                            border: 'none',
+                            cursor: 'pointer',
+                            overflow: 'hidden',
+                            borderRadius: 1,
+                            '&:hover': {
+                                '& img': {
+                                    transform: 'scale(1.05)',
+                                }
+                            }
                         }}
-                    />
+                    >
+                        <Box
+                            component="img"
+                            src={img}
+                            alt={`Damage view ${index + 1}`}
+                            sx={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                transition: 'transform 0.2s',
+                            }}
+                        />
+                    </Box>
                 ))}
             </Box>
+
+            {/* Image Viewer Modal */}
+            <ImageViewer
+                open={viewerOpen}
+                onClose={() => setViewerOpen(false)}
+                images={images}
+                initialIndex={selectedImageIndex}
+            />
+
 
             {/* Action Button */}
             <Button
