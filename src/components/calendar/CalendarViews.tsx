@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
     Box,
     Typography,
@@ -6,8 +5,6 @@ import {
     styled,
     Paper,
     IconButton,
-    Select,
-    SelectChangeEvent,
     Button,
 } from '@mui/material';
 import { ChevronLeft, ChevronRight, Close, KeyboardArrowDown } from '@mui/icons-material';
@@ -252,7 +249,7 @@ const appointments: Appointment[] = [
 ];
 
 const CalendarViews: React.FC = () => {
-    const [view, setView] = useState<string>('week');
+    // const [view, setView] = useState<string>('week');
     const timeSlots = Array.from({ length: 9 }, (_, i) => i + 9);
     const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     const currentDate = new Date(2024, 9, 20); // October 20, 2024

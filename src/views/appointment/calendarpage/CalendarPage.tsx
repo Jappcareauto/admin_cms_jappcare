@@ -18,7 +18,6 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventApi } from '@fullcalendar/core';
 import { ArrowBack, ArrowForward, ChevronLeft, ChevronRight, Close } from '@mui/icons-material';
-import CalendarViews from '../../../components/calendar/CalendarViews';
 import { useNavigate } from 'react-router-dom';
 // import CloseIcon from '../../../components/Icones/CloseIcon';
 

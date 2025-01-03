@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     Box,
     Typography,
@@ -11,8 +11,6 @@ import {
     styled,
     Stack
 } from '@mui/material';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CalendarIcon from '../../components/Icones/calendarIcon';
 import MenuChip from '../../components/Icones/MenuChip';
