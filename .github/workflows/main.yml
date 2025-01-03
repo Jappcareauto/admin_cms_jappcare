@@ -78,7 +78,7 @@ jobs:
         run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
 
       - name: Delete Old Docker Container
-        run: sudo docker rm -f vite-app || true
+        run: sudo docker rm -f admin-cms || true
 
       - name: Run Docker Container
         run: |
