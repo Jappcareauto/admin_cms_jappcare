@@ -84,7 +84,7 @@ jobs:
         run: |
           sudo docker run -d \
             -e VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            -p 5173:5173 --name vite-app \
+            -p 5174:5173 --name admin-cms \
             ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
 
       - name: Print npm debug log
