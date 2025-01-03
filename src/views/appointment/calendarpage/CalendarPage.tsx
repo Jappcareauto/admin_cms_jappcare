@@ -17,7 +17,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventApi } from '@fullcalendar/core';
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import { ArrowBack, ArrowForward, ChevronLeft, ChevronRight, Close } from '@mui/icons-material';
+import CalendarViews from '../../../components/calendar/CalendarViews';
+import { useNavigate } from 'react-router-dom';
+// import CloseIcon from '../../../components/Icones/CloseIcon';
 
 const appointmentTypes = [
     { value: 'bodyshop', label: 'Body Shop', color: '#FFE4E1' },
@@ -71,6 +74,7 @@ const DayCell = styled(Box)<DayCellProps>(({ isToday, isSelected, isEvent }) => 
 const FullCalendarPage = () => {
     const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
     const [selectedType, setSelectedType] = useState('bodyshop');
+    const navigate = useNavigate();
 
     const handleDateClick = (selected: { view: { calendar: any; }; start: Date; end: Date; allDay: boolean; }) => {
         const calendarApi = selected.view.calendar;
@@ -118,7 +122,28 @@ const FullCalendarPage = () => {
 
     return (
         <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                {/* Chevron Buttons */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconButton size="small">
+                        <ChevronLeft />
+                    </IconButton>
+                    <IconButton size="small">
+                        <ChevronRight />
+                    </IconButton>
+                </Box>
+
+                {/* Close Button */}
+                <IconButton
+                    size="small"
+                    onClick={() => navigate(-1)}
+                    sx={{ color: '#6F767E' }}
+                >
+                    <Close />
+                </IconButton>
+            </Box>
             <Grid container spacing={3}>
+
                 <Grid item xs={12} md={8} sx={{ pr: 3 }}>
 
                     <CardContent>
@@ -391,6 +416,10 @@ const FullCalendarPage = () => {
 
                 </Grid>
             </Grid>
+
+            {/* <Grid item xs={12}>
+                <CalendarViews />
+            </Grid> */}
         </Box>
     );
 };

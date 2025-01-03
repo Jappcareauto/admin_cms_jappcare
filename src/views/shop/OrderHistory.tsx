@@ -24,18 +24,6 @@ const StyledCard = styled(Card)(() => ({
 }));
 
 
-// const orders = [
-//     { id: 1, user: 'Sarah Maye', item: '1x Lamborghini Urus Headlight', price: '125,000 Frs', date: 'Oct. 20, 2024', status: 'Completed' },
-//     { id: 2, user: 'Sarah Maye', item: '2x iPhone 13 Pro Max', price: '$3,000', date: 'Nov. 19, 2024', status: 'In Progress' },
-//     { id: 3, user: 'Sarah Maye', item: '3x Apple Watch Series 7', price: '$1,200', date: 'Dec. 5, 2024', status: 'Pending' },
-//     { id: 4, user: 'Sarah Maye', item: '4x Sony WH-1000XM4 Headphones', price: '$800', date: 'Jan. 10, 2025', status: 'Pending' },
-//     { id: 5, user: 'Sarah Maye', item: '5x Nintendo Switch OLED Model', price: '$1,500', date: 'Feb. 20, 2025', status: 'In Progress' },
-//     { id: 6, user: 'Sarah Maye', item: '6x Samsung Galaxy S21 Ultra', price: '$4,200', date: 'Mar. 15, 2025', status: 'Completed' },
-//     { id: 7, user: 'Sarah Maye', item: '7x Bose QuietComfort 45 Headphones', price: '$1,000', date: 'Apr. 5, 2025', status: 'Pending' },
-//     { id: 8, user: 'Sarah Maye', item: '8x Fitbit Charge 5', price: '$400', date: 'May. 10, 2025', status: 'Pending' },
-//     { id: 9, user: 'Sarah Maye', item: '9x Amazon Kindle Paperwhite', price: '$900', date: 'Jun. 20, 2025', status: 'In Progress' },
-//     { id: 10, user: 'Sarah Maye', item: '10x GoPro HERO 10 Black', price: '$5,000', date: 'Jul. 15, 2025', status: 'In Progress' },
-// ];
 
 const extendedOrders: OrderDetailsInterface[] = [
     {
@@ -346,6 +334,7 @@ const OrderHistory = () => {
 
                             {/* Item Section */}
                             <Typography sx={{
+
                                 color: 'text.primary',
                                 fontSize: '0.875rem',
                                 flex: 1,
@@ -374,7 +363,7 @@ const OrderHistory = () => {
                                 alignItems: 'center',
                                 display: 'flex',
                             }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box sx={{ width: 150, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <CalendarIcon stroke='#777777' fill='' />
                                     {order.date}
                                 </Box>
@@ -385,11 +374,11 @@ const OrderHistory = () => {
                                 label={order.status}
                                 size="small"
                                 sx={{
-                                    // flex: 1,
-                                    // pl: 2,
+                                    flex: 1,
+                                    pl: 2,
                                     mr: 8,
                                     textAlign: 'left',
-                                    padding: "12px 10px",
+                                    padding: "12px 1px",
                                     borderRadius: '16px',
                                     bgcolor: "rgba(146, 143, 139, 0.1)",
                                     // minWidth: '100px',
