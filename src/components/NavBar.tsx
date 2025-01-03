@@ -120,6 +120,8 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
                                     fontWeight: 600,
                                     color: '#FF7A00',
                                     border: '2px solid #FF7A00',
+                                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
                                 }}
                             >
                                 DG
