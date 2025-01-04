@@ -9,6 +9,7 @@ import AppointmentPage from '../views/appointment/AppointmentPage';
 import FullCalendarPage from '../views/appointment/calendarpage/CalendarPage';
 import WeeklyMonthlyView from '../views/appointment/calendarpage/WeeklyMonthlyView';
 import AppointmentListView from '../views/appointment/AppointmentListView';
+import Accounts from '../views/accounts/Accounts';
 
 const Navigation = createBrowserRouter(
     createRoutesFromElements(
@@ -28,7 +29,7 @@ const Navigation = createBrowserRouter(
             <Route path="/statistics" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/invoices" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/profile" element={<AppLayout><Dashboard /></AppLayout>} />
-            <Route path="/accounts" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/accounts" element={<AppLayout><Accounts /></AppLayout>} />
             <Route path="/tips" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/payments" element={<AppLayout><Dashboard /></AppLayout>} />
 
