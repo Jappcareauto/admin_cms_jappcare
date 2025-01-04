@@ -7,6 +7,8 @@ import OrderHistory from '../views/shop/OrderHistory';
 // import Appointment from '../views/appointment/Appointment';
 import AppointmentPage from '../views/appointment/AppointmentPage';
 import FullCalendarPage from '../views/appointment/calendarpage/CalendarPage';
+import WeeklyMonthlyView from '../views/appointment/calendarpage/WeeklyMonthlyView';
+import AppointmentListView from '../views/appointment/AppointmentListView';
 
 const Navigation = createBrowserRouter(
     createRoutesFromElements(
@@ -18,6 +20,8 @@ const Navigation = createBrowserRouter(
             <Route path="/orderhistory" element={<AppLayout><OrderHistory /></AppLayout>} />
             <Route path="/appointments" element={<AppLayout><AppointmentPage /></AppLayout>} />
             <Route path="/appointments/*" element={<AppLayout><AppointmentPage /></AppLayout>} />
+            <Route path="/appointments/calendarviews" element={<AppLayout><WeeklyMonthlyView /></AppLayout>} />
+            <Route path="/appointments/list" element={<AppLayout><AppointmentListView /></AppLayout>} />
             <Route path="/calendar" element={<AppLayout><FullCalendarPage /></AppLayout>} />
             <Route path="/emergency" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/chats" element={<AppLayout><Dashboard /></AppLayout>} />
