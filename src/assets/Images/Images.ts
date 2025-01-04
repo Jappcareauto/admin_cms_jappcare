@@ -5,6 +5,9 @@ import GPSLocator from "../Group 37102.svg";
 import LoginImg from "../LoginImgPage.svg"
 import Porsche from "../porche-car.svg"
 import test from "../redd-francisco-KP_aqDegg20-unsplash.jpg"
+import bodyshopicon from "../bodyshopicon.svg"
+import deepcleaningicon from "../deepcleaningicon.svg"
+import maintainanceicon from "../maintenanceicon.svg"
 
 
 const Images = {
@@ -14,7 +17,10 @@ const Images = {
     GPSLocator,
     LoginImg,
     Porsche,
-    test
+    test,
+    bodyshopicon,
+    deepcleaningicon,
+    maintainanceicon
 }
 
 export default Images;

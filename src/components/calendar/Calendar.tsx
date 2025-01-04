@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton, Button } from '@mui/material';
+import { Box, Typography, IconButton, Button, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import ExpendIcon from '../Icones/ExpendIcon';
@@ -145,9 +145,12 @@ const Calendar = () => {
                     <IconButton size="small">
                         <ArrowForward />
                     </IconButton>
-                    <IconButton size="small" onClick={() => navigate('/calendar')}>
-                        <ExpendIcon fill='#111111' />
-                    </IconButton>
+                    <Tooltip title="Appointments Calendar">
+                        <IconButton size="small" onClick={() => navigate('/calendar')}>
+                            <ExpendIcon fill='#111111' />
+                        </IconButton>
+                    </Tooltip>
+
                 </Box>
             </CalendarHeader>
 
@@ -176,6 +179,7 @@ const Calendar = () => {
                         color: '#FB7C37',
                     }
                 }}
+                onClick={() => navigate('/appointments/calendarviews')}
             // fullWidth
             >
                 Show Calendar

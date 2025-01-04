@@ -14,43 +14,48 @@ interface CustomDrawerProps {
 
 const CustomDrawer = ({ open, onClose, title, children }: CustomDrawerProps) => {
     return (
-        <Drawer
-            anchor="right"
-            open={open}
-            onClose={onClose}
-            ModalProps={{
-                BackdropProps: {
-                    style: { display: 'none' }, // Disables the backdrop
-                },
-            }}
-            sx={{
-                '& .MuiDrawer-paper': {
-                    width: {
-                        xs: '100%',
-                        sm: '450px'
+        <Box sx={{
+            bgcolor: '#FFF5F5'
+        }}>
+            <Drawer
+                anchor="right"
+                open={open}
+                onClose={onClose}
+                ModalProps={{
+                    BackdropProps: {
+                        style: { display: 'none' }, // Disables the backdrop
                     },
-                    bgcolor: 'white',
-                    background: 'background.paper',
-                    padding: '24px',
+                }}
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        width: {
+                            xs: '100%',
+                            sm: '450px'
+                        },
+                        bgcolor: '#FFF5F5',
+                        background: 'background.paper',
+                        padding: '24px',
 
-                },
-            }}
-        >
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                mb: 3
-            }}>
-                <Typography variant="h6" component="h2">
-                    {title}
-                </Typography>
-                <IconButton onClick={onClose} edge="end">
-                    <CloseIcon />
-                </IconButton>
-            </Box>
-            {children}
-        </Drawer>
+                    },
+                }}
+            >
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 3
+                }}>
+                    <Typography variant="h6" component="h2">
+                        {title}
+                    </Typography>
+                    <IconButton onClick={onClose} edge="end">
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                {children}
+            </Drawer>
+        </Box>
+
     );
 };
 

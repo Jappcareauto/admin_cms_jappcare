@@ -9,6 +9,7 @@ import {
     Chip,
     Button,
     Stack,
+    IconButton,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { XAxis, ResponsiveContainer, BarChart, Bar, CartesianGrid } from 'recharts';
@@ -20,6 +21,8 @@ import CalendarIcon from '../../components/Icones/calendarIcon';
 import ExpandedAppointmentDetails from './ExpandedAppointmentDetails ';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import Calendar from '../../components/calendar/Calendar';
+import MenuChip from '../../components/Icones/MenuChip';
+import MenuListChip from '../../components/Icones/MenuListChip';
 
 
 
@@ -171,35 +174,53 @@ const Appointment: React.FC<AppointmentProps> = () => {
 
                             </Box>
                             <CardContent>
-                                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        sx={{ borderRadius: 8, padding: '5px 20px 5px 20px', bgcolor: "#FFEDE6", border: "none", color: "#111111" }}
-                                    >
-                                        Not Started
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        // size="small"
-                                        sx={{
-                                            padding: '7px 14px',
-                                            borderRadius: 8,
-                                            bgcolor: '#FB7C37',
-                                            // '&:hover': { bgcolor: '#FF6B3D' }
-                                        }}
-                                    >
-                                        In Progress
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        sx={{ borderRadius: 8, padding: '5px 20px 5px 20px', bgcolor: "#FFEDE6", border: "none", color: "#111111" }}
-                                    >
-                                        Completed
-                                    </Button>
-                                </Stack>
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
+                                    <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                sx={{ borderRadius: 8, padding: '5px 20px 5px 20px', bgcolor: "#FFEDE6", border: "none", color: "#111111" }}
+                                            >
+                                                Not Started
+                                            </Button>
+
+
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                sx={{
+                                                    padding: '5px 20px 5px 20px',
+                                                    borderRadius: 8,
+                                                    bgcolor: '#FB7C37',
+                                                    // '&:hover': { bgcolor: '#FF6B3D' }
+                                                }}
+                                            >
+                                                In Progress
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                sx={{ borderRadius: 8, padding: '5px 20px 5px 20px', bgcolor: "#FFEDE6", border: "none", color: "#111111" }}
+                                            >
+                                                Completed
+                                            </Button>
+                                        </Box>
+
+
+                                    </Stack>
+                                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
+                                        <Stack direction="row" spacing={-1}>
+                                            <IconButton>
+                                                <MenuChip fill='#FB7C37' iconfill='white' />
+                                            </IconButton>
+                                            <IconButton onClick={() => navigate('/appointments/list')}>
+                                                <MenuListChip fill='#FFEDE6' />
+                                            </IconButton>
+                                        </Stack>
+                                    </Box>
+                                </Box>
 
                                 <Typography sx={{ mt: 2, mb: 1, fontWeight: 'bold', fontSize: 20, color: '#111111' }}>
                                     Up Next

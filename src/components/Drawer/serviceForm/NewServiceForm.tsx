@@ -74,14 +74,14 @@ const NewServiceForm = ({ onSubmit, onCancel }: NewServiceFormProps) => {
                             }
                         }
                     }}
-                    sx={{
-                        '& .MuiSelect-select': {
-                            bgcolor: 'white'
-                        },
-                        '& .MuiMenu-paper': {
-                            bgcolor: 'white'
-                        }
-                    }}
+                // sx={{
+                //     '& .MuiSelect-select': {
+                //         // bgcolor: 'white'
+                //     },
+                //     '& .MuiMenu-paper': {
+                //         // bgcolor: 'white'
+                //     }
+                // }}
                 >
                     <MenuItem value="CUSTOM" sx={{ bgcolor: 'white' }}>Custom</MenuItem>
                     <MenuItem value="STANDARD" sx={{ bgcolor: 'white' }}>Standard</MenuItem>
