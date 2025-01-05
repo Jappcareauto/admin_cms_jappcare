@@ -5,9 +5,16 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import StarIcon from '@mui/icons-material/Star';
 import Images from '../../../assets/Images/Images';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ImageViewer } from '../../ImageViewer/ImageViewer';
 import LocationIcon from '../../Icones/LocationIcon';
+
+/// <reference types="@types/google.maps" />
+declare global {
+    interface Window {
+        google: typeof google;
+    }
+}
 
 interface ServiceProviderDetailsProps {
     onEditProfile?: () => void;
@@ -37,6 +44,36 @@ const ServiceProviderDetails = ({ onSeeStatistics }: ServiceProviderDetailsProps
             icon: Images.deepcleaningicon,
         },
     ];
+
+    useEffect(() => {
+        const loadGoogleMapsScript = () => {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBy9Mq91oGtmrw1jKiRrDvKWwGpQgtzt3I`;
+            script.async = true;
+            script.defer = true;
+            script.onload = initializeMap;
+            document.body.appendChild(script);
+        };
+
+        const initializeMap = () => {
+            const map = new google.maps.Map(document.getElementById('provider-map-container') as HTMLElement, {
+                center: { lat: 4.0511, lng: 9.7679 }, // Coordinates for Douala, Cameroon
+                zoom: 14,
+            });
+
+            new google.maps.Marker({
+                position: { lat: 4.0511, lng: 9.7679 },
+                map,
+                title: "Dave's Garage",
+            });
+        };
+
+        if (!window.google) {
+            loadGoogleMapsScript();
+        } else {
+            initializeMap();
+        }
+    }, []);
 
     return (
         <Box >
@@ -201,20 +238,30 @@ const ServiceProviderDetails = ({ onSeeStatistics }: ServiceProviderDetailsProps
             </Grid>
 
             {/* Map Section */}
-            <Typography sx={{ fontSize: '16px', fontWeight: 500, mb: 1.5 }}>
-                Home Location
-            </Typography>
-            <Box
-                sx={{
-                    width: '100%',
-                    height: 200,
-                    borderRadius: 1,
-                    overflow: 'hidden',
-                    position: 'relative',
-                    mb: 3
-                }}
-            >
-                <div id="provider-map-container" style={{ width: '100%', height: '100%', background: '#f5f5f5' }} />
+            <Box sx={{ mb: 2 }}>
+                <Typography
+                    sx={{
+                        mb: 1,
+                        fontSize: '14px',
+                        color: 'rgba(0, 0, 0, 0.87)'
+                    }}
+                >
+                    Home Location
+                </Typography>
+                <Box
+                    sx={{
+                        width: '100%',
+                        height: 200,
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        position: 'relative',
+                        bgcolor: '#f5f5f5',
+                        border: '1px solid rgba(0, 0, 0, 0.12)'
+                    }}
+                >
+                    {/* Map container - Ready for API implementation */}
+                    <div id="provider-map-container" style={{ width: '100%', height: '100%', background: '#f5f5f5' }} />
+                </Box>
             </Box>
 
             {/* Statistics Button */}
