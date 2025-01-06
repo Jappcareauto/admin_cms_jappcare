@@ -11,6 +11,8 @@ import WeeklyMonthlyView from '../views/appointment/calendarpage/WeeklyMonthlyVi
 import AppointmentListView from '../views/appointment/AppointmentListView';
 import Accounts from '../views/accounts/Accounts';
 import Profile from '../views/profile/Profile';
+import Statistics from '../views/statistics/Statistics';
+import TransactionsView from '../views/statistics/transactions/Transactions';
 
 const Navigation = createBrowserRouter(
     createRoutesFromElements(
@@ -27,7 +29,8 @@ const Navigation = createBrowserRouter(
             <Route path="/calendar" element={<AppLayout><FullCalendarPage /></AppLayout>} />
             <Route path="/emergency" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/chats" element={<AppLayout><Dashboard /></AppLayout>} />
-            <Route path="/statistics" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/statistics" element={<AppLayout><Statistics /></AppLayout>} />
+            <Route path="/transactions" element={<AppLayout><TransactionsView /></AppLayout>} />
             <Route path="/invoices" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />
             <Route path="/accounts" element={<AppLayout><Accounts /></AppLayout>} />
