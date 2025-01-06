@@ -9,7 +9,6 @@ import {
     Stack,
     Chip
 } from '@mui/material';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Images from '../../assets/Images/Images';
 import { useEffect } from 'react';
 import CalendarIcon from '../../components/Icones/calendarIcon';

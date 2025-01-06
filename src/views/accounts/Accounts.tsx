@@ -163,22 +163,27 @@ const Accounts = () => {
 
             </Box>
 
-            {/* Status Filters */}
-            <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
-                {['Users', 'Service Providers'].map((status) => (
-                    <StyledChip
-                        key={status}
-                        label={status}
-                        className={activeStatus === status ? 'active' : ''}
-                        onClick={() => setActiveStatus(status)}
-                        sx={{
-                            bgcolor: activeStatus === status ? '#FB7C37' : '#fff',
-                            '&:hover': {
-                                bgcolor: activeStatus === status ? '#FB7C37' : 'rgba(0, 0, 0, 0.04)',
-                            },
-                        }}
-                    />
-                ))}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+                {/* Status Filters */}
+                <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
+                    {['Users', 'Service Providers'].map((status) => (
+                        <StyledChip
+                            key={status}
+                            label={status}
+                            className={activeStatus === status ? 'active' : ''}
+                            onClick={() => setActiveStatus(status)}
+                            sx={{
+                                bgcolor: activeStatus === status ? '#FB7C37' : '#fff',
+                                '&:hover': {
+                                    bgcolor: activeStatus === status ? '#FB7C37' : 'rgba(0, 0, 0, 0.04)',
+                                },
+                            }}
+                        />
+                    ))}
+                </Box>
+
+
             </Box>
 
             {/* Stats Cards */}
