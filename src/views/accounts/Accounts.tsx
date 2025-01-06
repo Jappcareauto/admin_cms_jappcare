@@ -21,6 +21,7 @@ import UsersIcon from '../../components/Icones/UsersIcon';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import NewUserForm from '../../components/Drawer/userDetails/NewUserForm';
 import ServiceProviderDetails from '../../components/Drawer/serviceProviders/ServiceProviderDetails';
+import NewServiceProviderForm from '../../components/Drawer/serviceProviders/NewServiceProviderForm';
 
 // Interfaces
 interface Users {
@@ -52,6 +53,7 @@ const Accounts = () => {
     const [activeStatus, setActiveStatus] = useState('Not Started');
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isServiceProviderDrawerOpen, setIsServiceProviderDrawerOpen] = useState(false);
+    const [isServiceProviderFormDrawerOpen, setIsServiceProviderFormDrawerOpen] = useState(false);
 
     // Add these handlers inside the Dashboard component:
     const handleNewUser = (data: any) => {
@@ -161,22 +163,27 @@ const Accounts = () => {
 
             </Box>
 
-            {/* Status Filters */}
-            <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
-                {['Not Started', 'In Progress', 'Completed'].map((status) => (
-                    <StyledChip
-                        key={status}
-                        label={status}
-                        className={activeStatus === status ? 'active' : ''}
-                        onClick={() => setActiveStatus(status)}
-                        sx={{
-                            bgcolor: activeStatus === status ? '#FB7C37' : '#fff',
-                            '&:hover': {
-                                bgcolor: activeStatus === status ? '#FB7C37' : 'rgba(0, 0, 0, 0.04)',
-                            },
-                        }}
-                    />
-                ))}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+                {/* Status Filters */}
+                <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
+                    {['Users', 'Service Providers'].map((status) => (
+                        <StyledChip
+                            key={status}
+                            label={status}
+                            className={activeStatus === status ? 'active' : ''}
+                            onClick={() => setActiveStatus(status)}
+                            sx={{
+                                bgcolor: activeStatus === status ? '#FB7C37' : '#fff',
+                                '&:hover': {
+                                    bgcolor: activeStatus === status ? '#FB7C37' : 'rgba(0, 0, 0, 0.04)',
+                                },
+                            }}
+                        />
+                    ))}
+                </Box>
+
+
             </Box>
 
             {/* Stats Cards */}
@@ -275,7 +282,7 @@ const Accounts = () => {
                         <IconButton size="small">
                             <TrashIcon stroke='#141B34' fill='' />
                         </IconButton>
-                        <IconButton size="small" sx={{ color: '#FB7C37' }}>
+                        <IconButton size="small" sx={{ color: '#FB7C37' }} onClick={() => { setIsServiceProviderFormDrawerOpen(true) }}>
                             <ArrowForwardIcon />
                         </IconButton>
                     </Box>
@@ -297,8 +304,17 @@ const Accounts = () => {
                 onClose={() => setIsServiceProviderDrawerOpen(false)}
                 title="Service Provider Details"
             >
+                <NewServiceProviderForm
+                    onSubmit={() => console.log('Submitting')}
+                />
+            </CustomDrawer>
+            <CustomDrawer
+                open={isServiceProviderFormDrawerOpen}
+                onClose={() => setIsServiceProviderFormDrawerOpen(false)}
+                title="New Service Provider"
+            >
                 <ServiceProviderDetails
-                    onSeeStatistics={() => console.log('See statistics')}
+                    onSeeStatistics={() => console.log('Submitting')}
                 />
             </CustomDrawer>
         </Box>

@@ -8,6 +8,7 @@ import test from "../redd-francisco-KP_aqDegg20-unsplash.jpg"
 import bodyshopicon from "../bodyshopicon.svg"
 import deepcleaningicon from "../deepcleaningicon.svg"
 import maintainanceicon from "../maintenanceicon.svg"
+import garageimage from "../garage_image.png"
 
 
 const Images = {
@@ -20,7 +21,8 @@ const Images = {
     test,
     bodyshopicon,
     deepcleaningicon,
-    maintainanceicon
+    maintainanceicon,
+    garageimage
 }
 
 export default Images;
