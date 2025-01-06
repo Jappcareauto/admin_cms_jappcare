@@ -84,6 +84,8 @@ const AppLayout = ({ children }: { children?: React.ReactNode }) => {
             },
         },
 
+
+
         typography: {
             fontFamily: '"Plus Jakarta Sans", sans-serif',
             h1: { fontFamily: '"Plus Jakarta Sans", sans-serif' },
