@@ -13,7 +13,7 @@ import {
     InputAdornment,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { LineChart, Line, XAxis, ResponsiveContainer } from 'recharts';
+import { XAxis, ResponsiveContainer, Area, AreaChart, Tooltip } from 'recharts';
 import SearchIcon from '@mui/icons-material/Search';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
 import NotifIcon from '../../components/Icones/NotifIcon';
@@ -27,15 +27,16 @@ import ProductDetails from '../../components/Drawer/products/ProductDetails';
 import Product from '../../interfaces/Interfaces';
 import NewProductForm from '../../components/Drawer/products/NewProductForm';
 import { useNavigate } from 'react-router-dom';
+import { YAxis } from 'recharts';
 
 // Sample data for the revenue chart
 const revenueData = [
-    { name: 'Mon', value: 1500 },
-    { name: 'Tues', value: 12000 },
-    { name: 'Wed', value: 22000 },
-    { name: 'Thurs', value: 20000 },
-    { name: 'Fri', value: 25000 },
-    { name: 'Sat', value: 28000 },
+    { name: 'Mon', revenue: 1500 },
+    { name: 'Tues', revenue: 12000 },
+    { name: 'Wed', revenue: 22000 },
+    { name: 'Thurs', revenue: 20000 },
+    { name: 'Fri', revenue: 25000 },
+    { name: 'Sat', revenue: 28000 },
 ];
 
 // Sample product data
@@ -197,6 +198,24 @@ const ProductPrice = styled(Typography)(({ theme }) => ({
     fontWeight: 500,
     fontSize: '0.875rem',
 }));
+
+const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <Box sx={{
+                bgcolor: 'background.paper',
+                p: 1,
+                borderRadius: 1,
+                boxShadow: 3,
+            }}>
+                <Typography variant="body2">
+                    {`${payload[0].value.toLocaleString()} Frs`}
+                </Typography>
+            </Box>
+        );
+    }
+    return null;
+};
 
 
 const Shop = () => {
@@ -392,16 +411,42 @@ const Shop = () => {
                     {/* Revenue Chart */}
                     <StyledCard sx={{ mb: 3 }}>
                         <CardContent>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                <Chip label="28,000 Frs" color="primary" />
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
                                 <Typography variant="body2" color="text.secondary">Revenue</Typography>
                             </Box>
                             <Box sx={{ height: 100 }}>
                                 <ResponsiveContainer>
-                                    <LineChart data={revenueData}>
-                                        <XAxis dataKey="name" />
-                                        <Line type="monotone" dataKey="value" stroke="#FF7A00" />
-                                    </LineChart>
+                                    <AreaChart
+                                        data={revenueData}
+                                        margin={{
+                                            top: 10,
+                                            right: 0,
+                                            left: 0,
+                                            bottom: 0,
+                                        }}
+                                    >
+                                        <defs>
+                                            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#FF7A00" stopOpacity={0.2} />
+                                                <stop offset="100%" stopColor="#FF7A00" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <XAxis
+                                            dataKey="name"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: '#6F767E', fontSize: 12 }}
+                                        />
+                                        <YAxis hide />
+                                        <Tooltip content={<CustomTooltip />} />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="revenue"
+                                            stroke="#FF7A00"
+                                            strokeWidth={2}
+                                            fill="url(#colorRevenue)"
+                                        />
+                                    </AreaChart>
                                 </ResponsiveContainer>
                             </Box>
                         </CardContent>

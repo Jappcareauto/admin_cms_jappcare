@@ -120,7 +120,7 @@ const Profile = () => {
                                     Dave's Garage
                                 </Typography>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                    <LocationIcon fill='#6F767E' stroke='' />
+                                    <LocationIcon fill='#FF7A00' stroke='#FF7A00' />
                                     <Typography sx={{
                                         fontSize: '15px',
                                         color: '#6F767E'
