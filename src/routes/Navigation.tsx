@@ -13,6 +13,7 @@ import Accounts from '../views/accounts/Accounts';
 import Profile from '../views/profile/Profile';
 import Statistics from '../views/statistics/Statistics';
 import TransactionsView from '../views/statistics/transactions/Transactions';
+import ServiceCenterChats from '../views/chats/Chats';
 
 const Navigation = createBrowserRouter(
     createRoutesFromElements(
@@ -28,7 +29,7 @@ const Navigation = createBrowserRouter(
             <Route path="/appointments/list" element={<AppLayout><AppointmentListView /></AppLayout>} />
             <Route path="/calendar" element={<AppLayout><FullCalendarPage /></AppLayout>} />
             <Route path="/emergency" element={<AppLayout><Dashboard /></AppLayout>} />
-            <Route path="/chats" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/chats" element={<AppLayout><ServiceCenterChats /></AppLayout>} />
             <Route path="/statistics" element={<AppLayout><Statistics /></AppLayout>} />
             <Route path="/transactions" element={<AppLayout><TransactionsView /></AppLayout>} />
             <Route path="/invoices" element={<AppLayout><Dashboard /></AppLayout>} />
