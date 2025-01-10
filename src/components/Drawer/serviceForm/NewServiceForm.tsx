@@ -7,17 +7,16 @@ import Stack from '@mui/material/Stack';
 
 interface NewServiceFormProps {
     onSubmit: (data: any) => void;
-    onCancel: () => void;
+
 }
 
-const NewServiceForm = ({ onSubmit, onCancel }: NewServiceFormProps) => {
+const NewServiceForm = ({ onSubmit }: NewServiceFormProps) => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         definition: 'CUSTOM',
         serviceCenter: ''
     });
-    console.log("close", onCancel);
 
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,10 +100,12 @@ const NewServiceForm = ({ onSubmit, onCancel }: NewServiceFormProps) => {
             </Stack>
             {/* Button Section */}
             <Box sx={{
-                mt: 'auto',
-                pt: 3,
-                // borderTop: '1px solid',
-                // borderColor: 'divider'
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+                p: 2
             }}>
                 <Button
                     fullWidth

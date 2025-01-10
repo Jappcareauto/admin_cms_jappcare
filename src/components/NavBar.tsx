@@ -39,7 +39,7 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
         { text: 'Shop', icon: <ShopIcon stroke='' fill='' />, path: '/shop' },
         { text: 'Appointments', icon: <AppointmentIcon stroke='#111111' fill='#111111' />, path: '/appointments' },
         { text: 'Emergency Assistance', icon: <Emergency />, path: '/emergency' },
-        { text: 'Chats', icon: <ChatsIcon stroke='#111111' fill='#111111' />, path: '/chats' },
+        { text: 'Chats', icon: <ChatsIcon stroke='#111111' fill='#111111' />, path: '/servicecenterchats' },
         { text: 'Statistics', icon: <PieChartIcon stroke="#111111" fill="#111111" />, path: '/statistics' },
         { text: 'Invoices', icon: <InvoiceIcon stroke='#111111' fill='#111111' />, path: '/invoices' },
         { text: 'Profile', icon: <UserIcon fill='#111111' />, path: '/profile' },

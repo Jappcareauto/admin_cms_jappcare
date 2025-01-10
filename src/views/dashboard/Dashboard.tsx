@@ -596,7 +596,6 @@ const Dashboard = () => {
             >
                 <NewServiceForm
                     onSubmit={handleNewService}
-                    onCancel={() => setIsDrawerOpen(false)}
                 />
             </CustomDrawer>
             <CustomDrawer
