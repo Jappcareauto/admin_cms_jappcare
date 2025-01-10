@@ -12,6 +12,8 @@ import {
     Paper,
     styled,
     Popover,
+    Button,
+    Chip,
 
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -25,13 +27,17 @@ import StopIcon from '@mui/icons-material/Stop';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { TimerRef } from './types';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import LocationIcon from '../../components/Icones/LocationIcon';
+import { Service } from './ServiceCenterChats';
+import { ArrowBack, Star } from '@mui/icons-material';
 
 
 
 // Styled Components (previous styled components remain the same)
 const SearchInput = styled(InputBase)(() => ({
     backgroundColor: '#FFEDE6',
-    borderRadius: 8,
+    borderRadius: 28,
     padding: '8px 12px',
     width: '100%',
     '& input': {
@@ -42,14 +48,15 @@ const SearchInput = styled(InputBase)(() => ({
 const ServiceItem = styled(ListItem)(() => ({
     borderRadius: 8,
     marginBottom: 8,
+    cursor: 'pointer',
     '&:hover': {
-        backgroundColor: '#FFF5F5',
+        backgroundColor: '#FFEDE6',
     }
 }));
 
 const MessageInput = styled(InputBase)(() => ({
     backgroundColor: '#FFEDE6',
-    borderRadius: 24,
+    borderRadius: 28,
     padding: '8px 16px',
     width: '100%',
     '& input': {
@@ -57,11 +64,16 @@ const MessageInput = styled(InputBase)(() => ({
     }
 }));
 
-interface Service {
-    id: string;
-    name: string;
-    initials: string;
-}
+const StyledChip = styled(Chip)(() => ({
+    borderRadius: 28,
+    padding: '20px 14px',
+    '&.active': {
+        backgroundColor: "#FB7C37",
+        color: 'white',
+    },
+}));
+
+
 
 interface Message {
     id: string;
@@ -78,7 +90,7 @@ interface AudioMessage extends Message {
     currentTime?: number;
 }
 
-const ServiceCenterChats = () => {
+const Chats = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [messageInput, setMessageInput] = useState('');
     const [isRecording, setIsRecording] = useState(false);
@@ -94,19 +106,23 @@ const ServiceCenterChats = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const recordingTimerRef = useRef<TimerRef>();
     const audioElementsRef = useRef<{ [key: string]: HTMLAudioElement }>({});
+    const location = useLocation();
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     console.log("audio", audioURL);
+    console.log("id", id);
 
     const [services] = useState<Service[]>([
-        { id: 'DA', name: "Dave's Autoshop", initials: 'DA' },
-        { id: 'AC', name: 'AutoCare Plus BodyShop', initials: 'DA' },
-        { id: 'SL', name: 'Speedy Lube', initials: 'SL' },
-        { id: 'MM', name: 'Mega Motors', initials: 'MM' },
-        { id: 'WW', name: 'Wheel Wizards', initials: 'WW' },
-        { id: 'GG', name: 'Gearheads Garage', initials: 'GG' },
-        { id: 'PS', name: 'Pit Stop Pro', initials: 'PS' },
-        { id: 'TT', name: 'Turbo Tune-Up', initials: 'TT' },
-        { id: 'RR', name: 'Rev it Right', initials: 'RR' },
+        { id: '1', name: "Sara", initials: 'S' },
+        { id: '2', name: 'James', initials: 'J' },
+        { id: '3', name: 'Liz', initials: 'L' },
+        { id: '4', name: 'Clo', initials: 'C' },
+        { id: '5', name: 'Love', initials: 'L' },
+        { id: '6', name: 'Odilon', initials: 'O' },
+        { id: '7', name: 'Love', initials: 'L' },
+        { id: '8', name: 'Mike', initials: 'M' },
+        { id: '9', name: 'Collabo', initials: 'C' },
     ]);
 
     const scrollToBottom = () => {
@@ -314,13 +330,140 @@ const ServiceCenterChats = () => {
     };
 
 
+    const [initialValues, setInitialValues] = useState<Service>();
+    const [activeStatus, setActiveStatus] = useState('All');
+
+
+    useEffect(() => {
+        if (id && location.state && location.state.chatsData) {
+            // Use the data passed from the previous component
+            setInitialValues(location.state.chatsData);
+        }
+    }, [id, location.state]);
+
+    console.log("chatsData=======", location.state);
+
+
+
     return (
-        <Box sx={{ display: 'flex', height: '100vh' }}>
+        <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
             {/* Left Sidebar */}
-            <Box sx={{ width: 350, borderRight: '1px solid #F0F0F0', p: 2 }}>
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                    Service Center Chats
-                </Typography>
+
+
+            <Box sx={{
+                width: 400, borderRight: '1px solid #F0F0F0', p: 1, overflowY: 'auto', height: '100vh'
+            }}>
+                <Box sx={{ p: 0 }}>
+                    {/* Header with Back Button */}
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0,
+                        ml: -2,
+                        mb: 1
+                    }}>
+                        <IconButton
+                            onClick={() => navigate(-1)}
+                            sx={{
+                                color: '#111111',
+                                '&:hover': {
+                                    bgcolor: '#FFEDE6'
+                                }
+                            }}
+                        >
+                            <ArrowBack />
+                        </IconButton>
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            Chats
+                        </Typography>
+                    </Box>
+                </Box>
+                <Avatar
+                    sx={{
+                        width: 64,
+                        height: 64,
+                        bgcolor: '#111111',
+                        color: '#FF7A00',
+                        fontSize: '22px',
+                        fontWeight: 600,
+                        border: '2px solid #FF7A00',
+                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
+
+                    }}
+                >
+                    DG
+                </Avatar>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
+                        <Box>
+                            <Typography sx={{
+                                fontSize: '20px',
+                                fontWeight: 600,
+                                color: '#1A1D1F'
+                            }}>
+                                {initialValues?.name}
+
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                <LocationIcon fill='#FF7A00' stroke='#FF7A00' />
+                                <Typography sx={{
+                                    fontSize: '12px',
+                                    color: '#6F767E'
+                                }}>
+                                    Deido, Douala
+                                </Typography>
+                                <Box sx={{ border: '1px solid #111111', height: '5px', width: '5px', borderRadius: '50%', bgcolor: '#111111', ml: 0.5 }} />
+                                <Star sx={{ color: '#FF7A00' }} />
+                                <Typography sx={{ color: '#FF7A00', fontSize: '15px' }}>
+                                    4.75
+                                </Typography>
+                            </Box>
+
+
+                        </Box>
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                // bgcolor: '#fff',
+                                border: '1px solid #6F767E',
+                                color: '#111111',
+                                maxWidth: '150px',
+                                height: 35,
+                                padding: '20px 16px',
+                                '&:hover': {
+                                    bgcolor: '#f5f5f5'
+                                }
+                            }}
+                            onClick={() => { navigate('/profile') }}
+                        >
+                            View Profile
+                        </Button>
+                    </Box>
+
+
+                </Box>
+
+
+
+                {/* Status Filters */}
+                <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
+                    {['All', 'Unread'].map((status) => (
+                        <StyledChip
+                            key={status}
+                            label={status}
+                            className={activeStatus === status ? 'active' : ''}
+                            onClick={() => setActiveStatus(status)}
+                            sx={{
+                                bgcolor: activeStatus === status ? '#FB7C37' : '#fff',
+                                '&:hover': {
+                                    bgcolor: activeStatus === status ? '#FB7C37' : 'rgba(0, 0, 0, 0.04)',
+                                },
+                            }}
+                        />
+                    ))}
+                </Box>
 
                 <Box sx={{ mb: 2 }}>
                     <SearchInput
@@ -355,9 +498,11 @@ const ServiceCenterChats = () => {
             </Box>
 
             {/* Chat Area */}
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{
+                flex: 1, display: 'flex', flexDirection: 'column', height: '85vh', overflow: 'hidden'
+            }}>
                 {/* Chat Header */}
-                <Box sx={{ p: 2, borderBottom: '1px solid #F0F0F0', display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ p: 2, borderBottom: '1px solid #F0F0F0', display: 'flex', alignItems: 'center', zIndex: 1 }}>
                     <Avatar sx={{
                         mr: 1,
                         bgcolor: '#FF7A00',
@@ -373,7 +518,9 @@ const ServiceCenterChats = () => {
                 </Box>
 
                 {/* Messages Area */}
-                <Box sx={{ flex: 1, p: 2, overflowY: 'auto' }}>
+                <Box sx={{
+                    flex: 1, p: 2, overflowY: 'auto', display: 'flex', flexDirection: 'column'
+                }}>
                     {messages.map((message) => (
                         <Box
                             key={message.id}
@@ -407,7 +554,7 @@ const ServiceCenterChats = () => {
                 </Box>
 
                 {/* Input Area */}
-                <Box sx={{ p: 2, borderTop: '1px solid #F0F0F0' }}>
+                <Box sx={{ p: 2, borderTop: '1px solid #F0F0F0', position: 'relative', zIndex: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <MessageInput
                             placeholder="Write a message"
@@ -474,4 +621,4 @@ const ServiceCenterChats = () => {
     );
 };
 
-export default ServiceCenterChats;
+export default Chats;
