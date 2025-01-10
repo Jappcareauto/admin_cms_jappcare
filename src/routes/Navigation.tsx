@@ -16,6 +16,7 @@ import TransactionsView from '../views/statistics/transactions/Transactions';
 import ServiceCenterChats from '../views/chats/ServiceCenterChats';
 import Chats from '../views/chats/Chats';
 import Tips from '../views/tips/Tips';
+import Payments from '../views/payments/Payments';
 
 const Navigation = createBrowserRouter(
     createRoutesFromElements(
@@ -39,7 +40,7 @@ const Navigation = createBrowserRouter(
             <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />
             <Route path="/accounts" element={<AppLayout><Accounts /></AppLayout>} />
             <Route path="/tips" element={<AppLayout><Tips /></AppLayout>} />
-            <Route path="/payments" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/payments" element={<AppLayout><Payments /></AppLayout>} />
 
 
             {/* </Route> */}
