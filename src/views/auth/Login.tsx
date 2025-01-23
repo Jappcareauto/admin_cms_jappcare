@@ -7,21 +7,97 @@ import {
     IconButton,
     InputAdornment,
     Paper,
+    Alert,
+    CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Images from '../../assets/Images/Images';
+import { iUsersAction, iUsersConnected } from '../../interfaces/UsersInterface';
+import { Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
+import { JC_Services } from '../../services';
 
-const Logi = () => {
+
+const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
-
+    const [credentials, setCredentials] = useState({ email: "", password: "", extend: true });
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const navigate = useNavigate();
+    const dispatch: Dispatch<any> = useDispatch();
+    // const connectedUsers: iUsersConnected = useSelector(
+    //     (state: iUsersConnected) => state)
 
-    const handleLogin = () => {
-        navigate('/dashboard');
-    }
+    // console.log("connectedUsers", connectedUsers);
+
+    // console.log("credentials", credentials);
+
+    const handleLogin = async () => {
+        if (!credentials.email || !credentials.password) {
+            setErrorMessage('Please enter both email and password');
+            return;
+        }
+        try {
+            setLoading(true);
+            const response = await JC_Services("JAPPCARE", 'auth/login', 'POST', credentials);
+
+            console.log("res", response);
+
+            if (response && response.status === 200) {
+
+                const users: iUsersConnected = response.body.data;
+
+                const action: iUsersAction = {
+                    type: "LOGIN",
+                    users: users
+                }
+                dispatch(action);
+                // Successful login, navigate to dashboard or perform other actions
+                navigate('/dashboard');
+                setSuccessMessage('Login successful!');
+                setErrorMessage('');
+            } else if (response && response.status === 401) {
+                // Invalid credentials, handle error (display message, etc.)
+                setErrorMessage('Invalid email or password');
+            }
+
+            else {
+                // Login failed, handle error (display message, etc.)
+                setErrorMessage(response.body.details);
+                setSuccessMessage('');
+                console.error('Login failed:', response.body.message);
+            }
+        } catch (error) {
+            setErrorMessage('An error occurred during login. Try again later.');
+
+            console.error('Error:', error);
+        }
+        setLoading(false);
+    };
+
+    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    //     setCredentials({ ...credentials, [key]: e.target.value });
+    // };
+
+    const handleChange = (e: { target: { value: any; }; }, field: any) => {
+        setCredentials(prev => ({
+            ...prev,
+            [field]: e.target.value
+        }));
+        // Clear error message when user starts typing
+        if (errorMessage) setErrorMessage('');
+    };
+
+    // Handle form submission with Enter key
+    // const handleKeyPress = (e: { key: string; }) => {
+    //     if (e.key === 'Enter' && !loading) {
+    //         handleLogin();
+    //     }
+    // };
 
     return (
         <Box
@@ -90,6 +166,18 @@ const Logi = () => {
                         Sign In
                     </Typography>
 
+                    {errorMessage && (
+                        <Alert severity='error'>
+                            {errorMessage}
+                        </Alert>
+                    )}
+
+                    {successMessage && (
+                        <Alert severity='success'>
+                            {successMessage}
+                        </Alert>
+                    )}
+
                     <Box component="form" sx={{ mt: 1 }}>
                         <Typography
                             sx={{
@@ -105,6 +193,8 @@ const Logi = () => {
                             placeholder="Email"
                             variant="outlined"
                             size="small"
+                            value={credentials.email}
+                            onChange={(e) => handleChange(e, 'email')}
                             sx={{
                                 mb: 3,
                                 '& .MuiOutlinedInput-root': {
@@ -134,6 +224,8 @@ const Logi = () => {
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
                             variant="outlined"
+                            value={credentials.password}
+                            onChange={(e) => handleChange(e, 'password')}
                             size="small"
                             InputProps={{
                                 endAdornment: (
@@ -202,7 +294,7 @@ const Logi = () => {
                             }}
                             onClick={handleLogin}
                         >
-                            Sign In
+                            {loading ? <CircularProgress size={24} color='inherit' /> : "Sign In"}
                         </Button>
                     </Box>
                 </Paper>
@@ -211,4 +303,4 @@ const Logi = () => {
     );
 };
 
-export default Logi;
+export default Login;
