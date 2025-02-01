@@ -11,18 +11,21 @@ import {
     Avatar,
     Button,
 } from '@mui/material';
-import { Emergency } from '@mui/icons-material';
+// import { Emergency } from '@mui/icons-material';
 import PieChartIcon from './Icones/PieChartIcon';
 import DashBoardIcon from './Icones/DashBoardIcon';
 import ShopIcon from './Icones/ShopIcon';
 import AppointmentIcon from './Icones/AppointmentIcon';
 import ChatsIcon from './Icones/ChatsIcon';
-import InvoiceIcon from './Icones/InvoiceIcon';
+// import InvoiceIcon from './Icones/InvoiceIcon';
 import UserIcon from './Icones/UserIcon';
 import UsersIcon from './Icones/UsersIcon';
 import TipIcon from './Icones/TipsIcon';
 import WalletIcon from './Icones/WalletIcon';
 import LogOutIcon from './Icones/LogOutIcon';
+import { iUsersAction } from '../interfaces/UsersInterface';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
 
 interface NavBarProps {
     isSidebarCollapsed: boolean;
@@ -33,15 +36,16 @@ const drawerWidth = 270;
 const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
     // const location = useLocation();
     const navigate = useNavigate();
+    const dispatch: Dispatch<iUsersAction> = useDispatch();
 
     const menuItems = [
         { text: 'Dashboard', icon: <DashBoardIcon stroke='#111111' fill='#111111' />, path: '/dashboard' },
         { text: 'Shop', icon: <ShopIcon stroke='' fill='' />, path: '/shop' },
         { text: 'Appointments', icon: <AppointmentIcon stroke='#111111' fill='#111111' />, path: '/appointments' },
-        { text: 'Emergency Assistance', icon: <Emergency />, path: '/emergency' },
+        // { text: 'Emergency Assistance', icon: <Emergency />, path: '/emergency' },
         { text: 'Chats', icon: <ChatsIcon stroke='#111111' fill='#111111' />, path: '/servicecenterchats' },
         { text: 'Statistics', icon: <PieChartIcon stroke="#111111" fill="#111111" />, path: '/statistics' },
-        { text: 'Invoices', icon: <InvoiceIcon stroke='#111111' fill='#111111' />, path: '/invoices' },
+        // { text: 'Invoices', icon: <InvoiceIcon stroke='#111111' fill='#111111' />, path: '/invoices' },
         { text: 'Profile', icon: <UserIcon fill='#111111' />, path: '/profile' },
         { text: 'Accounts', icon: <UsersIcon fill='#111111' />, path: '/accounts' },
         { text: 'Tips', icon: <TipIcon fill='#111111' />, path: '/tips' },
@@ -55,8 +59,13 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
 
     const handleLogout = () => {
         console.log("Logout clicked");
+        const action: iUsersAction = {
+            type: "LOGOUT",
+            users: {}
+        }
+        dispatch(action);
+
         navigate('/');
-        // Add your logout logic here
     };
 
     const isSelected = (path: string) => location.pathname === path;
