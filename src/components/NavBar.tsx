@@ -23,9 +23,10 @@ import UsersIcon from './Icones/UsersIcon';
 import TipIcon from './Icones/TipsIcon';
 import WalletIcon from './Icones/WalletIcon';
 import LogOutIcon from './Icones/LogOutIcon';
-import { iUsersAction } from '../interfaces/UsersInterface';
+import { iUsersAction, iUsersConnected } from '../interfaces/UsersInterface';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
+import { useSelector } from 'react-redux';
 
 interface NavBarProps {
     isSidebarCollapsed: boolean;
@@ -54,8 +55,12 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
 
     const handleItemClick = (path: string) => {
         navigate(path);
-        console.log(path);
     };
+
+    const connectedUsers: iUsersConnected = useSelector(
+        (state: iUsersConnected) => state)
+
+    const username = connectedUsers.name
 
     const handleLogout = () => {
         console.log("Logout clicked");
@@ -133,7 +138,9 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
 
                                 }}
                             >
-                                DG
+                                {/* DG */}
+                                {username.split(' ').map(n => n[0]).join('')}
+
                             </Avatar>
                         )}
                         {!isSidebarCollapsed && (
@@ -145,101 +152,112 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    Dave's Garage
+                                    {username}
                                 </Typography>
                             </Box>
                         )}
                     </Box>
                 </Box>
-            </Box>
 
-            <Box
-                sx={{
-                    padding: '10px',
-                    maxHeight: 'calc(100vh - 200px)',
-                    overflowY: 'auto',
-                    '&::-webkit-scrollbar': {
-                        width: '6px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                        background: 'rgba(0, 0, 0, 0.05)',
-                        borderRadius: '3px',
-                        margin: '8px',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        background: 'rgba(255, 112, 67, 0.3)',
-                        borderRadius: '3px',
-                        '&:hover': {
-                            background: 'rgba(255, 112, 67, 0.5)',
+                <Box
+                    sx={{
+                        padding: '10px',
+                        maxHeight: 'calc(100vh - 200px)',
+                        // overflowY: 'auto',
+                        '&::-webkit-scrollbar': {
+                            width: '6px',
                         },
-                    },
-                    scrollbarWidth: 'thin',
-                    scrollbarColor: 'rgba(255, 112, 67, 0.3) rgba(0, 0, 0, 0.05)',
-                }}
-            >
-                <List>
-                    {menuItems.map((item) => {
-                        const selected = isSelected(item.path);
-                        return (
-                            <ListItem
-                                onClick={() => handleItemClick(item.path)}
-                                key={item.text}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    borderRadius: '12px',
-                                    padding: '0px 16px 0px 16px',
-                                    mb: 1,
-                                    height: '44px',
-                                    cursor: 'pointer',
-                                    bgcolor: selected ? 'rgba(255, 112, 67, 0.1)' : 'transparent',
-                                    color: selected ? '#FF7043' : 'inherit',
-                                    '&:hover': {
-                                        bgcolor: 'rgba(255, 112, 67, 0.1)',
-                                    },
-                                }}
-                            >
-                                <ListItemIcon
+                        '&::-webkit-scrollbar-track': {
+                            background: 'rgba(0, 0, 0, 0.05)',
+                            borderRadius: '3px',
+                            margin: '8px',
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            background: 'rgba(255, 112, 67, 0.3)',
+                            borderRadius: '3px',
+                            '&:hover': {
+                                background: 'rgba(255, 112, 67, 0.5)',
+                            },
+                        },
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: 'rgba(255, 112, 67, 0.3) rgba(0, 0, 0, 0.05)',
+                    }}
+                >
+                    <List>
+                        {menuItems.map((item) => {
+                            const selected = isSelected(item.path);
+                            return (
+                                <ListItem
+                                    onClick={() => handleItemClick(item.path)}
+                                    key={item.text}
                                     sx={{
-                                        minWidth: 36,
-                                        width: "36px",
-                                        color: selected ? '#FF7043' : '#000000',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        borderRadius: '12px',
+                                        padding: '0px 16px 0px 16px',
+                                        mb: 1,
+                                        height: '44px',
+                                        cursor: 'pointer',
+                                        bgcolor: selected ? 'rgba(255, 112, 67, 0.1)' : 'transparent',
+                                        color: selected ? '#FF7043' : 'inherit',
+                                        '&:hover': {
+                                            bgcolor: 'rgba(255, 112, 67, 0.1)',
+                                        },
                                     }}
                                 >
-                                    {React.cloneElement(item.icon, {
-                                        stroke: selected ? '#FF7043' : '',
-                                        fill: selected ? '#FF7043' : '#000000'
-                                    })}
-                                </ListItemIcon>
-                                {!isSidebarCollapsed && (
-                                    <ListItemText
-                                        primary={item.text}
+                                    <ListItemIcon
                                         sx={{
-                                            '& .MuiTypography-root': {
-                                                fontSize: '14px',
-                                                fontWeight: 500,
-                                                color: selected ? '#FF7043' : 'inherit',
-                                            },
+                                            minWidth: 36,
+                                            width: "36px",
+                                            color: selected ? '#FF7043' : '#000000',
                                         }}
-                                    />
-                                )}
-                            </ListItem>
-                        );
-                    })}
-                </List>
+                                    >
+                                        {React.cloneElement(item.icon, {
+                                            stroke: selected ? '#FF7043' : '',
+                                            fill: selected ? '#FF7043' : '#000000'
+                                        })}
+                                    </ListItemIcon>
+                                    {!isSidebarCollapsed && (
+                                        <ListItemText
+                                            primary={item.text}
+                                            sx={{
+                                                '& .MuiTypography-root': {
+                                                    fontSize: '14px',
+                                                    fontWeight: 500,
+                                                    color: selected ? '#FF7043' : 'inherit',
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                </ListItem>
+                            );
+                        })}
+                    </List>
+                </Box>
+
+                <Box sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1,
+                    p: 2
+                }}>
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={handleLogout}
+                        sx={{ width: '100%' }}
+                    >
+                        <LogOutIcon />
+                        <Box sx={{ marginLeft: '8px' }}>Log Out</Box>
+                    </Button>
+                </Box>
             </Box>
 
-            <Box sx={{ padding: '16px', textAlign: 'center' }}>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={handleLogout}
-                    sx={{ width: '100%' }}
-                >
-                    <LogOutIcon />
-                    <Box sx={{ marginLeft: '8px' }}>Log Out</Box>
-                </Button>
-            </Box>
+
+
+
         </Drawer>
     );
 };
