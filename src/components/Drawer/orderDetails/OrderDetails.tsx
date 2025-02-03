@@ -1,5 +1,7 @@
-import { Box, Typography, Avatar, Chip } from '@mui/material';
+import { Box, Typography, Avatar, Chip, Alert, IconButton } from '@mui/material';
 import CalendarIcon from '../../Icones/calendarIcon';
+import { useEffect, useState } from 'react';
+import { Close } from '@mui/icons-material';
 
 export interface OrderDetailsInterface {
     id: number;
@@ -15,11 +17,68 @@ export interface OrderDetailsInterface {
     total: string;
 }
 
+
+
 const OrderDetails = ({ order }: { order: OrderDetailsInterface }) => {
+    const [OrderData, setOrderData] = useState<OrderDetailsInterface>();
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+
+    useEffect(() => {
+        return setOrderData(order);
+    }, []);
+
+    console.log("OrderData========", OrderData);
+
+
+    const handleCloseMessage = () => {
+        setErrorMessage('');
+        setSuccessMessage('');
+    };
+
     return (
         <Box >
 
+            <>
+                {successMessage && (
+                    <Alert
+                        severity="success"
+                        sx={{ mb: 2 }}
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={handleCloseMessage}
+                            >
+                                <Close fontSize="inherit" />
+                            </IconButton>
+                        }
+                    >
+                        {successMessage}
+                    </Alert>
+                )}
 
+                {errorMessage && (
+                    <Alert
+                        severity="error"
+                        sx={{ mb: 2 }}
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={handleCloseMessage}
+                            >
+                                <Close fontSize="inherit" />
+                            </IconButton>
+                        }
+                    >
+                        {errorMessage}
+                    </Alert>
+                )}
+            </>
             {/* Header with User Info */}
             <Box sx={{ display: 'flex', alignItems: "center", gap: 1.5, mb: 4, justifyContent: 'space-between' }}>
                 <Box sx={{

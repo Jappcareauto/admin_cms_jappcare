@@ -239,7 +239,7 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
                     fullWidth
                     label="Percentage Commission"
                     name="percentageCommission"
-                    placeholder="[ercentage Commission"
+                    placeholder="Percentage Commission"
                     value={formData.percentageCommission}
                     onChange={handleChange}
                     variant="outlined"

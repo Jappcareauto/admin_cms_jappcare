@@ -1,3 +1,3 @@
-// import { Product, OrderDetails } from './Interfaces';
+import { Product } from './Interfaces';
 
-// export type { Product, OrderDetails } 
+export type { Product } 

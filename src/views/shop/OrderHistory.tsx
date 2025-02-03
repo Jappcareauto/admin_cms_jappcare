@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Card,
@@ -8,6 +8,8 @@ import {
     Avatar,
     Chip,
     IconButton,
+    Alert,
+    CircularProgress,
 } from '@mui/material';
 import ShopIcon from '../../components/Icones/ShopIcon';
 import { styled } from '@mui/material/styles';
@@ -16,6 +18,11 @@ import TrashIcon from '../../components/Icones/TrashIcon';
 import ArrowRight from '../../components/Icones/ArrowRight';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import OrderDetails, { OrderDetailsInterface } from '../../components/Drawer/orderDetails/OrderDetails';
+import { JC_Services } from '../../services';
+import { iUsersConnected } from '../../interfaces/UsersInterface';
+import { useSelector } from 'react-redux';
+import { Close } from '@mui/icons-material';
+import { OrderInterface } from '../../interfaces/Interfaces';
 
 const StyledCard = styled(Card)(() => ({
     borderRadius: 16,
@@ -183,12 +190,20 @@ const OrderHistory = () => {
     // const [isNewProductsDrawerOpen, setisNewProductsDrawerOpen] = useState(false);
     const [isOrderDetailsDrawerOpen, setisOrderDetailsDrawerOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<OrderDetailsInterface | null>(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [orderData, setOrders] = useState<OrderInterface[]>([]);
 
 
     // const handleOrderClick = (order: OrderDetailsInterface) => {
     //     setSelectedOrder(order);
     //     setisProductDetailsDrawerOpen(true);
     // };
+
+    const connectedUsers: iUsersConnected = useSelector(
+        (state: iUsersConnected) => state)
+
+    console.log("orderData", orderData);
 
     const handleOrderClick = (orderId: number) => {
         const orderDetails = extendedOrders.find(order => order.id === orderId);
@@ -202,6 +217,36 @@ const OrderHistory = () => {
         setisOrderDetailsDrawerOpen(false);
         setSelectedOrder(null);
     };
+
+    const fetchProductData = async () => {
+        setLoading(true);
+        try {
+
+            const response = await JC_Services('JAPPCARE', `order/list`, 'GET', "", connectedUsers.accessToken);
+            console.log("resp====", response);
+            if (response && response.status === 200) {
+                setOrders(response.body);
+            } else if (response && response.status === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchProductData();
+    }, []);
+
+    const handleCloseMessage = () => {
+        setErrorMessage('');
+    };
+
 
     return (
         <Box sx={{ p: 3, minHeight: '100vh' }}>
@@ -245,6 +290,25 @@ const OrderHistory = () => {
                     }}
                 />
             </Box>
+
+            {errorMessage && (
+                <Alert
+                    severity="error"
+                    sx={{ mb: 2 }}
+                    action={
+                        <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={handleCloseMessage}
+                        >
+                            <Close fontSize="inherit" />
+                        </IconButton>
+                    }
+                >
+                    {errorMessage}
+                </Alert>
+            )}
             <Grid container spacing={3} sx={{ mb: 3 }}>
                 <Grid item xs={12} md={3}>
                     <StyledCard>
@@ -283,142 +347,150 @@ const OrderHistory = () => {
             </Grid>
 
             {/* Orders Section */}
-            <Box sx={{ mt: 3 }}>
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+
+                <Box sx={{ mt: 3 }}>
 
 
-                {/* Orders List Card */}
+                    {/* Orders List Card */}
 
-                {orders.map((order) => (
-                    <Box
-                        key={order.id}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            p: 1,
-                            borderBottom: '1px solid #E4E4E4',
-                            '&:last-child': { borderBottom: 'none' }
-                        }}
-                    >
-                        {/* User Section */}
-                        <Box sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2,
-                            width: '200px', // Fixed width for user section
-                        }}>
-                            <Avatar sx={{
-                                width: 48,
-                                height: 48,
-                                bgcolor: '#1A1D1F',
-                                fontSize: '16px',
-                                fontWeight: 600,
-                                color: '#FF7A00',
-                                border: '2px solid #FF7A00',
-                                boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
-
-                            }}>
-                                SM
-                            </Avatar>
-                            <Typography sx={{
-                                fontWeight: 500,
-                                color: 'text.primary',
-                                fontSize: '0.938rem'
-                            }}>
-                                {order.user}
-                            </Typography>
-                        </Box>
-
-                        {/* Item Section */}
-                        <Typography sx={{
-
-                            color: 'text.primary',
-                            fontSize: '0.875rem',
-                            flex: 1,
-                            pl: 2
-                        }}>
-                            {order.item}
-                        </Typography>
-
-                        <Typography sx={{
-                            color: '#FF7A00',
-                            fontWeight: 500,
-                            fontSize: '0.938rem',
-                            flex: 1,
-                            pl: 2,
-                            textAlign: 'left'
-                        }}>
-                            {order.price}
-                        </Typography>
-
-                        <Typography sx={{
-                            color: 'text.secondary',
-                            fontSize: '0.938rem',
-                            flex: 1,
-                            // pl: 2,
-                            textAlign: 'center',
-                            alignItems: 'center',
-                            display: 'flex',
-                        }}>
-                            <Box sx={{ width: 150, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <CalendarIcon stroke='#777777' fill='' />
-                                {order.date}
-                            </Box>
-                        </Typography>
-
-
-                        <Chip
-                            label={order.status}
-                            size="small"
+                    {orders.map((order) => (
+                        <Box
+                            key={order.id}
                             sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                p: 1,
+                                borderBottom: '1px solid #E4E4E4',
+                                '&:last-child': { borderBottom: 'none' }
+                            }}
+                        >
+                            {/* User Section */}
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                                width: '200px', // Fixed width for user section
+                            }}>
+                                <Avatar sx={{
+                                    width: 48,
+                                    height: 48,
+                                    bgcolor: '#1A1D1F',
+                                    fontSize: '16px',
+                                    fontWeight: 600,
+                                    color: '#FF7A00',
+                                    border: '2px solid #FF7A00',
+                                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
+
+                                }}>
+                                    SM
+                                </Avatar>
+                                <Typography sx={{
+                                    fontWeight: 500,
+                                    color: 'text.primary',
+                                    fontSize: '0.938rem'
+                                }}>
+                                    {order.user}
+                                </Typography>
+                            </Box>
+
+                            {/* Item Section */}
+                            <Typography sx={{
+
+                                color: 'text.primary',
+                                fontSize: '0.875rem',
+                                flex: 1,
+                                pl: 2
+                            }}>
+                                {order.item}
+                            </Typography>
+
+                            <Typography sx={{
+                                color: '#FF7A00',
+                                fontWeight: 500,
+                                fontSize: '0.938rem',
                                 flex: 1,
                                 pl: 2,
-                                mr: 8,
-                                textAlign: 'left',
-                                padding: "12px 1px",
-                                borderRadius: '16px',
-                                bgcolor: "rgba(146, 143, 139, 0.1)",
-                                // minWidth: '100px',
-                                height: '34px',
-                                fontSize: '0.813rem',
-                                fontWeight: 500,
-                                '& .MuiChip-label': {
-                                    px: 2
-                                }
-                            }}
-                        />
+                                textAlign: 'left'
+                            }}>
+                                {order.price}
+                            </Typography>
 
-                        {/* Price and Actions Section */}
-                        <Box sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 3,
-                            ml: 'auto'
-                        }}>
+                            <Typography sx={{
+                                color: 'text.secondary',
+                                fontSize: '0.938rem',
+                                flex: 1,
+                                // pl: 2,
+                                textAlign: 'center',
+                                alignItems: 'center',
+                                display: 'flex',
+                            }}>
+                                <Box sx={{ width: 150, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <CalendarIcon stroke='#777777' fill='' />
+                                    {order.date}
+                                </Box>
+                            </Typography>
 
 
-                            <IconButton
+                            <Chip
+                                label={order.status}
                                 size="small"
                                 sx={{
-                                    color: 'text.secondary',
-                                    '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' }
+                                    flex: 1,
+                                    pl: 2,
+                                    mr: 8,
+                                    textAlign: 'left',
+                                    padding: "12px 1px",
+                                    borderRadius: '16px',
+                                    bgcolor: "rgba(146, 143, 139, 0.1)",
+                                    // minWidth: '100px',
+                                    height: '34px',
+                                    fontSize: '0.813rem',
+                                    fontWeight: 500,
+                                    '& .MuiChip-label': {
+                                        px: 2
+                                    }
                                 }}
-                            >
-                                <TrashIcon stroke='#141B34' fill='' />
-                            </IconButton>
-                            <IconButton
-                                sx={{
-                                    color: 'FF7A00',
-                                    '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' }
-                                }}
-                                onClick={() => handleOrderClick(order.id)}
-                            >
-                                <ArrowRight fill='#FF7A00' />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                ))}
+                            />
 
-            </Box>
+                            {/* Price and Actions Section */}
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 3,
+                                ml: 'auto'
+                            }}>
+
+
+                                <IconButton
+                                    size="small"
+                                    sx={{
+                                        color: 'text.secondary',
+                                        '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' }
+                                    }}
+                                >
+                                    <TrashIcon stroke='#141B34' fill='' />
+                                </IconButton>
+                                <IconButton
+                                    sx={{
+                                        color: 'FF7A00',
+                                        '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' }
+                                    }}
+                                    onClick={() => handleOrderClick(order.id)}
+                                >
+                                    <ArrowRight fill='#FF7A00' />
+                                </IconButton>
+                            </Box>
+                        </Box>
+                    ))}
+
+                </Box>
+            )}
+
 
             <CustomDrawer
                 open={isOrderDetailsDrawerOpen}
