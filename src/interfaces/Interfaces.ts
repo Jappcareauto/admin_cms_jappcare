@@ -65,6 +65,13 @@ export interface OrderInterface {
     date: string;
 }
 
+export interface ServiceData {
+    title: string;
+    description: string;
+    serviceCenterId: string;
+    definition: string;
+    id: string;
+}
 
 
 

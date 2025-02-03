@@ -55,11 +55,13 @@ const Accounts = () => {
     const [isServiceProviderDrawerOpen, setIsServiceProviderDrawerOpen] = useState(false);
     const [isServiceProviderFormDrawerOpen, setIsServiceProviderFormDrawerOpen] = useState(false);
 
+
     // Add these handlers inside the Dashboard component:
-    const handleNewUser = (data: any) => {
+    const handleNewUser = async (data: any) => {
         console.log('New service data:', data);
         setIsDrawerOpen(false);
         // Handle the new service data here
+
     };
     // const navigate = useNavigate();
     // Sample data
@@ -311,7 +313,7 @@ const Accounts = () => {
             <CustomDrawer
                 open={isServiceProviderFormDrawerOpen}
                 onClose={() => setIsServiceProviderFormDrawerOpen(false)}
-                title="New Service Provider"
+                title=" Service Provider Details"
             >
                 <ServiceProviderDetails
                     onSeeStatistics={() => console.log('Submitting')}

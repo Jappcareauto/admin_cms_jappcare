@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Card,
@@ -12,6 +12,7 @@ import {
     Stack,
     IconButton,
     Collapse,
+    Alert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { XAxis, ResponsiveContainer, AreaChart, YAxis, Tooltip, Area } from 'recharts';
@@ -25,6 +26,11 @@ import NewServiceForm from '../../components/Drawer/serviceForm/NewServiceForm';
 import ShopIcon from '../../components/Icones/ShopIcon';
 import AppointmentDetails from '../../components/Drawer/appointmentDetails/AppointmentDetails';
 import Images from '../../assets/Images/Images';
+import { JC_Services } from '../../services';
+import { iUsersConnected } from '../../interfaces/UsersInterface';
+import { useSelector } from 'react-redux';
+import { ServiceData } from '../../interfaces/Interfaces';
+import { Close } from '@mui/icons-material';
 
 // Sample data for the revenue chart
 const revenueData = [
@@ -97,12 +103,43 @@ const Dashboard = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isAppointmentDrawerOpen, setIsAppointmentDrawerOpen] = useState(false);
+    const [serviceData, setServiceData] = useState<ServiceData[]>([]);
+    const [errorMessage, setErrorMessage] = useState('');
 
+
+    const connectedUsers: iUsersConnected = useSelector((state: iUsersConnected) => state);
     // Add these handlers inside the Dashboard component:
     const handleNewService = (data: any) => {
         console.log('New service data:', data);
         setIsDrawerOpen(false);
         // Handle the new service data here
+    };
+
+    const fetchService = async () => {
+        try {
+
+            const response = await JC_Services('JAPPCARE', `service/list`, 'GET', "", connectedUsers.accessToken);
+            console.log("resp", response);
+            if (response && response.status === 200) {
+                setServiceData(response.body.data.slice(0, 2)); // Limit to 2 services
+            } else if (response && response.status === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('No Data Found');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+
+    };
+
+    useEffect(() => {
+        fetchService();
+    }, [])
+
+    const handleCloseMessage = () => {
+        setErrorMessage('');
     };
 
     const handleToggle = () => {
@@ -484,42 +521,60 @@ const Dashboard = () => {
                         </Grid>
                         {/* Services Section */}
                         <Box>
+
+                            {errorMessage && (
+                                <Alert
+                                    severity="error"
+                                    sx={{ mb: 2 }}
+                                    action={
+                                        <IconButton
+                                            aria-label="close"
+                                            color="inherit"
+                                            size="small"
+                                            onClick={handleCloseMessage}
+                                        >
+                                            <Close fontSize="inherit" />
+                                        </IconButton>
+                                    }
+                                >
+                                    {errorMessage}
+                                </Alert>
+                            )}
                             <Typography variant="h6" sx={{ mb: 2 }}>Services</Typography>
                             <Stack spacing={2}>
-                                <ServiceItem>
-                                    <Box>
-                                        <Typography variant="h6">Vehicle Reports</Typography>
-                                    </Box>
-                                    <Box component="img" src={Images.vehiclereport} alt="Vehicle Reports" sx={{ width: 200, height: 120 }} />
-                                </ServiceItem>
-
-                                <ServiceItem>
-                                    <Box>
-                                        <Typography variant="h6">GPS Locator</Typography>
-                                    </Box>
-                                    <Box component="img" src={Images.GPSLocator} alt="GPS Locator" sx={{ width: 200, height: 120 }} />
-                                </ServiceItem>
-
-                                <Box sx={{ mt: 2 }}>
-                                    <Button
-                                        variant="outlined"
-                                        className='w-fit rounded-full px-3'
-                                        onClick={() => setIsDrawerOpen(true)}
-                                        sx={{
-                                            color: 'black',
-                                            borderColor: 'black',
-                                            '&:hover': {
-                                                color: '#FF7A00',
-                                            },
-                                        }}
-
-
-                                    >
-                                        New service
-                                    </Button>
-                                </Box>
+                                {serviceData.map((service, index) => (
+                                    <ServiceItem key={service.id}>
+                                        <Box>
+                                            <Typography variant="h6">
+                                                {service.title}
+                                            </Typography>
+                                        </Box>
+                                        <Box
+                                            component="img"
+                                            src={index === 0 ? Images.vehiclereport : Images.GPSLocator}
+                                            alt={service.title}
+                                            sx={{ width: 200, height: 120 }}
+                                        />
+                                    </ServiceItem>
+                                ))}
                             </Stack>
+                            <Button
+                                variant="outlined"
+                                sx={{
+                                    borderRadius: 3,
+                                    mt: 2,
+                                    borderColor: 'grey.800',
+                                    color: 'text.primary',
+                                    px: 3,
+                                }}
+                                onClick={() => setIsDrawerOpen(true)}
+
+                            >
+                                New Service
+                            </Button>
                         </Box>
+
+
 
                         {/* Orders Section */}
                         <Box>
