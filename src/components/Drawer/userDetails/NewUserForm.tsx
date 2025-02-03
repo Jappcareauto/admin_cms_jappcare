@@ -8,7 +8,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
-import ImageIcon from '../../Icones/ImageIcon';
+import { JC_Services } from '../../../services';
+import { iUsersConnected } from '../../../interfaces/UsersInterface';
+import { useSelector } from 'react-redux';
+import { Close, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Alert, CircularProgress, MenuItem } from '@mui/material';
 
 interface NewUserFormProps {
     onSubmit: (data: any) => void;
@@ -21,14 +25,34 @@ declare global {
     }
 }
 
+const ROLES = [
+    "ROLE_ADMIN",
+    "ROLE_GARAGE_MANAGER",
+    "ROLE_SERVICE_MANAGER",
+    "ROLE_TECHNICIAN",
+    "ROLE_CUSTOMER",
+    "ROLE_RECEPTIONIST"
+];
+
 const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        homeAddress: '',
+        password: '',
         phoneNumber: '',
-        countryCode: '+237'
+        verified: true,
+        role: ''
     });
+
+    const connectedUsers: iUsersConnected = useSelector((state: iUsersConnected) => state);
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    console.log("submit", onSubmit);
+
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -38,9 +62,40 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
         }));
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        onSubmit(formData);
+        setLoading(true);
+        try {
+            const response = await JC_Services("JAPPCARE", "user/create", "POST", formData, connectedUsers.accessToken)
+            console.log("response", response);
+            console.log("formData", formData);
+
+            if (response && response.status === 200 || response.status === 201) {
+                setSuccessMessage("User created successfully");
+                setFormData({
+                    name: '',
+                    email: '',
+                    password: '',
+                    phoneNumber: '',
+                    verified: true,
+                    role: ''
+                })
+
+            } else if (response && response.status === 401) {
+                setErrorMessage(response.body.details || 'Unauthorized to perform action');
+
+            } else if (response && response.status === 409) {
+                setErrorMessage('This Data already exists');
+            }
+            else {
+                // Handle error
+                setErrorMessage(response.body.details || "An error occurred while creating user");
+            }
+        }
+        catch (error) {
+            setErrorMessage("An error occurred while creating user");
+        }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -73,12 +128,56 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
         }
     }, []);
 
+    const handleCloseMessage = () => {
+        setErrorMessage('');
+        setSuccessMessage('');
+    };
     return (
         <Box
             component="form"
             onSubmit={handleSubmit}
 
         >
+            {/* Success and Error Messages */}
+            <>
+                {successMessage && (
+                    <Alert
+                        severity="success"
+                        sx={{ mb: 2 }}
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={handleCloseMessage}
+                            >
+                                <Close fontSize="inherit" />
+                            </IconButton>
+                        }
+                    >
+                        {successMessage}
+                    </Alert>
+                )}
+
+                {errorMessage && (
+                    <Alert
+                        severity="error"
+                        sx={{ mb: 2 }}
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={handleCloseMessage}
+                            >
+                                <Close fontSize="inherit" />
+                            </IconButton>
+                        }
+                    >
+                        {errorMessage}
+                    </Alert>
+                )}
+            </>
             {/* User Details Header */}
 
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -144,20 +243,21 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                 {/* Home Address Field */}
                 <TextField
                     fullWidth
-                    label="Home Address"
-                    name="homeAddress"
-                    placeholder="Home Address"
-                    value={formData.homeAddress}
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
                     onChange={handleChange}
                     variant="outlined"
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
                                 <IconButton
-                                    onClick={() => setFormData(prev => ({ ...prev, homeAddress: '' }))}
+                                    onClick={handleClickShowPassword}
                                     edge="end"
                                 >
-                                    <ImageIcon />
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
                         ),
@@ -166,48 +266,37 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
 
                 {/* Phone Number Field */}
                 <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-                    <TextField
-                        sx={{ width: 120 }}
-                        label="Country Code"
-                        name="countryCode"
-                        placeholder="+237"
-                        type="phoneNumber"
-                        value={formData.countryCode}
-                        onChange={handleChange}
-                        variant="outlined"
-                    />
+
 
                     <TextField
                         fullWidth
                         // sx={{ pl: 1 }}
-                        label="Phone Number"
-                        name="phoneNumber"
+                        label="Role"
+                        name="role"
                         placeholder="Hint text"
-                        value={formData.phoneNumber}
+                        value={formData.role}
                         onChange={handleChange}
                         variant="outlined"
-                    // InputProps={{
-                    //     startAdornment: (
-                    //         <TextField
-                    //             select
-                    //             value={formData.countryCode}
-                    //             onChange={(e) => setFormData(prev => ({ ...prev, countryCode: e.target.value }))}
-                    //             sx={{
-                    //                 width: '80px',
-                    //                 mr: 1,
-                    //                 '& .MuiOutlinedInput-notchedOutline': {
-                    //                     border: 'none'
-                    //                 },
+                        select
+                        SelectProps={{
+                            MenuProps: {
+                                PaperProps: {
+                                    sx: {
+                                        bgcolor: 'white',
+                                        boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)'
+                                    }
+                                }
+                            }
+                        }}
 
-                    //             }}
-                    //         >
-                    //             <MenuItem value="+237">+237</MenuItem>
-                    //             <MenuItem value="+1">+1</MenuItem>
-                    //             <MenuItem value="+44">+44</MenuItem>
-                    //         </TextField>
-                    //     ),
-                    // }}
-                    />
+                    >
+                        <MenuItem value="" disabled selected>Select Role</MenuItem>
+                        {ROLES.map((role) => (
+                            <MenuItem key={role} value={role} sx={{ bgcolor: "white" }}>
+                                {role.replace("ROLE_", "").replace(/_/g, " ")} {/* Formats text */}
+                            </MenuItem>
+                        ))}
+                    </TextField>
                 </Box>
 
 
@@ -265,26 +354,35 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                     </Box>
                 </Box>
 
+                <Box sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1,
+                    p: 2
+                }}>
+                    {/* Submit Button */}
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        type="submit"
+                        sx={{
+                            bgcolor: 'black',
+                            color: 'white',
+                            py: 1.5,
+                            textTransform: 'none',
+                            borderRadius: 1,
+                            mt: 1,
+                            '&:hover': {
+                                bgcolor: '#333'
+                            }
+                        }}
+                    >
+                        {loading ? <CircularProgress size={24} /> : 'Create User'}
+                    </Button>
+                </Box>
 
-                {/* Submit Button */}
-                <Button
-                    fullWidth
-                    variant="contained"
-                    type="submit"
-                    sx={{
-                        bgcolor: 'black',
-                        color: 'white',
-                        py: 1.5,
-                        textTransform: 'none',
-                        borderRadius: 1,
-                        mt: 1,
-                        '&:hover': {
-                            bgcolor: '#333'
-                        }
-                    }}
-                >
-                    Create User
-                </Button>
             </Stack>
         </Box>
     );
