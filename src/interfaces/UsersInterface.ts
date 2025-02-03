@@ -22,6 +22,12 @@ export interface iUsersConnected {
             ]
         }
     ]
+    name: string,
+    email: string,
+    verified: boolean,
+    profileImageId: string,
+    profileImageUrl: string,
+    id: string,
 
 }
 

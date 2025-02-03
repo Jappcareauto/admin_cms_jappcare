@@ -17,6 +17,7 @@ import { iUsersAction, iUsersConnected } from '../../interfaces/UsersInterface';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
 import { JC_Services } from '../../services';
+import { useSelector } from 'react-redux';
 
 
 const Login = () => {
@@ -29,10 +30,10 @@ const Login = () => {
 
     const navigate = useNavigate();
     const dispatch: Dispatch<any> = useDispatch();
-    // const connectedUsers: iUsersConnected = useSelector(
-    //     (state: iUsersConnected) => state)
+    const connectedUsers: iUsersConnected = useSelector(
+        (state: iUsersConnected) => state)
 
-    // console.log("connectedUsers", connectedUsers);
+    console.log("connectedUsers", connectedUsers);
 
     // console.log("credentials", credentials);
 
@@ -48,24 +49,51 @@ const Login = () => {
             console.log("res", response);
 
             if (response && response.status === 200) {
-
-                const users: iUsersConnected = response.body.data;
+                const users: iUsersConnected = response.body;
 
                 const action: iUsersAction = {
                     type: "LOGIN",
                     users: users
                 }
                 dispatch(action);
-                // Successful login, navigate to dashboard or perform other actions
+
+                // After dispatching the login action, get the token from the store
+                try {
+                    // Assuming the token is stored in the users object
+                    const token = users.accessToken; // adjust this based on your actual structure
+                    const userInfoResponse = await JC_Services("JAPPCARE", 'user/logged-in', 'GET', "", token);
+                    console.log("userInfoResponse", userInfoResponse);
+                    console.log("token==========", token);
+
+                    if (userInfoResponse && userInfoResponse.status === 200) {
+                        // Update the store with additional user info
+                        const updatedUsers: iUsersConnected = {
+                            ...users,
+                            ...userInfoResponse.body,
+                            accessTokenExpiry: Number(response.body.accessTokenExpiry),
+                            refreshTokenExpiry: Number(response.body.refreshTokenExpiry)
+                        };
+
+                        const updateAction: iUsersAction = {
+                            type: "LOGIN",
+                            users: updatedUsers
+                        }
+                        dispatch(updateAction);
+                    } else {
+                        console.error('Failed to fetch user info:', userInfoResponse);
+                    }
+                } catch (userInfoError) {
+                    console.error('Error fetching user info:', userInfoError);
+                }
+
+                // Navigate and set messages after attempting to fetch user info
                 navigate('/dashboard');
                 setSuccessMessage('Login successful!');
                 setErrorMessage('');
             } else if (response && response.status === 401) {
                 // Invalid credentials, handle error (display message, etc.)
                 setErrorMessage('Invalid email or password');
-            }
-
-            else {
+            } else {
                 // Login failed, handle error (display message, etc.)
                 setErrorMessage(response.body.details);
                 setSuccessMessage('');
@@ -73,7 +101,6 @@ const Login = () => {
             }
         } catch (error) {
             setErrorMessage('An error occurred during login. Try again later.');
-
             console.error('Error:', error);
         }
         setLoading(false);

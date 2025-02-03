@@ -6,6 +6,12 @@ const initialState: iUsersConnected = {
     accessToken: '',
     refreshToken: '',
     isAuthenticated: false,
+    name: '',
+    email: '',
+    verified: false,
+    profileImageId: '',
+    profileImageUrl: '',
+    id: '',
     authorities: [
         {
             userId: '',
@@ -40,8 +46,14 @@ const users = (state: iUsersConnected = initialState, action: iUsersAction): iUs
                 isAuthenticated: true
             };
 
-
             return nextstate || state;
+
+        //    case "UPDATE-USER":
+        //         nextstate = {
+        //             ...state,
+        //             ...action.users,
+        //             isAuthenticated: true
+        //         };
 
         case "LOGOUT":
             return initialState;
