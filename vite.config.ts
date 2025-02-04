@@ -7,6 +7,6 @@ export default defineConfig({
   // server: {
   //   host: 'ec2-3-138-123-2.us-east-2.compute.amazonaws.com',
   //   strictPort: true,
-  //   port: 5173 // You can change this to your desired port
+  //   port: 5174 // You can change this to your desired port
   // }
 })
