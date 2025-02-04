@@ -483,14 +483,16 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
             </Box>
 
             {/* Submit Button */}
-            <Box sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1,
-                p: 2
-            }}>
+            <Box
+            // sx={{
+            //     position: 'absolute',
+            //     bottom: 0,
+            //     left: 0,
+            //     right: 0,
+            //     zIndex: 1,
+            //     p: 2
+            // }}
+            >
                 <Button
                     fullWidth
                     variant="contained"
