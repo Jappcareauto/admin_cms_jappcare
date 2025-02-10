@@ -92,6 +92,8 @@ const Payments = () => {
     const [errorMessage, setErrorMessage] = useState('');
     // const navigate = useNavigate();
     console.log("errorMessage", errorMessage);
+    console.log("loading", loading);
+    console.log("payments", payments);
 
 
     const connectedUsers: iUsersConnected = useSelector(
