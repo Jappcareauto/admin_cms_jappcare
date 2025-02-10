@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
-import Stack from '@mui/material/Stack';
+// import Stack from '@mui/material/Stack';
 import Images from '../../../assets/Images/Images';
 import { Product } from '../../../interfaces';
 import { JC_Services } from '../../../services';
@@ -143,7 +143,7 @@ const ProductDetails = ({ product, onEdit }: ProductDetailsProps) => {
                                     fontWeight: 500
                                 }}
                             >
-                                {product.price}
+                                {product.price.amount}
                             </Typography>
                             {product.rating && (
                                 <Box sx={{
@@ -202,7 +202,7 @@ const ProductDetails = ({ product, onEdit }: ProductDetailsProps) => {
                     </Box>
 
                     {/* Reviews */}
-                    {product.reviews && product.reviews.length > 0 && (
+                    {/* {product.reviews && product.reviews.length > 0 && (
                         <Stack spacing={2} sx={{ mb: 3 }}>
                             <Typography variant="subtitle1">Reviews</Typography>
                             {product.reviews.map((review, index) => (
@@ -232,7 +232,7 @@ const ProductDetails = ({ product, onEdit }: ProductDetailsProps) => {
                                 </Box>
                             ))}
                         </Stack>
-                    )}
+                    )} */}
                 </>
             )
             }
