@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -12,6 +12,9 @@ import {
 import WalletIcon from '../../components/Icones/WalletIcon';
 import UpwardArrowIcon from '../../components/Icones/UpwardArrowIcon';
 import DownwardArrowIcon from '../../components/Icones/DownwardArrowIcon';
+import { JC_Services } from '../../services';
+import { iUsersConnected } from '../../interfaces/UsersInterface';
+import { useSelector } from 'react-redux';
 
 // Interfaces
 interface Transaction {
@@ -83,7 +86,22 @@ const StyledCard = styled(Card)<StyledCardProps>(({ theme, bgcolor }) => ({
 const Payments = () => {
     const [activeFilter, setActiveFilter] = useState('All');
     const [activeMethodFilter, setActiveMethodFilter] = useState('All');
+    const [loading, setLoading] = useState(false);
+    const [payments, setPayments] = useState<Transaction[]>([]);
+    // const [filteredPayments, setFilteredPayments] = useState<iPayments[]>([]);
+    const [errorMessage, setErrorMessage] = useState('');
     // const navigate = useNavigate();
+    console.log("errorMessage", errorMessage);
+    console.log("loading", loading);
+    console.log("payments", payments);
+
+
+    const connectedUsers: iUsersConnected = useSelector(
+        (state: iUsersConnected) => state)
+
+    // console.log("userconnected", connectedUsers);
+    const token = connectedUsers.accessToken
+
     // Sample data
     const transactions: Transaction[] = [
         {
@@ -140,6 +158,32 @@ const Payments = () => {
             type: 'Withdrawal'
         }
     ];
+
+    const fetchPayments = async () => {
+        setLoading(true);
+        try {
+
+            const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", token);
+            console.log("fecthnotifresp", response);
+            if (response && response.status === 200) {
+                // setSuccessMessage('Successful!');
+                setPayments(response.body);
+            } else if (response && response.status === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchPayments();
+    }, []);
 
 
     return (
