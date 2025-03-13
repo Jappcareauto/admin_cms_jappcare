@@ -91,7 +91,15 @@ export interface ServiceData {
     id: string;
 }
 
-
+export interface Chatroom {
+    id: string;
+    name: string;
+    participantIds: string[];
+    createdBy: string | null;
+    updatedBy: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
 
 
 

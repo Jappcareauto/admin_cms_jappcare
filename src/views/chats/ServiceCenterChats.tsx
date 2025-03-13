@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -9,14 +9,16 @@ import {
     ListItemAvatar,
     ListItemText,
     styled,
-
+    CircularProgress
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
+import { JC_Services } from '../../services';
+import { iUsersConnected } from '../../interfaces/UsersInterface';
+import { useSelector } from 'react-redux';
+import { Chatroom } from '../../interfaces/Interfaces';
 
-
-
-// Styled Components (previous styled components remain the same)
+// Styled Components
 const SearchInput = styled(InputBase)(() => ({
     backgroundColor: '#FFEDE6',
     borderRadius: 28,
@@ -36,36 +38,79 @@ const ServiceItem = styled(ListItem)(() => ({
     }
 }));
 
-
-export interface Service {
-    id: string;
-    name: string;
-    initials: string;
-}
-
-
+// Interface for Chatroom data from API
 
 
 const ServiceCenterChats = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [chatrooms, setChatrooms] = useState<Chatroom[]>([]); // Initialize as empty array
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const [services] = useState<Service[]>([
-        { id: 'DA', name: "Dave's Autoshop", initials: 'DA' },
-        { id: 'AC', name: 'AutoCare Plus BodyShop', initials: 'DA' },
-        { id: 'SL', name: 'Speedy Lube', initials: 'SL' },
-        { id: 'MM', name: 'Mega Motors', initials: 'MM' },
-        { id: 'WW', name: 'Wheel Wizards', initials: 'WW' },
-        { id: 'GG', name: 'Gearheads Garage', initials: 'GG' },
-        { id: 'PS', name: 'Pit Stop Pro', initials: 'PS' },
-        { id: 'TT', name: 'Turbo Tune-Up', initials: 'TT' },
-        { id: 'RR', name: 'Rev it Right', initials: 'RR' },
-    ]);
+    const connectedUsers: iUsersConnected = useSelector(
+        (state: iUsersConnected) => state)
 
-    const handleServiceCenterChats = (row: Service) => {
-        navigate(`/chats/${row.id}`, { state: { chatsData: row } });
-        console.log("row,", row);
-    }
+    const token = connectedUsers.accessToken;
+    const userId = connectedUsers.id;
 
+    const fetchChatrooms = async () => {
+        setLoading(true);
+        try {
+            const response = await JC_Services('JAPPCARE', `chatroom/user/${userId}`, 'GET', "", token);
+            console.log("fetchChatroomResponse", response);
+            if (response && response.status === 200) {
+                // Make sure data is an array before setting state
+                const chatroomsData = response?.body || [];
+                if (Array.isArray(chatroomsData)) {
+                    setChatrooms(chatroomsData);
+                } else {
+                    console.error("API did not return an array", chatroomsData);
+                    setErrorMessage('Invalid response format from server');
+                    setChatrooms([]); // Reset to empty array
+                }
+            } else if (response && response.status === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+                setChatrooms([]); // Reset to empty array
+            } else {
+                setErrorMessage('Error fetching chatrooms');
+                setChatrooms([]); // Reset to empty array
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+            setChatrooms([]); // Reset to empty array
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchChatrooms();
+    }, []);
+
+    const handleServiceCenterChats = (chatroom: Chatroom) => {
+        navigate(`/chats/${chatroom.id}`, { state: { chatsData: chatroom } });
+    };
+
+    // Function to get initials from service center name
+    const getInitials = (name: string): string => {
+        if (!name) return 'SC'; // Default initials if name is empty
+
+        // Split by spaces and get first letter of each word, maximum 2 letters
+        const words = name.split(' ');
+        if (words.length === 1) {
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        return (words[0][0] + words[1][0]).toUpperCase();
+    };
+
+    // Safely filter chatrooms
+    const filteredChatrooms = chatrooms && Array.isArray(chatrooms)
+        ? chatrooms.filter(chatroom =>
+            chatroom.name && chatroom.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        : [];
 
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -79,36 +124,57 @@ const ServiceCenterChats = () => {
                     <SearchInput
                         placeholder="Search"
                         startAdornment={<SearchIcon sx={{ color: '#666', mr: 1 }} />}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </Box>
 
-                <List sx={{ p: 0 }}>
-                    {services.map((service) => (
-                        <ServiceItem key={service.id}
-                            onClick={() => handleServiceCenterChats(service)}>
-                            <ListItemAvatar>
-                                <Avatar
-                                    sx={{
-                                        bgcolor: '#1A1D1F',
-                                        color: '#FF7A00',
-                                        border: '2px solid #FF7A00',
-                                        width: 48,
-                                        height: 48,
-                                        fontSize: 16,
-                                        fontWeight: 600,
-                                        boxShadow: 'inset 0 0 0 1px rgb(247, 249, 250)',
-                                    }}
+                {loading ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                        <CircularProgress color="inherit" />
+                    </Box>
+                ) : errorMessage ? (
+                    <Typography color="error" sx={{ mt: 2 }}>
+                        {errorMessage}
+                    </Typography>
+                ) : (
+                    <List sx={{ p: 0 }}>
+                        {filteredChatrooms.length > 0 ? (
+                            filteredChatrooms.map((chatroom) => (
+                                <ServiceItem
+                                    key={chatroom.id}
+                                    onClick={() => handleServiceCenterChats(chatroom)}
                                 >
-                                    {service.initials}
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={service.name} />
-                        </ServiceItem>
-                    ))}
-                </List>
+                                    <ListItemAvatar>
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: '#1A1D1F',
+                                                color: '#FF7A00',
+                                                border: '2px solid #FF7A00',
+                                                width: 48,
+                                                height: 48,
+                                                fontSize: 16,
+                                                fontWeight: 600,
+                                                boxShadow: 'inset 0 0 0 1px rgb(247, 249, 250)',
+                                            }}
+                                        >
+                                            {getInitials(chatroom.name || '')}
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={chatroom.name || 'Unnamed Service Center'}
+                                        secondary={chatroom.updatedAt ? new Date(chatroom.updatedAt).toLocaleDateString() : 'No date'}
+                                    />
+                                </ServiceItem>
+                            ))
+                        ) : (
+                            <Typography sx={{ mt: 2, textAlign: 'center' }}>
+                                No chatrooms found
+                            </Typography>
+                        )}
+                    </List>
+                )}
             </Box>
-
-
         </Box>
     );
 };

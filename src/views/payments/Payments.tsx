@@ -162,16 +162,16 @@ const Payments = () => {
     const fetchPayments = async () => {
         setLoading(true);
         try {
-
-            const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", token);
+            const response = await JC_Services('JAPPCARE', `payment/list`, 'GET', "", token);
             console.log("fecthnotifresp", response);
             if (response && response.status === 200) {
                 // setSuccessMessage('Successful!');
-                setPayments(response.body);
+                setPayments(response.body.data);
             } else if (response && response.status === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
-                setErrorMessage('');
+                setErrorMessage('Error fetching payments');
+
             }
         } catch (error) {
             console.error("Error:", error);

@@ -29,8 +29,8 @@ import Picker from '@emoji-mart/react';
 import { TimerRef } from './types';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import LocationIcon from '../../components/Icones/LocationIcon';
-import { Service } from './ServiceCenterChats';
 import { ArrowBack, Star } from '@mui/icons-material';
+import { Chatroom } from '../../interfaces/Interfaces';
 
 
 
@@ -113,16 +113,88 @@ const Chats = () => {
     console.log("audio", audioURL);
     console.log("id", id);
 
-    const [services] = useState<Service[]>([
-        { id: '1', name: "Sara", initials: 'S' },
-        { id: '2', name: 'James', initials: 'J' },
-        { id: '3', name: 'Liz', initials: 'L' },
-        { id: '4', name: 'Clo', initials: 'C' },
-        { id: '5', name: 'Love', initials: 'L' },
-        { id: '6', name: 'Odilon', initials: 'O' },
-        { id: '7', name: 'Love', initials: 'L' },
-        { id: '8', name: 'Mike', initials: 'M' },
-        { id: '9', name: 'Collabo', initials: 'C' },
+    const [services] = useState<Chatroom[]>([
+        {
+            id: '1',
+            name: "Sara",
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '2',
+            name: 'James',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '3',
+            name: 'Liz',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '4',
+            name: 'Clo',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '5',
+            name: 'Love',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '6',
+            name: 'Odilon',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '7',
+            name: 'Love',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '8',
+            name: 'Mike',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
+        {
+            id: '9',
+            name: 'Collabo',
+            participantIds: [],
+            createdBy: null,
+            updatedBy: null,
+            createdAt: '',
+            updatedAt: ''
+        },
     ]);
 
     const scrollToBottom = () => {
@@ -330,7 +402,7 @@ const Chats = () => {
     };
 
 
-    const [initialValues, setInitialValues] = useState<Service>();
+    const [initialValues, setInitialValues] = useState<Chatroom>();
     const [activeStatus, setActiveStatus] = useState('All');
 
 
@@ -488,7 +560,7 @@ const Chats = () => {
                                         boxShadow: 'inset 0 0 0 1px rgb(247, 249, 250)',
                                     }}
                                 >
-                                    {service.initials}
+                                    {service.name?.charAt(0)}
                                 </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary={service.name} />
