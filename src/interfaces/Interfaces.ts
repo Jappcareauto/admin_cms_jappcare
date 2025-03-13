@@ -1,16 +1,34 @@
 export interface Product {
-    id: number;
+    // Original mock data properties
+    id: string;
     name: string;
-    price: string;
-    image: string;
-    rating?: number;
-    description?: string;
-    reviews?: Array<{
-        rating: number;
-        comment: string;
-        user: string;
-        date: string;
-    }>;
+    category: string;
+    rating: number;
+    reviews: string;
+    price: {
+        amount: number;
+        currency: string;
+    };
+    image?: string;
+    description: string;
+    stockQuantity: number;
+    active: boolean;
+    media: {
+        id: string;
+        type: string;
+        source: string;
+        items: Array<{
+            sourceUrl: string;
+            capturedUrl: string;
+            type: string;
+            mediaId: string | null;
+            fileId: string | null;
+            fileUrl: string | null;
+            id: string;
+
+        }>;
+    };
+
 }
 
 
@@ -73,7 +91,15 @@ export interface ServiceData {
     id: string;
 }
 
-
+export interface Chatroom {
+    id: string;
+    name: string;
+    participantIds: string[];
+    createdBy: string | null;
+    updatedBy: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
 
 
 

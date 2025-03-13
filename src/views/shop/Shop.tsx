@@ -20,7 +20,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
 import NotifIcon from '../../components/Icones/NotifIcon';
 import ShopIcon from '../../components/Icones/ShopIcon';
-import image9 from '../../assets/image 9.png'
 import image10 from '../../assets/image 10.png'
 import image11 from '../../assets/image 11.png'
 import image12 from '../../assets/image 12.png'
@@ -50,72 +49,72 @@ const revenueData = [
 
 
 // Sample product data
-const products: Product[] = [
-    {
-        id: 1,
-        name: 'Porsche 911 Matrix LED Headlights',
-        price: '5,000 Frs',
-        image: image10,
-        rating: 4.5,
-        description: 'High-performance LED headlights designed specifically for the Porsche 911, providing superior illumination and modern styling.',
-        reviews: [
-            {
-                rating: 4,
-                comment: 'Excellent quality and perfect fit for my 911!',
-                user: 'Michael',
-                date: 'Yesterday'
-            }
-        ]
-    },
-    {
-        id: 2,
-        name: 'BMW M5 Turbocharged V8 Engine',
-        price: '6,000 Frs',
-        image: image9,
-        rating: 4.8,
-        description: 'High-performance V8 engine for BMW M5, delivering exceptional power and reliability.',
-        reviews: [
-            {
-                rating: 5,
-                comment: 'Amazing performance upgrade, totally worth it!',
-                user: 'Sarah',
-                date: '2 days ago'
-            }
-        ]
-    },
-    {
-        id: 3,
-        name: 'Lamborghini Urus V10 Front Bumper',
-        price: '7,000 Frs',
-        image: image11,
-        rating: 4.7,
-        description: 'Original Lamborghini Urus front bumper, perfect for replacements or upgrades.',
-        reviews: [
-            {
-                rating: 4,
-                comment: 'Perfect fit and great quality materials.',
-                user: 'David',
-                date: 'Last week'
-            }
-        ]
-    },
-    {
-        id: 4,
-        name: 'Porsche Macan Headlights',
-        price: '10,000 Frs',
-        image: image12,
-        rating: 4.6,
-        description: 'Premium quality headlights for Porsche Macan, featuring advanced LED technology.',
-        reviews: [
-            {
-                rating: 5,
-                comment: 'These headlights transformed the look of my Macan!',
-                user: 'Emma',
-                date: '3 days ago'
-            }
-        ]
-    },
-];
+// const products: Product[] = [
+//     {
+//         id: 1,
+//         name: 'Porsche 911 Matrix LED Headlights',
+//         price: '5,000 Frs',
+//         image: image10,
+//         rating: 4.5,
+//         description: 'High-performance LED headlights designed specifically for the Porsche 911, providing superior illumination and modern styling.',
+//         reviews: [
+//             {
+//                 rating: 4,
+//                 comment: 'Excellent quality and perfect fit for my 911!',
+//                 user: 'Michael',
+//                 date: 'Yesterday'
+//             }
+//         ]
+//     },
+//     {
+//         id: 2,
+//         name: 'BMW M5 Turbocharged V8 Engine',
+//         price: '6,000 Frs',
+//         image: image9,
+//         rating: 4.8,
+//         description: 'High-performance V8 engine for BMW M5, delivering exceptional power and reliability.',
+//         reviews: [
+//             {
+//                 rating: 5,
+//                 comment: 'Amazing performance upgrade, totally worth it!',
+//                 user: 'Sarah',
+//                 date: '2 days ago'
+//             }
+//         ]
+//     },
+//     {
+//         id: 3,
+//         name: 'Lamborghini Urus V10 Front Bumper',
+//         price: '7,000 Frs',
+//         image: image11,
+//         rating: 4.7,
+//         description: 'Original Lamborghini Urus front bumper, perfect for replacements or upgrades.',
+//         reviews: [
+//             {
+//                 rating: 4,
+//                 comment: 'Perfect fit and great quality materials.',
+//                 user: 'David',
+//                 date: 'Last week'
+//             }
+//         ]
+//     },
+//     {
+//         id: 4,
+//         name: 'Porsche Macan Headlights',
+//         price: '10,000 Frs',
+//         image: image12,
+//         rating: 4.6,
+//         description: 'Premium quality headlights for Porsche Macan, featuring advanced LED technology.',
+//         reviews: [
+//             {
+//                 rating: 5,
+//                 comment: 'These headlights transformed the look of my Macan!',
+//                 user: 'Emma',
+//                 date: '3 days ago'
+//             }
+//         ]
+//     },
+// ];
 
 // Sample orders data
 const orders = [
@@ -238,7 +237,9 @@ const Shop = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [notificationData, setNotificationData] = useState<NotificationData>();
-    const [productListData, setProductListData] = useState<NotificationData>();
+    const [productListData, setProductListData] = useState<Product[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+
 
 
     console.log("productlist", productListData);
@@ -246,9 +247,8 @@ const Shop = () => {
     const connectedUsers: iUsersConnected = useSelector(
         (state: iUsersConnected) => state)
 
-    console.log("userconnected", connectedUsers);
+    // console.log("userconnected", connectedUsers);
     const token = connectedUsers.accessToken
-    console.log("token=====", token);
 
     const navigate = useNavigate();
     const handleProductClick = (product: Product) => {
@@ -267,11 +267,14 @@ const Shop = () => {
     const fetchProductData = async () => {
         setLoading(true);
         try {
-
-            const response = await JC_Services('JAPPCARE', `product/list`, 'GET', "", connectedUsers.accessToken);
-            console.log("resp====", response);
+            const response = await JC_Services('JAPPCARE', `product/list`, 'GET', "", token);
+            console.log("Product API Response:", response);
             if (response && response.status === 200) {
-                setProductListData(response.body);
+                // Make sure we're setting the actual array of products
+                const products = Array.isArray(response.body) ? response.body :
+                    Array.isArray(response.body.data) ? response.body.data :
+                        [];
+                setProductListData(products);
             } else if (response && response.status === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
@@ -281,14 +284,13 @@ const Shop = () => {
             console.error("Error:", error);
             setErrorMessage("Network Error Try Again Later!!!!");
         }
-
         setLoading(false);
     };
     const fetchNotification = async () => {
         setLoading(true);
         try {
 
-            const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", connectedUsers.accessToken);
+            const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", token);
             console.log("fecthnotifresp", response);
             if (response && response.status === 200) {
                 // setSuccessMessage('Successful!');
@@ -310,6 +312,24 @@ const Shop = () => {
         fetchNotification();
         fetchProductData();
     }, [])
+
+    useEffect(() => {
+        if (productListData && Array.isArray(productListData)) {
+            // Filter products based on active category
+            const filtered = productListData.filter(product =>
+                product.category === activeCategory
+            );
+            setFilteredProducts(filtered);
+        } else if (productListData) {
+            // If productListData is not an array, it might be wrapped in an object
+            // Check if it has a data property or similar that contains the array
+            const productsArray: Product[] = Array.isArray(productListData) ? productListData : [];
+            const filtered = productsArray.filter(product =>
+                product.category === activeCategory
+            );
+            setFilteredProducts(filtered);
+        }
+    }, [activeCategory, productListData]);
 
     const handleCloseMessage = () => {
         setErrorMessage('');
@@ -495,7 +515,7 @@ const Shop = () => {
 
                             {/* Products Grid */}
                             <Grid container spacing={2}>
-                                {products.map((product) => (
+                                {filteredProducts.map((product) => (
                                     <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
                                         <ProductCard
                                             onClick={() => handleProductClick(product)}
@@ -508,7 +528,7 @@ const Shop = () => {
                                             }}
                                         >
                                             <ProductImage
-                                                src={product.image}
+                                                src={product.media?.items[0]?.fileUrl || image10}
                                                 alt={product.name}
                                             />
                                             <ProductInfo>
@@ -524,12 +544,35 @@ const Shop = () => {
                                                     {product.name}
                                                 </Typography>
                                                 <ProductPrice>
-                                                    {product.price}
+                                                    {`${product.price.amount.toLocaleString()} ${product.price.currency}`}
                                                 </ProductPrice>
+                                                {!product.active && (
+                                                    <Typography
+                                                        variant="caption"
+                                                        color="error"
+                                                        sx={{ display: 'block', mt: 1 }}
+                                                    >
+                                                        Out of Stock
+                                                    </Typography>
+                                                )}
                                             </ProductInfo>
                                         </ProductCard>
                                     </Grid>
                                 ))}
+                                {filteredProducts.length === 0 && (
+                                    <Grid item xs={12}>
+                                        <Box sx={{
+                                            textAlign: 'center',
+                                            py: 4,
+                                            bgcolor: 'rgba(0, 0, 0, 0.02)',
+                                            borderRadius: 2
+                                        }}>
+                                            <Typography color="text.secondary">
+                                                No products found in this category
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                )}
                             </Grid>
                         </Grid>
 

@@ -131,51 +131,57 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
         setLoading(false);
     };
 
-    // const uploadProductMedia = async (productId: string, mainImage: File, additionalImages: File[]) => {
-    //     try {
-    //         // Create FormData for the main image
-    //         const mainImageFormData = new FormData();
-    //         mainImageFormData.append('files', mainImage);
-
-    //         // Upload main image
-    //         await JC_Services('JAPPCARE', `product/${productId}/upload-media`, 'POST', mainImageFormData, token);
-
-    //         // Upload additional images if any
-    //         if (additionalImages.length > 0) {
-    //             const additionalImagesFormData = new FormData();
-    //             additionalImages.forEach(file => {
-    //                 additionalImagesFormData.append('files', file);
-    //             });
-
-    //             await JC_Services('JAPPCARE', `product/${productId}/upload-media`, 'POST', additionalImagesFormData, token);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error uploading media:", error);
-    //         throw error;
-    //     }
-    // };
-
     const uploadProductMedia = async (productId: string, mainImage: File, additionalImages: File[]) => {
         try {
-            // Convert the files to an array of strings (you may need to adjust this part
-            // depending on how exactly your API expects to receive the files)
-            const allFiles = [mainImage, ...additionalImages];
+            // Create FormData for the main image
+            const mainImageFormData = new FormData();
+            mainImageFormData.append('files', mainImage);
 
-            // Create URLSearchParams to send files as query parameters
-            const params = new URLSearchParams();
-            allFiles.forEach(file => {
-                params.append('files', file.name); // or however you need to represent the file
-            });
+            // Upload main image
+            const response = await JC_Services('JAPPCARE', `product/${productId}/upload-media`, 'POST', mainImageFormData, token);
+            // const response = await JC_Services('JAPPCARE', `product/332ed7d7-6289-40c5-aba4-deda13f9f91a/upload-media`, 'POST', mainImageFormData, token);
+            console.log("upload response", response);
 
-            // Make the API call with query parameters
-            const url = `product/${productId}/upload-media?${params.toString()}`;
-            await JC_Services('JAPPCARE', url, 'POST', null, token);
+            // Upload additional images if any
+            if (additionalImages.length > 0) {
+                const additionalImagesFormData = new FormData();
+                additionalImages.forEach(file => {
+                    additionalImagesFormData.append('files', file);
+                });
 
+                const response = await JC_Services('JAPPCARE', `product/${productId}/upload-media`, 'POST', additionalImagesFormData, token);
+                // const response = await JC_Services('JAPPCARE', `product/332ed7d7-6289-40c5-aba4-deda13f9f91a/upload-media`, 'POST', additionalImagesFormData, token);
+                console.log("upload multiple response", response);
+            }
         } catch (error) {
             console.error("Error uploading media:", error);
             throw error;
         }
     };
+
+    // const uploadProductMedia = async (productId: string, mainImage: File, additionalImages: File[]) => {
+    //     try {
+    //         // Convert the files to an array of strings (you may need to adjust this part
+    //         // depending on how exactly your API expects to receive the files)
+    //         // Create a single FormData object for all files
+    //         const formData = new FormData();
+    //         formData.append('files', mainImage);
+    //         additionalImages.forEach(file => {
+    //             formData.append('files', file);
+    //         });
+
+
+    //         // Make the API call with query parameters
+    //         const url = `product/${productId}/upload-media`;
+    //         const response = await JC_Services('JAPPCARE', url, 'POST', formData, token);
+    //         console.log("upload response", response);
+
+
+    //     } catch (error) {
+    //         console.error("Error uploading media:", error);
+    //         throw error;
+    //     }
+    // };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -360,7 +366,7 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
                         MenuProps: {
                             PaperProps: {
                                 sx: {
-                                    bgcolor: 'white',
+                                    bgcolor: '#FFF5F5',
                                     boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)'
                                 }
                             }
@@ -370,10 +376,10 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
                         mb: 2,
 
                         '& .MuiSelect-select': {
-                            bgcolor: 'white'
+                            bgcolor: '#FFF5F5'
                         },
                         '& .MuiMenu-paper': {
-                            bgcolor: 'white'
+                            bgcolor: '#FFF5F5'
                         }
                     }}
                 >
@@ -483,14 +489,16 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
             </Box>
 
             {/* Submit Button */}
-            <Box sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1,
-                p: 2
-            }}>
+            <Box
+                sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    // zIndex: 1,
+                    p: 2
+                }}
+            >
                 <Button
                     fullWidth
                     variant="contained"
@@ -508,6 +516,37 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
                     {loading ? <CircularProgress /> : "Create product"}
                 </Button>
             </Box>
+            {/* <Box
+            // sx={{
+            //     position: 'absolute',
+            //     bottom: 0,
+            //     left: 0,
+            //     right: 0,
+            //     zIndex: 1,
+            //     p: 2
+            // }}
+            >
+                <Button
+                    fullWidth
+                    variant="contained"
+                    // onClick={() => onSubmit(productformData)}
+                    onClick={() => {
+                        if (featuredImageFile) {
+                            uploadProductMedia('332ed7d7-6289-40c5-aba4-deda13f9f91a', featuredImageFile, additionalImageFiles)
+                        }
+                    }}
+                    sx={{
+                        bgcolor: '#000',
+                        color: 'white',
+                        py: 1.5,
+                        '&:hover': {
+                            bgcolor: '#333'
+                        }
+                    }}
+                >
+                    {loading ? <CircularProgress /> : "Upload img"}
+                </Button>
+            </Box> */}
 
         </Box>
     );
