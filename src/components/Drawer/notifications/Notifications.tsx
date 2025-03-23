@@ -98,12 +98,12 @@ const Notifications = ({ onClose }: NotificationsProps) => {
         try {
             const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", connectedUsers.accessToken);
 
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 const unreadNotifications = response.body.filter(
                     (notification: NotificationData) => !notification.isRead
                 );
                 setNotificationData(unreadNotifications);
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('An error occurred while fetching notifications');
@@ -122,7 +122,7 @@ const Notifications = ({ onClose }: NotificationsProps) => {
 
             console.log("response", response);
 
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 // Update the local state to remove the marked notification
                 setNotificationData(prev => prev.filter(notification => notification.id !== notificationId));
             } else {

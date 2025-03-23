@@ -37,10 +37,10 @@ const ProductDetails = ({ product, onEdit }: ProductDetailsProps) => {
 
             const response = await JC_Services('JAPPCARE', `product/${product.id}`, 'GET', "", connectedUsers.accessToken);
             console.log("resp", response);
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 setSuccessMessage('Successfull!');
                 setProductData(response.body);
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('No Data Found');

@@ -269,13 +269,13 @@ const Shop = () => {
         try {
             const response = await JC_Services('JAPPCARE', `product/list`, 'GET', "", token);
             console.log("Product API Response:", response);
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 // Make sure we're setting the actual array of products
-                const products = Array.isArray(response.body) ? response.body :
-                    Array.isArray(response.body.data) ? response.body.data :
+                const products = Array.isArray(response.body.data) ? response.body.data :
+                    Array.isArray(response.body.data.data) ? response.body.data.data :
                         [];
                 setProductListData(products);
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('');
@@ -292,10 +292,10 @@ const Shop = () => {
 
             const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", token);
             console.log("fecthnotifresp", response);
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
-                setNotificationData(response.body[0]);
-            } else if (response && response.status === 401) {
+                setNotificationData(response.body.data[0]);
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('');
@@ -528,7 +528,7 @@ const Shop = () => {
                                             }}
                                         >
                                             <ProductImage
-                                                src={product.media?.items[0]?.fileUrl || image10}
+                                                src={product.media?.items?.[0]?.fileUrl || image10}
                                                 alt={product.name}
                                             />
                                             <ProductInfo>

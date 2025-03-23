@@ -105,6 +105,7 @@ const Dashboard = () => {
     const [isAppointmentDrawerOpen, setIsAppointmentDrawerOpen] = useState(false);
     const [serviceData, setServiceData] = useState<ServiceData[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const serviceRequestbody = {}
 
 
     const connectedUsers: iUsersConnected = useSelector((state: iUsersConnected) => state);
@@ -118,11 +119,11 @@ const Dashboard = () => {
     const fetchService = async () => {
         try {
 
-            const response = await JC_Services('JAPPCARE', `service/list`, 'GET', "", connectedUsers.accessToken);
+            const response = await JC_Services('JAPPCARE', `service/list`, 'POST', serviceRequestbody, connectedUsers.accessToken);
             console.log("resp", response);
-            if (response && response.status === 200) {
-                setServiceData(response.body.data.slice(0, 2)); // Limit to 2 services
-            } else if (response && response.status === 401) {
+            if (response && response.body.meta.statusCode === 200) {
+                setServiceData(response.body.data.data.slice(0, 2)); // Limit to 2 services
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('No Data Found');

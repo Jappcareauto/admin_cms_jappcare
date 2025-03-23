@@ -224,9 +224,9 @@ const OrderHistory = () => {
 
             const response = await JC_Services('JAPPCARE', `order/list`, 'GET', "", connectedUsers.accessToken);
             console.log("resp====", response);
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 setOrders(response.body);
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('');
