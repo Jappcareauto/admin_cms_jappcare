@@ -59,9 +59,9 @@ const ServiceCenterChats = () => {
         try {
             const response = await JC_Services('JAPPCARE', `chatroom/user/${userId}`, 'GET', "", token);
             console.log("fetchChatroomResponse", response);
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 // Make sure data is an array before setting state
-                const chatroomsData = response?.body || [];
+                const chatroomsData = response?.body.data || [];
                 if (Array.isArray(chatroomsData)) {
                     setChatrooms(chatroomsData);
                 } else {
@@ -69,7 +69,7 @@ const ServiceCenterChats = () => {
                     setErrorMessage('Invalid response format from server');
                     setChatrooms([]); // Reset to empty array
                 }
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
                 setChatrooms([]); // Reset to empty array
             } else {

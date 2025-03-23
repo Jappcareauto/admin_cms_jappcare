@@ -87,10 +87,10 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
             // Create product first
             const response = await JC_Services('JAPPCARE', `product`, 'POST', productformData, token);
 
-            if (response && (response.status === 200 || response.status === 201)) {
+            if (response && (response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201)) {
                 console.log("addresponse", response);
 
-                const productId = response.body.id; // Assuming the response includes the created product ID
+                const productId = response.body.data.id; // Assuming the response includes the created product ID
 
                 // Upload images
                 await uploadProductMedia(productId, featuredImageFile, additionalImageFiles);
@@ -118,7 +118,7 @@ const NewProductForm = ({ onSubmit }: NewProductFormProps) => {
                 setFeaturedImageFile(null);
                 setAdditionalImages([]);
                 setAdditionalImageFiles([]);
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('Failed to create product');
