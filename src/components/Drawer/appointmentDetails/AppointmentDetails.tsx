@@ -5,23 +5,33 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
-import Images from '../../../assets/Images/Images';
-import AppointmentIcon from '../../Icones/AppointmentIcon';
-import LocationIcon from '../../Icones/LocationIcon';
 import { Tooltip } from '@mui/material';
 import ExpandIcon from '../../Icones/ExpandIcon';
 import { ImageViewer } from '../../ImageViewer/ImageViewer';
+import AppointmentIcon from '../../Icones/AppointmentIcon';
+import LocationIcon from '../../Icones/LocationIcon';
+import { format, parseISO } from 'date-fns';
+import { AppointmentInterface } from '../../../interfaces/Interfaces';
 
 interface AppointmentDetailsProps {
+    appointment: AppointmentInterface;
     onExpand: () => void;
     onMarkCompleted: () => void;
 }
 
-const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsProps) => {
+const AppointmentDetails = ({
+    appointment,
+    onExpand,
+    onMarkCompleted
+}: AppointmentDetailsProps) => {
     const [viewerOpen, setViewerOpen] = useState(false);
-
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | undefined>(undefined);
-    const images = [Images.car1, Images.car1, Images.car2, Images.car2, Images.Porsche, Images.test];
+    console.log("appointment", appointment);
+
+    // Placeholder images array - replace with actual vehicle media if available
+    const images = appointment.vehicle.media?.items?.length
+        ? appointment.vehicle.media.items.map((item) => item.sourceUrl)
+        : ['/api/placeholder/400/320', '/api/placeholder/400/320'];
 
     const handleImageClick = (index: number) => {
         setSelectedImageIndex(index);
@@ -34,17 +44,12 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'flex-end',
-                // alignItems: 'flex-start',
-
             }}>
                 <Tooltip title="View More" sx={{ mr: 1 }}>
                     <IconButton onClick={onExpand} size="small">
-
                         <ExpandIcon />
                     </IconButton>
                 </Tooltip>
-
-
             </Box>
 
             {/* Car Details */}
@@ -56,17 +61,17 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                     mb: 1
                 }}
             >
-                Porsche Taycan Turbo S
+                {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                2024, RWD
+                {`${appointment.vehicle.detail.year}, ${appointment.vehicle.detail.trim}`}
             </Typography>
 
             {/* Car Image */}
             <Box
                 component="img"
-                src={Images.Porsche} // Replace with actual image path
-                alt="Porsche Taycan"
+                src={appointment.vehicle.media?.mainItemUrl || '/api/placeholder/400/320'}
+                alt={`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
                 sx={{
                     width: '100%',
                     height: 'auto',
@@ -90,14 +95,15 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                     fontWeight: 600,
                     color: '#FF7A00',
                     border: '2px solid #FF7A00',
-                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
-
-                }}>SM</Avatar>
+                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
+                }}>
+                    {appointment.vehicle.name.substring(0, 2).toUpperCase()}
+                </Avatar>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    Sarah Maye
+                    {appointment.vehicle.name}
                 </Typography>
                 <Chip
-                    label="In Progress"
+                    label={appointment.status.replace('_', ' ')}
                     size="small"
                     sx={{
                         bgcolor: 'rgba(255, 107, 0, 0.1)',
@@ -116,7 +122,7 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                     mb: 2
                 }}
             >
-                Body shop appointment
+                {appointment.service.title}
             </Typography>
 
             {/* Date and Location */}
@@ -129,17 +135,17 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                 }}>
                     <AppointmentIcon stroke="#797676" fill='' />
                     <Typography variant="body2">
-                        Oct. 20, 2024
+                        {format(parseISO(appointment.date), 'MMM dd, yyyy')}
                     </Typography>
                     <Typography variant="body2" sx={{ ml: 1 }}>
-                        10am
+                        {format(parseISO(appointment.date), 'hh:mm a')}
                     </Typography>
                     <Typography
                         variant="body2"
                         color="text.secondary"
                         sx={{ ml: 'auto' }}
                     >
-                        Revenue
+                        {appointment.timeOfDay}
                     </Typography>
                 </Box>
                 <Box sx={{
@@ -150,25 +156,21 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                 }}>
                     <LocationIcon stroke="#797676" fill='#797676' />
                     <Typography variant="body2">
-                        At Home
+                        {appointment.locationType === 'HOME' ? 'At Home' : appointment.locationType}
                     </Typography>
-                    <Typography
-                        variant="body1"
-                        sx={{
-                            ml: 'auto',
-                            color: '#FF6B00',
-                            fontWeight: 500
-                        }}
-                    >
-                        5,000 Fr
-                    </Typography>
+                    {/* 
+                    Note: If you want to add revenue or pricing, you'll need to modify 
+                    the AppointmentInterface to include this information 
+                    */}
                 </Box>
             </Box>
 
             {/* Description */}
-            <Typography variant="body2" sx={{ mb: 3 }}>
-                There is a noticeable dent on the rear bumper of my Porsche Taycan, specifically located between the lower edge of the rear headlight and the rear wheel arch. It is closer to the wheel arch, situated near the car's side profile. The dent is below the horizontal line of the rear headlight and sits closer to the lower third of the rear bumper.
-            </Typography>
+            {appointment.note && (
+                <Typography variant="body2" sx={{ mb: 3 }}>
+                    {appointment.note}
+                </Typography>
+            )}
 
             {/* Images */}
             <Typography variant="h6" sx={{ mb: 2 }}>
@@ -180,7 +182,7 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                 gap: 1,
                 mb: 3
             }}>
-                {images.map((img, index) => (
+                {images.slice(0, 4).map((img, index) => (
                     <Box
                         key={index}
                         onClick={() => handleImageClick(index)}
@@ -223,7 +225,6 @@ const AppointmentDetails = ({ onExpand, onMarkCompleted }: AppointmentDetailsPro
                 images={images}
                 initialIndex={selectedImageIndex}
             />
-
 
             {/* Action Button */}
             <Button
