@@ -13,6 +13,7 @@ import { iUsersConnected } from '../../../interfaces/UsersInterface';
 import { useSelector } from 'react-redux';
 import { Close, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Alert, CircularProgress, MenuItem } from '@mui/material';
+import { Roles } from '../../../interfaces/Interfaces';
 
 interface NewUserFormProps {
     onSubmit: (data: any) => void;
@@ -24,15 +25,6 @@ declare global {
         google: typeof google;
     }
 }
-
-const ROLES = [
-    "ROLE_ADMIN",
-    "ROLE_GARAGE_MANAGER",
-    "ROLE_SERVICE_MANAGER",
-    "ROLE_TECHNICIAN",
-    "ROLE_CUSTOMER",
-    "ROLE_RECEPTIONIST"
-];
 
 const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
     const [formData, setFormData] = useState({
@@ -50,6 +42,7 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [roles, setRoles] = useState<Roles[]>([]);
 
     console.log("submit", onSubmit);
 
@@ -70,7 +63,7 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
             console.log("response", response);
             console.log("formData", formData);
 
-            if (response && response.status === 200 || response.status === 201) {
+            if (response && response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201) {
                 setSuccessMessage("User created successfully");
                 setFormData({
                     name: '',
@@ -81,10 +74,10 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                     role: ''
                 })
 
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.details || 'Unauthorized to perform action');
 
-            } else if (response && response.status === 409) {
+            } else if (response && response.body.meta.statusCode === 409) {
                 setErrorMessage('This Data already exists');
             }
             else {
@@ -97,6 +90,33 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
         }
         setLoading(false);
     };
+
+    const fetchRoles = async () => {
+        setLoading(true);
+        try {
+
+            const response = await JC_Services('JAPPCARE', `authorities/roles`, 'GET', "", connectedUsers.accessToken);
+            console.log("fetchroleresp", response);
+            if (response && response.body.meta.statusCode === 200) {
+                // setSuccessMessage('Successful!');
+                setRoles(response.body.data);
+            } else if (response && response.body.meta.statusCode === 401) {
+                setErrorMessage(response.body.meta.message || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('Error fetching Roles');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchRoles();
+    }, []);
+
 
     useEffect(() => {
         const loadGoogleMapsScript = () => {
@@ -290,12 +310,17 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                         }}
 
                     >
+
                         <MenuItem value="" disabled selected>Select Role</MenuItem>
-                        {ROLES.map((role) => (
-                            <MenuItem key={role} value={role} sx={{ bgcolor: "white" }}>
-                                {role.replace("ROLE_", "").replace(/_/g, " ")} {/* Formats text */}
-                            </MenuItem>
-                        ))}
+                        {Array.isArray(roles) && roles.length > 0 ? (
+                            roles.map((option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                    {option.definition.replace("ROLE_", "").replace(/_/g, " ")}
+                                </MenuItem>
+                            ))
+                        ) : (
+                            <MenuItem value="">No Role available</MenuItem>
+                        )}
                     </TextField>
                 </Box>
 

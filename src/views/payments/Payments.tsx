@@ -163,12 +163,12 @@ const Payments = () => {
         setLoading(true);
         try {
             const response = await JC_Services('JAPPCARE', `payment/list`, 'GET', "", token);
-            console.log("fecthnotifresp", response);
-            if (response && response.status === 200) {
+            console.log("fecthpaymentresp", response);
+            if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
                 setPayments(response.body.data);
-            } else if (response && response.status === 401) {
-                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else if (response && response.body.meta.statusCode === 401) {
+                setErrorMessage(response.body.meta.message || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('Error fetching payments');
 

@@ -44,7 +44,7 @@ export default async function JC_Services(services, link, method, form, token) {
         const response = await makeRequest(token);
 
         // If the response indicates token expired
-        if (response.status === 401 && store.getState().refreshToken) {
+        if (response.body.meta.statusCode === 401 && store.getState().refreshToken) {
             try {
                 // Get current state
                 const state = store.getState();
@@ -57,7 +57,7 @@ export default async function JC_Services(services, link, method, form, token) {
                     { refreshToken: state.refreshToken }
                 );
 
-                if (refreshResponse.status === 200) {
+                if (refreshresponse.body.meta.statusCode === 200) {
                     // Update store with new tokens
                     store.dispatch({
                         type: "LOGIN",

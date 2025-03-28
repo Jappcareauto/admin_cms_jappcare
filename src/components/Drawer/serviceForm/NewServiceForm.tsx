@@ -51,6 +51,7 @@ const NewServiceForm = ({ onSubmit }: NewServiceFormProps) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [serviceCenterData, setServiceCenterData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const ServiceCenterRequestbody = {};
 
     console.log("onSubmit", onSubmit);
 
@@ -75,13 +76,13 @@ const NewServiceForm = ({ onSubmit }: NewServiceFormProps) => {
             console.log("response", response);
             console.log("formData", formData);
 
-            if (response && response.status === 200 || response.status === 201) {
+            if (response && response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201) {
                 setSuccessMessage("Service created successfully");
 
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.details || 'Unauthorized to perform action');
 
-            } else if (response && response.status === 409) {
+            } else if (response && response.body.meta.statusCode === 409) {
                 setErrorMessage('This Data already exists');
             }
             else {
@@ -98,11 +99,11 @@ const NewServiceForm = ({ onSubmit }: NewServiceFormProps) => {
     const fetchServiceCenter = async () => {
         try {
 
-            const response = await JC_Services('JAPPCARE', `service-center`, 'GET', "", connectedUsers.accessToken);
+            const response = await JC_Services('JAPPCARE', `service-center/list`, 'POST', ServiceCenterRequestbody, connectedUsers.accessToken);
             console.log("resp", response);
-            if (response && response.status === 200) {
-                setServiceCenterData(response.body.data);
-            } else if (response && response.status === 401) {
+            if (response && response.body.meta.statusCode === 200) {
+                setServiceCenterData(response.body.data.data);
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('No Data Found');

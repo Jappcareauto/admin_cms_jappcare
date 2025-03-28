@@ -15,8 +15,8 @@ export const useTokenRefresh = () => {
                 { refreshToken }
             );
 
-            if (response && response.status === 200) {
-                return response.body;
+            if (response && response.body.meta.statusCode === 200) {
+                return response.body.data;
             }
             throw new Error('Failed to refresh token');
         } catch (error) {

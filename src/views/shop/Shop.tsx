@@ -33,7 +33,7 @@ import { JC_Services } from '../../services';
 import { iUsersConnected } from '../../interfaces/UsersInterface';
 import { useSelector } from 'react-redux';
 import { Product } from '../../interfaces';
-import { NotificationData } from '../../interfaces/Interfaces';
+import { NotificationData, OrderInterface } from '../../interfaces/Interfaces';
 import { formatValue } from '../../tools/formatValue';
 import { Close } from '@mui/icons-material';
 
@@ -48,75 +48,8 @@ const revenueData = [
 ];
 
 
-// Sample product data
-// const products: Product[] = [
-//     {
-//         id: 1,
-//         name: 'Porsche 911 Matrix LED Headlights',
-//         price: '5,000 Frs',
-//         image: image10,
-//         rating: 4.5,
-//         description: 'High-performance LED headlights designed specifically for the Porsche 911, providing superior illumination and modern styling.',
-//         reviews: [
-//             {
-//                 rating: 4,
-//                 comment: 'Excellent quality and perfect fit for my 911!',
-//                 user: 'Michael',
-//                 date: 'Yesterday'
-//             }
-//         ]
-//     },
-//     {
-//         id: 2,
-//         name: 'BMW M5 Turbocharged V8 Engine',
-//         price: '6,000 Frs',
-//         image: image9,
-//         rating: 4.8,
-//         description: 'High-performance V8 engine for BMW M5, delivering exceptional power and reliability.',
-//         reviews: [
-//             {
-//                 rating: 5,
-//                 comment: 'Amazing performance upgrade, totally worth it!',
-//                 user: 'Sarah',
-//                 date: '2 days ago'
-//             }
-//         ]
-//     },
-//     {
-//         id: 3,
-//         name: 'Lamborghini Urus V10 Front Bumper',
-//         price: '7,000 Frs',
-//         image: image11,
-//         rating: 4.7,
-//         description: 'Original Lamborghini Urus front bumper, perfect for replacements or upgrades.',
-//         reviews: [
-//             {
-//                 rating: 4,
-//                 comment: 'Perfect fit and great quality materials.',
-//                 user: 'David',
-//                 date: 'Last week'
-//             }
-//         ]
-//     },
-//     {
-//         id: 4,
-//         name: 'Porsche Macan Headlights',
-//         price: '10,000 Frs',
-//         image: image12,
-//         rating: 4.6,
-//         description: 'Premium quality headlights for Porsche Macan, featuring advanced LED technology.',
-//         reviews: [
-//             {
-//                 rating: 5,
-//                 comment: 'These headlights transformed the look of my Macan!',
-//                 user: 'Emma',
-//                 date: '3 days ago'
-//             }
-//         ]
-//     },
-// ];
 
-// Sample orders data
+
 const orders = [
     {
         id: 1,
@@ -237,9 +170,11 @@ const Shop = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [notificationData, setNotificationData] = useState<NotificationData>();
+    const [ordersData, setOrdersData] = useState<OrderInterface[]>([]);
     const [productListData, setProductListData] = useState<Product[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
+    console.log("ordersData", ordersData);
 
 
     console.log("productlist", productListData);
@@ -269,13 +204,13 @@ const Shop = () => {
         try {
             const response = await JC_Services('JAPPCARE', `product/list`, 'GET', "", token);
             console.log("Product API Response:", response);
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 // Make sure we're setting the actual array of products
-                const products = Array.isArray(response.body) ? response.body :
-                    Array.isArray(response.body.data) ? response.body.data :
+                const products = Array.isArray(response.body.data) ? response.body.data :
+                    Array.isArray(response.body.data.data) ? response.body.data.data :
                         [];
                 setProductListData(products);
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('');
@@ -292,10 +227,31 @@ const Shop = () => {
 
             const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", token);
             console.log("fecthnotifresp", response);
-            if (response && response.status === 200) {
+            if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
-                setNotificationData(response.body[0]);
-            } else if (response && response.status === 401) {
+                setNotificationData(response.body.data[0]);
+            } else if (response && response.body.meta.statusCode === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+
+        setLoading(false);
+    };
+    const fetchOrders = async () => {
+        setLoading(true);
+        try {
+
+            const response = await JC_Services('JAPPCARE', `order/list`, 'GET', "", token);
+            console.log("fetchordersresp", response);
+            if (response && response.body.meta.statusCode === 200) {
+                // setSuccessMessage('Successful!');
+                setOrdersData(response.body.data.data.slice(0, 4)); // slice to get only 4 orders
+            } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('');
@@ -311,6 +267,7 @@ const Shop = () => {
     useEffect(() => {
         fetchNotification();
         fetchProductData();
+        fetchOrders();
     }, [])
 
     useEffect(() => {
@@ -528,7 +485,7 @@ const Shop = () => {
                                             }}
                                         >
                                             <ProductImage
-                                                src={product.media?.items[0]?.fileUrl || image10}
+                                                src={product.media?.items?.[0]?.fileUrl || image10}
                                                 alt={product.name}
                                             />
                                             <ProductInfo>
