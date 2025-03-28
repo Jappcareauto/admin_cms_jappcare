@@ -12,6 +12,7 @@ import AppointmentIcon from '../../Icones/AppointmentIcon';
 import LocationIcon from '../../Icones/LocationIcon';
 import { format, parseISO } from 'date-fns';
 import { AppointmentInterface } from '../../../interfaces/Interfaces';
+import { formatValue } from '../../../tools/formatValue';
 
 interface AppointmentDetailsProps {
     appointment: AppointmentInterface;
@@ -100,10 +101,10 @@ const AppointmentDetails = ({
                     {appointment.vehicle.name.substring(0, 2).toUpperCase()}
                 </Avatar>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {appointment.vehicle.name}
+                    {formatValue(appointment.vehicle.name)}
                 </Typography>
                 <Chip
-                    label={appointment.status.replace('_', ' ')}
+                    label={formatValue(appointment.status.replace('_', ' '))}
                     size="small"
                     sx={{
                         bgcolor: 'rgba(255, 107, 0, 0.1)',
@@ -122,7 +123,7 @@ const AppointmentDetails = ({
                     mb: 2
                 }}
             >
-                {appointment.service.title}
+                {formatValue(appointment.service.title)}
             </Typography>
 
             {/* Date and Location */}

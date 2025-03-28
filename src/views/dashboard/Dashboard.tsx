@@ -286,7 +286,7 @@ const Dashboard = () => {
             {/* Appointment Details */}
             <Box sx={{ mb: 2 }}>
                 <Typography sx={{ color: '#FF7A00', mb: 0.5 }}>
-                    {appointment.service.title}
+                    {formatValue(appointment.service.title)}
                 </Typography>
                 <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
                     {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
