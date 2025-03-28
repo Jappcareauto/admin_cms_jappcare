@@ -72,9 +72,9 @@ const Accounts = () => {
     const fetchAccounts = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams({}).toString();
+            // const params = new URLSearchParams({}).toString();
 
-            const response = await JC_Services('JAPPCARE', `user/list?${params}`, 'GET', "", token);
+            const response = await JC_Services('JAPPCARE', `user/list`, 'POST', {}, token);
             console.log("fecthaccountresp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
