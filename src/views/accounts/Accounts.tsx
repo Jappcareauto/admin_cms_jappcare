@@ -78,7 +78,7 @@ const Accounts = () => {
             console.log("fecthaccountresp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
-                setuserAccounts(response.body.data.data);
+                setuserAccounts(response.body.data);
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.meta.message || 'Unauthorized to perform action');
             } else {
@@ -258,8 +258,7 @@ const Accounts = () => {
                             <Box sx={{ width: 300, display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <CalendarIcon stroke='#777777' fill='' />
                                 <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
-                                    {/* {formatDate(user.createdAt)} */}
-                                    Oct 20, 2024
+                                    {formatDate(user.createdAt)}
                                 </Typography>
                             </Box>
 

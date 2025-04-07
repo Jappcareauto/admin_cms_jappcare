@@ -52,23 +52,23 @@ const ServiceCenterChats = () => {
         (state: iUsersConnected) => state)
 
     const token = connectedUsers.accessToken;
-    const userId = connectedUsers.id;
 
     const fetchChatrooms = async () => {
         setLoading(true);
         try {
-            const response = await JC_Services('JAPPCARE', `chatroom/user/${userId}`, 'GET', "", token);
+            const response = await JC_Services('JAPPCARE', `chatroom/list`, 'POST', {}, token);
             console.log("fetchChatroomResponse", response);
             if (response && response.body.meta.statusCode === 200) {
                 // Make sure data is an array before setting state
-                const chatroomsData = response?.body.data || [];
-                if (Array.isArray(chatroomsData)) {
-                    setChatrooms(chatroomsData);
-                } else {
-                    console.error("API did not return an array", chatroomsData);
-                    setErrorMessage('Invalid response format from server');
-                    setChatrooms([]); // Reset to empty array
-                }
+                const chatroomsData = response?.body.data.data;
+                setChatrooms(chatroomsData || []); // Set to empty array if undefined or null
+                // if (Array.isArray(chatroomsData)) {
+                //     setChatrooms(chatroomsData);
+                // } else {
+                //     console.error("API did not return an array", chatroomsData);
+                //     setErrorMessage('Invalid response format from server');
+                //     setChatrooms([]); // Reset to empty array
+                // }
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
                 setChatrooms([]); // Reset to empty array
@@ -106,11 +106,11 @@ const ServiceCenterChats = () => {
     };
 
     // Safely filter chatrooms
-    const filteredChatrooms = chatrooms && Array.isArray(chatrooms)
-        ? chatrooms.filter(chatroom =>
-            chatroom.name && chatroom.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        : [];
+    // const filteredChatrooms = chatrooms && Array.isArray(chatrooms)
+    //     ? chatrooms.filter(chatroom =>
+    //         chatroom.name && chatroom.name.toLowerCase().includes(searchTerm.toLowerCase())
+    //     )
+    //     : [];
 
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -139,8 +139,8 @@ const ServiceCenterChats = () => {
                     </Typography>
                 ) : (
                     <List sx={{ p: 0 }}>
-                        {filteredChatrooms.length > 0 ? (
-                            filteredChatrooms.map((chatroom) => (
+                        {chatrooms.length > 0 ? (
+                            chatrooms.map((chatroom) => (
                                 <ServiceItem
                                     key={chatroom.id}
                                     onClick={() => handleServiceCenterChats(chatroom)}

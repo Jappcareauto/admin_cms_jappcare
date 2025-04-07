@@ -11,15 +11,15 @@ import {
     Button,
     Stack,
     IconButton,
-    Collapse,
+    // Collapse,
     Alert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { XAxis, ResponsiveContainer, AreaChart, YAxis, Tooltip, Area } from 'recharts';
 import AppointmentIcon from '../../components/Icones/AppointmentIcon';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
-import NotifIcon from '../../components/Icones/NotifIcon';
-import DropdownIcon from '../../components/Icones/DropdownIcon';
+// import NotifIcon from '../../components/Icones/NotifIcon';
+// import DropdownIcon from '../../components/Icones/DropdownIcon';
 import LocationIcon from '../../components/Icones/LocationIcon';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import NewServiceForm from '../../components/Drawer/serviceForm/NewServiceForm';
@@ -125,7 +125,7 @@ const StyledChip = styled(Chip)<{ status?: string }>(({ status }) => {
 
 
 const Dashboard = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    // const [isExpanded, setIsExpanded] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isAppointmentDrawerOpen, setIsAppointmentDrawerOpen] = useState(false);
     const [serviceData, setServiceData] = useState<ServiceData[]>([]);
@@ -200,9 +200,9 @@ const Dashboard = () => {
         setErrorMessage('');
     };
 
-    const handleToggle = () => {
-        setIsExpanded(!isExpanded);
-    };
+    // const handleToggle = () => {
+    //     setIsExpanded(!isExpanded);
+    // };
 
     const handleSeeDetails = (appointment: AppointmentInterface) => {
         setSelectedAppointment(appointment);
@@ -377,7 +377,7 @@ const Dashboard = () => {
 
 
                         {/* Emergency Request Stats */}
-                        <Grid item xs={12} md={6}>
+                        {/* <Grid item xs={12} md={6}>
                             <StyledCard>
                                 <CardContent>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}>
@@ -385,7 +385,7 @@ const Dashboard = () => {
                                         <Chip label="This Week" size="small" sx={{ bgcolor: 'rgba(175, 169, 169, 0.2)', color: 'text.secondary' }} />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>14</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>N/A</Typography>
                                         <Typography variant="body2" color="text.secondary">Accepted Emergency Requests</Typography>
                                     </Box>
                                 </CardContent>
@@ -405,13 +405,12 @@ const Dashboard = () => {
                                     </Box>
                                 </CardContent>
                             </StyledCard>
-                        </Grid>
+                        </Grid> */}
 
                         {/* Emergency Assistance Request */}
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <StyledCard>
                                 <CardContent>
-                                    {/* Header - Always visible */}
                                     <Box sx={{
                                         display: 'flex',
                                         justifyContent: 'space-between',
@@ -436,11 +435,8 @@ const Dashboard = () => {
                                         </IconButton>
                                     </Box>
 
-                                    {/* Collapsible Content */}
                                     <Collapse in={isExpanded} timeout="auto">
-                                        {/* Main Content */}
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                                            {/* Left Section */}
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
                                                 <Avatar
                                                     sx={{
@@ -467,7 +463,6 @@ const Dashboard = () => {
                                                 </Box>
                                             </Box>
 
-                                            {/* Right Section */}
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                 <StyledChip
                                                     label="Break Failure"
@@ -482,7 +477,6 @@ const Dashboard = () => {
                                             </Box>
                                         </Box>
 
-                                        {/* Service Provider */}
                                         <Box sx={{ mt: 0.5, ml: 8 }}>
                                             <Typography variant="caption" color="text.secondary">
                                                 handled by{' '}
@@ -494,7 +488,7 @@ const Dashboard = () => {
                                     </Collapse>
                                 </CardContent>
                             </StyledCard>
-                        </Grid>
+                        </Grid> */}
 
                         {/* Recent Appointments Section */}
                         <Grid item xs={12} md={12}>

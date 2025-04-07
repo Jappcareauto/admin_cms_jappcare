@@ -106,8 +106,11 @@ export interface Users {
     name: string;
     email: string;
     date: string;
+    createdAt: string;
+    updatedAt: string;
     status: 'Users' | 'Service Providers';
     verified: boolean;
+
 }
 
 export interface Roles {
