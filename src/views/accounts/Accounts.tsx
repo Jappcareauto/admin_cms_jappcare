@@ -98,8 +98,8 @@ const Accounts = () => {
             console.log("resp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // Make sure we're storing an array of properly formatted objects
-                const data = Array.isArray(response.body.data.data)
-                    ? response.body.data.data
+                const data = Array.isArray(response.body.data)
+                    ? response.body.data
                     : [];
                 setServiceCenterData(data);
             } else if (response && response.body.meta.statusCode === 401) {
@@ -116,7 +116,7 @@ const Accounts = () => {
     useEffect(() => {
         fetchAccounts();
         fetchServiceCenter();
-    }, []);
+    }, [connectedUsers.accessToken]);
 
     // Format date function
     const formatDate = (dateString: string) => {

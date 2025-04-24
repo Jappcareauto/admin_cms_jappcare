@@ -110,7 +110,7 @@ const Appointment = () => {
 
             if (response && response.body.meta.statusCode === 200) {
                 // Filter appointments by status
-                const filteredAppointments = response.body.data.data.filter(
+                const filteredAppointments = response.body.data.filter(
                     (appointment: AppointmentInterface) => appointment.status === activeStatus
                 );
 

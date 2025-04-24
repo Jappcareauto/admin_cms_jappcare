@@ -136,7 +136,7 @@ const Calendar: React.FC = () => {
                 const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 }); // Monday
                 const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 }); // Sunday
 
-                const filteredAppointments = response.body.data.data.filter(
+                const filteredAppointments = response.body.data.filter(
                     (appointment: AppointmentInterface) => {
                         const appointmentDate = parseISO(appointment.date);
                         return isWithinInterval(appointmentDate, { start: weekStart, end: weekEnd });

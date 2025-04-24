@@ -119,8 +119,8 @@ const Payments = () => {
 
             if (response && response.body?.meta?.statusCode === 200) {
                 // Ensure data is an array
-                const paymentData = Array.isArray(response.body.data.data)
-                    ? response.body.data.data
+                const paymentData = Array.isArray(response.body.data)
+                    ? response.body.data
                     : [];
 
                 console.log("Processed Payment Data:", paymentData);
