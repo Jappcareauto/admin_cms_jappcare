@@ -69,7 +69,7 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                     email: '',
                     password: '',
                     verified: true,
-                    role: ''
+                    role: '',
                 })
 
             } else if (response && response.body.meta.statusCode === 401) {
@@ -80,7 +80,7 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
             }
             else {
                 // Handle error
-                setErrorMessage(response.body.details || "An error occurred while creating user");
+                setErrorMessage(response.body.errors || "An error occurred while creating user");
             }
         }
         catch (error) {

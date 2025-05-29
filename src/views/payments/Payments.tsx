@@ -148,19 +148,19 @@ const Payments = () => {
 
     // Calculations with extensive error handling
     const totalEarnings = payments
-        .filter(p => p.userFrom !== 'User')
+        .filter(p => p.userFrom !== 'Manager')
         .reduce((sum, payment) => sum + (payment.money?.amount || 0), 0);
 
     const totalWithdrawals = payments
-        .filter(p => p.userTo === 'Manager')
+        .filter(p => p.userTo === 'User')
         .reduce((sum, payment) => sum + (payment.money?.amount || 0), 0);
 
     // Filtering with error handling
     const filteredTransactions = payments.filter(transaction => {
         const typeMatch =
             activeFilter === 'All' ||
-            (activeFilter === 'Earnings' && transaction.userFrom !== 'User') ||
-            (activeFilter === 'Withdrawals' && transaction.userTo === 'Manager');
+            (activeFilter === 'Withdrawals' && transaction.userFrom !== 'User') ||
+            (activeFilter === 'Earnings' && transaction.userTo === 'Manager');
 
         const methodMatch =
             activeMethodFilter === 'All' ||
@@ -355,14 +355,15 @@ const Payments = () => {
                         </Box>
 
                         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2 }}>
-                            <TransactionStatus type={transaction.userTo === 'Manager' ? 'Withdrawal' : 'Earnings'}>
-                                {transaction.userTo === 'Manager' ? 'Withdrawal' : 'Earnings'}
+                            <TransactionStatus type={transaction.userTo === 'Manager' ? 'Earnings' : 'Withdrawal'}>
+                                {transaction.userTo === 'Manager' ? 'Earnings' : 'Withdrawal'}
                             </TransactionStatus>
                             <Box>
                                 {transaction.userTo === 'Manager' ? (
-                                    <UpwardArrowIcon />
-                                ) : (
                                     <DownwardArrowIcon />
+
+                                ) : (
+                                    <UpwardArrowIcon />
                                 )}
                             </Box>
                         </Box>
