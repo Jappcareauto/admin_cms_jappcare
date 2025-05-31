@@ -31,7 +31,6 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
         name: '',
         email: '',
         password: '',
-        phoneNumber: '',
         verified: true,
         role: ''
     });
@@ -69,9 +68,8 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                     name: '',
                     email: '',
                     password: '',
-                    phoneNumber: '',
                     verified: true,
-                    role: ''
+                    role: '',
                 })
 
             } else if (response && response.body.meta.statusCode === 401) {
@@ -82,7 +80,7 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
             }
             else {
                 // Handle error
-                setErrorMessage(response.body.details || "An error occurred while creating user");
+                setErrorMessage(response.body.errors || "An error occurred while creating user");
             }
         }
         catch (error) {
@@ -118,35 +116,7 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
     }, []);
 
 
-    useEffect(() => {
-        const loadGoogleMapsScript = () => {
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBy9Mq91oGtmrw1jKiRrDvKWwGpQgtzt3I`;
-            script.async = true;
-            script.defer = true;
-            script.onload = initializeMap;
-            document.body.appendChild(script);
-        };
-
-        const initializeMap = () => {
-            const map = new google.maps.Map(document.getElementById('provider-map-container') as HTMLElement, {
-                center: { lat: 4.0511, lng: 9.7679 }, // Coordinates for Douala, Cameroon
-                zoom: 14,
-            });
-
-            new google.maps.Marker({
-                position: { lat: 4.0511, lng: 9.7679 },
-                map,
-                title: "Dave's Garage",
-            });
-        };
-
-        if (!window.google) {
-            loadGoogleMapsScript();
-        } else {
-            initializeMap();
-        }
-    }, []);
+    // useEffect(() => {
 
     const handleCloseMessage = () => {
         setErrorMessage('');
@@ -314,7 +284,9 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                         <MenuItem value="" disabled selected>Select Role</MenuItem>
                         {Array.isArray(roles) && roles.length > 0 ? (
                             roles.map((option) => (
-                                <MenuItem key={option.id} value={option.id}>
+
+                                <MenuItem key={option.id} value={option.definition}>
+
                                     {option.definition.replace("ROLE_", "").replace(/_/g, " ")}
                                 </MenuItem>
                             ))
@@ -324,67 +296,12 @@ const NewUserForm = ({ onSubmit }: NewUserFormProps) => {
                     </TextField>
                 </Box>
 
-
-
-                {/* Home Location Section - Prepared for API integration */}
-                <Box sx={{ mb: 2 }}>
-                    <Typography
-                        sx={{
-                            mb: 1,
-                            fontSize: '14px',
-                            color: 'rgba(0, 0, 0, 0.87)'
-                        }}
-                    >
-                        Home Location
-                    </Typography>
-                    <Box
-                        sx={{
-                            width: '100%',
-                            height: 200,
-                            borderRadius: 1,
-                            overflow: 'hidden',
-                            position: 'relative',
-                            bgcolor: '#f5f5f5',
-                            border: '1px solid rgba(0, 0, 0, 0.12)'
-                        }}
-                    >
-                        {/* Map container - Ready for API implementation */}
-                        {/* <div id="map-container" style={{ width: '100%', height: '100%' }} /> */}
-                        <div id="provider-map-container" style={{ width: '100%', height: '100%', background: '#f5f5f5' }} />
-
-
-                        {/* Expand button */}
-                        {/* <IconButton
-                            sx={{
-                                position: 'absolute',
-                                right: 8,
-                                top: 8,
-                                bgcolor: 'white',
-                                '&:hover': {
-                                    bgcolor: 'rgba(255, 255, 255, 0.9)'
-                                }
-                            }}
-                        >
-                            <Box
-                                component="svg"
-                                sx={{ width: 16, height: 16 }}
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M16,3H8V5H16V3M21,3V5H18V3H21M3,3H6V5H3V3M21,19H18V21H21V19M16,19H8V21H16V19M3,19H6V21H3V19M21,11H18V13H21V11M16,11H8V13H16V11M3,11H6V13H3V11Z"
-                                />
-                            </Box>
-                        </IconButton> */}
-                    </Box>
-                </Box>
-
                 <Box sx={{
-                    // position: 'absolute',
+
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    // zIndex: 1,
+                   
                 }}>
                     {/* Submit Button */}
                     <Button

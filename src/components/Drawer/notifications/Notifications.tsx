@@ -99,7 +99,9 @@ const Notifications = ({ onClose }: NotificationsProps) => {
             const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", connectedUsers.accessToken);
 
             if (response && response.body.meta.statusCode === 200) {
-                const unreadNotifications = response.body.filter(
+
+                const unreadNotifications = response.body.data.filter(
+
                     (notification: NotificationData) => !notification.isRead
                 );
                 setNotificationData(unreadNotifications);
@@ -117,6 +119,7 @@ const Notifications = ({ onClose }: NotificationsProps) => {
     };
 
     const handleMarkAsRead = async (notificationId: string) => {
+
         try {
             const response = await JC_Services('JAPPCARE', `notification/${notificationId}/mark-read`, 'PATCH', "", connectedUsers.accessToken);
 

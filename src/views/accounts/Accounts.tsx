@@ -27,6 +27,8 @@ import { JC_Services } from '../../services';
 import { iUsersConnected } from '../../interfaces/UsersInterface';
 import { useSelector } from 'react-redux';
 import { Users } from '../../interfaces/Interfaces';
+import UserDetails from '../../components/Drawer/userDetails/UserDetails';
+
 
 // Styled Components
 const StyledCard = styled(Card)(() => ({
@@ -45,10 +47,18 @@ const StyledChip = styled(Chip)(() => ({
 }));
 
 const Accounts = () => {
-    const [activeTab, setActiveTab] = useState('Users');
+
+    const [activeTab, setActiveTab] = useState(() => {
+        return localStorage.getItem('activeTab') || 'Users';
+    });
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isUserDetailsDrawerOpen, setIsUserDetailsDrawerOpen] = useState(false);
     const [isServiceProviderDrawerOpen, setIsServiceProviderDrawerOpen] = useState(false);
     const [isServiceProviderFormDrawerOpen, setIsServiceProviderFormDrawerOpen] = useState(false);
+    const [selectedServiceProviderId, setSelectedServiceProviderId] = useState<string | null>(null);
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
     const [userAccounts, setuserAccounts] = useState<Users[]>([]);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -58,27 +68,45 @@ const Accounts = () => {
         (state: iUsersConnected) => state)
 
     console.log("loading", loading);
+    const token = connectedUsers.accessToken
+
+    const handleTabChange = (status: string) => {
+        setActiveTab(status);
+        localStorage.setItem('activeTab', status);
+    };
+
 
     // console.log("userconnected", connectedUsers);
     const token = connectedUsers.accessToken
 
-    // Add these handlers inside the Dashboard component:
     const handleNewUser = async (data: any) => {
         console.log('New service data:', data);
         setIsDrawerOpen(false);
+        await fetchAccounts();
         // Handle the new service data here
+    };
+
+
+    const handleServiceProviderClick = (providerId: string) => {
+        setSelectedServiceProviderId(providerId);
+        setIsServiceProviderFormDrawerOpen(true);
+    };
+    const handleUserClick = (userId: string) => {
+        setSelectedUserId(userId);
+        setIsUserDetailsDrawerOpen(true);
     };
 
     const fetchAccounts = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams({}).toString();
+            // const params = new URLSearchParams({}).toString();
 
-            const response = await JC_Services('JAPPCARE', `user/list?${params}`, 'GET', "", token);
+            const response = await JC_Services('JAPPCARE', `user/list`, 'POST', {}, token);
             console.log("fecthaccountresp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
-                setuserAccounts(response.body.data.data);
+                setuserAccounts(response.body.data);
+
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.meta.message || 'Unauthorized to perform action');
             } else {
@@ -92,14 +120,15 @@ const Accounts = () => {
         setLoading(false);
     };
 
+
     const fetchServiceCenter = async () => {
         try {
             const response = await JC_Services('JAPPCARE', `service-center/list`, 'POST', ServiceCenterRequestbody, connectedUsers.accessToken);
             console.log("resp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // Make sure we're storing an array of properly formatted objects
-                const data = Array.isArray(response.body.data.data)
-                    ? response.body.data.data
+                const data = Array.isArray(response.body.data)
+                    ? response.body.data
                     : [];
                 setServiceCenterData(data);
             } else if (response && response.body.meta.statusCode === 401) {
@@ -116,7 +145,8 @@ const Accounts = () => {
     useEffect(() => {
         fetchAccounts();
         fetchServiceCenter();
-    }, []);
+    }, [connectedUsers.accessToken]);
+
 
     // Format date function
     const formatDate = (dateString: string) => {
@@ -170,7 +200,8 @@ const Accounts = () => {
                             key={status}
                             label={status}
                             className={activeTab === status ? 'active' : ''}
-                            onClick={() => setActiveTab(status)}
+                            onClick={() => handleTabChange(status)}
+
                             sx={{
                                 bgcolor: activeTab === status ? '#FB7C37' : '#fff',
                                 '&:hover': {
@@ -258,8 +289,9 @@ const Accounts = () => {
                             <Box sx={{ width: 300, display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <CalendarIcon stroke='#777777' fill='' />
                                 <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
-                                    {/* {formatDate(user.createdAt)} */}
-                                    Oct 20, 2024
+
+                                    {formatDate(user.createdAt)}
+
                                 </Typography>
                             </Box>
 
@@ -285,7 +317,12 @@ const Accounts = () => {
                                 <IconButton size="small">
                                     <TrashIcon stroke='#141B34' fill='' />
                                 </IconButton>
-                                <IconButton size="small" sx={{ color: '#FB7C37' }} onClick={() => { setIsServiceProviderFormDrawerOpen(true) }}>
+
+                                <IconButton
+                                    size="small"
+                                    sx={{ color: '#FB7C37' }}
+                                    onClick={() => handleUserClick(user.id)}                                 >
+
                                     <ArrowForwardIcon />
                                 </IconButton>
                             </Box>
@@ -379,7 +416,13 @@ const Accounts = () => {
                                 <IconButton size="small">
                                     <TrashIcon stroke='#141B34' fill='' />
                                 </IconButton>
-                                <IconButton size="small" sx={{ color: '#FB7C37' }} onClick={() => { setIsServiceProviderFormDrawerOpen(true) }}>
+
+                                <IconButton
+                                    size="small"
+                                    sx={{ color: '#FB7C37' }}
+                                    onClick={() => handleServiceProviderClick(provider.id)}
+                                >
+
                                     <ArrowForwardIcon />
                                 </IconButton>
                             </Box>
@@ -407,7 +450,21 @@ const Accounts = () => {
                 title="User Details"
             >
                 <NewUserForm
-                    onSubmit={handleNewUser}
+                    // onSubmit={handleNewUser}
+                    onSubmit={() => {
+                        handleNewUser;
+                        setIsDrawerOpen(false);
+                    }}
+                />
+            </CustomDrawer>
+            <CustomDrawer
+                open={isUserDetailsDrawerOpen}
+                onClose={() => setIsUserDetailsDrawerOpen(false)}
+                title="User Details"
+            >
+                <UserDetails
+                    onClose={() => setIsUserDetailsDrawerOpen(false)}
+                    userId={selectedUserId || ''}
                 />
             </CustomDrawer>
             <CustomDrawer
@@ -416,17 +473,24 @@ const Accounts = () => {
                 title="Service Provider Details"
             >
                 <NewServiceProviderForm
-                    onSubmit={() => console.log('Submitting')}
+                    onSubmit={() => {
+                        setIsServiceProviderDrawerOpen(false);
+                        fetchServiceCenter();
+                    }}
                 />
+
             </CustomDrawer>
             <CustomDrawer
                 open={isServiceProviderFormDrawerOpen}
                 onClose={() => setIsServiceProviderFormDrawerOpen(false)}
                 title=" Service Provider Details"
             >
-                <ServiceProviderDetails
-                    onSeeStatistics={() => console.log('Submitting')}
-                />
+                {selectedServiceProviderId && (
+                    <ServiceProviderDetails
+                        onSeeStatistics={() => console.log('Submitting')}
+                        serviceProviderId={selectedServiceProviderId}
+                    />
+                )}
             </CustomDrawer>
         </Box>
     );

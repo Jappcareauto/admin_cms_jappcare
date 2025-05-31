@@ -11,15 +11,12 @@ import {
     Button,
     Stack,
     IconButton,
-    Collapse,
     Alert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { XAxis, ResponsiveContainer, AreaChart, YAxis, Tooltip, Area } from 'recharts';
 import AppointmentIcon from '../../components/Icones/AppointmentIcon';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
-import NotifIcon from '../../components/Icones/NotifIcon';
-import DropdownIcon from '../../components/Icones/DropdownIcon';
 import LocationIcon from '../../components/Icones/LocationIcon';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import NewServiceForm from '../../components/Drawer/serviceForm/NewServiceForm';
@@ -29,8 +26,11 @@ import Images from '../../assets/Images/Images';
 import { JC_Services } from '../../services';
 import { iUsersConnected } from '../../interfaces/UsersInterface';
 import { useSelector } from 'react-redux';
-import { ServiceData } from '../../interfaces/Interfaces';
+import { AppointmentInterface, ServiceData } from '../../interfaces/Interfaces';
 import { Close } from '@mui/icons-material';
+import { formatValue } from '../../tools/formatValue';
+import { format, parseISO } from 'date-fns';
+
 
 // Sample data for the revenue chart
 const revenueData = [
@@ -72,7 +72,25 @@ const StyledCard = styled(Card)<StyledCardProps>(({ theme, bgcolor }) => ({
     border: '1px solid rgba(0, 0, 0, 0.05)',
 }));
 
-
+// Scrollable container for services
+const ScrollableServicesContainer = styled(Box)(({ }) => ({
+    maxHeight: '300px',
+    overflowY: 'auto',
+    '&::-webkit-scrollbar': {
+        width: '6px',
+    },
+    '&::-webkit-scrollbar-track': {
+        backgroundColor: '#f1f1f1',
+        borderRadius: '10px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+        backgroundColor: '#c1c1c1',
+        borderRadius: '10px',
+        '&:hover': {
+            backgroundColor: '#a8a8a8',
+        },
+    },
+}));
 
 const ServiceItem = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -87,25 +105,54 @@ const ServiceItem = styled(Box)(({ theme }) => ({
     }
 }));
 
-const StyledChip = styled(Chip)(({ }) => ({
-    backgroundColor: '#FFF4ED',
-    color: '#FF7A00',
-    height: '34px',
-    '& .MuiChip-label': {
-        padding: '15px 20px 15px 20px',
-        fontSize: '13px',
-        fontWeight: 600,
-    },
-}));
+const StyledChip = styled(Chip)<{ status?: string }>(({ status }) => {
+    const getStatusStyle = () => {
+        switch (status?.toLowerCase()) {
+            case 'in_progress':
+                return {
+                    backgroundColor: '#FB7C37',
+                    color: '#ffffff',
+                };
+            case 'completed':
+                return {
+                    backgroundColor: '#E8F5E9',
+                    color: '#4CAF50',
+                };
+            default:
+                return {
+                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                    color: 'rgba(0, 0, 0, 0.6)',
+                };
+        }
+    };
+
+    return {
+        height: '34px',
+        ...getStatusStyle(),
+        '& .MuiChip-label': {
+            padding: '15px 20px 15px 20px',
+            fontSize: '13px',
+            fontWeight: 600,
+        },
+    };
+});
+
 
 
 const Dashboard = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    // const [isExpanded, setIsExpanded] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isAppointmentDrawerOpen, setIsAppointmentDrawerOpen] = useState(false);
     const [serviceData, setServiceData] = useState<ServiceData[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(null);
     const serviceRequestbody = {}
+    const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
+    const [Allappointments, setAllAppointments] = useState<AppointmentInterface[]>([]);
+    const [activeStatus, setActiveStatus] = useState('IN_PROGRESS');
+
+
 
 
     const connectedUsers: iUsersConnected = useSelector((state: iUsersConnected) => state);
@@ -120,9 +167,10 @@ const Dashboard = () => {
         try {
 
             const response = await JC_Services('JAPPCARE', `service/list`, 'POST', serviceRequestbody, connectedUsers.accessToken);
-            console.log("resp", response);
+            console.log("service resp", response);
             if (response && response.body.meta.statusCode === 200) {
-                setServiceData(response.body.data.data.slice(0, 2)); // Limit to 2 services
+                setServiceData(response.body.data); // Display all services instead of slicing
+
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
@@ -135,17 +183,171 @@ const Dashboard = () => {
 
     };
 
+    const fetchAppointments = async () => {
+        try {
+            const response = await JC_Services('JAPPCARE', `appointment/list`, 'POST', {}, connectedUsers.accessToken);
+            console.log("appointment resp", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                // Filter appointments by status
+                const filteredAppointments = response.body.data.filter(
+                    (appointment: AppointmentInterface) => appointment.status === activeStatus
+                );
+
+                // Sort appointments by date
+                const sortedAppointments = filteredAppointments.sort((a: { date: string | number | Date; }, b: { date: string | number | Date; }) =>
+                    new Date(a.date).getTime() - new Date(b.date).getTime()
+                );
+
+                setAppointments(sortedAppointments.slice(0, 2)); // Limit to 2 appointments
+                setAllAppointments(response.body.data); // Store all appointments for potential future use
+            } else if (response && response.body.meta.statusCode === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('No Appointments Found');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+    };
+
+
     useEffect(() => {
         fetchService();
-    }, [])
+        fetchAppointments();
+    }, [activeStatus]);
 
     const handleCloseMessage = () => {
         setErrorMessage('');
     };
 
-    const handleToggle = () => {
-        setIsExpanded(!isExpanded);
+    const handleSeeDetails = (appointment: AppointmentInterface) => {
+        setSelectedAppointment(appointment);
+        setIsAppointmentDrawerOpen(true);
     };
+
+    const renderAppointmentCard = (appointment: AppointmentInterface) => (
+        <Box sx={{
+            p: 2,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'grey.100',
+            mb: 2
+        }}>
+            {/* Top row with avatars, names, and status */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {/* User Avatar and Name */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Avatar
+                            sx={{
+                                width: 48,
+                                height: 48,
+                                bgcolor: '#1A1D1F',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                color: '#FF7A00',
+                                border: '2px solid #FF7A00',
+                                boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
+                            }}
+                        >
+                            {appointment.vehicle.detail.make.substring(0, 2).toUpperCase()}
+                        </Avatar>
+                        <Typography>
+                            {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                        </Typography>
+                    </Box>
+
+                    {/* Divider */}
+                    <Box sx={{
+                        height: '28px',
+                        width: '1px',
+                        bgcolor: 'grey.300',
+                    }} />
+
+                    {/* Garage Avatar and Info */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Avatar
+                            sx={{
+                                width: 48,
+                                height: 48,
+                                bgcolor: '#1A1D1F',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                color: '#FF7A00',
+                                border: '2px solid #FF7A00',
+                                boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
+                            }}
+                        >
+                            {appointment.serviceCenter.name.substring(0, 2).toUpperCase()}
+
+                        </Avatar>
+                        <Box>
+                            <Typography variant="caption" color="text.secondary">
+                                Handled by
+                            </Typography>
+                            <Typography variant="body2">
+                                {appointment.serviceCenter.name}
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Box>
+
+                <StyledChip
+                    label={formatValue(appointment.status.replace('_', ' '))}
+                    size="small"
+                    status={appointment.status}
+                />
+            </Box>
+
+            {/* Appointment Details */}
+            <Box sx={{ mb: 2 }}>
+                <Typography sx={{ color: '#FF7A00', mb: 0.5 }}>
+                    {formatValue(appointment.service.title)}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                    {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                </Typography>
+            </Box>
+
+            {/* Bottom row with date, location, and button */}
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+            }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <AppointmentIcon stroke="#797676" fill='' />
+                        <Typography variant="body2" color="text.secondary">
+                            {format(parseISO(appointment.date), 'MMM dd, yyyy hh:mm a')}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <LocationIcon stroke="#797676" fill='' />
+                        <Typography variant="body2" color="text.secondary">
+                            {formatValue(appointment.locationType === 'CUSTOM' ? 'At Home' : appointment.locationType)}
+                        </Typography>
+                    </Box>
+                </Box>
+
+                <Button
+                    variant="outlined"
+                    sx={{
+                        borderRadius: 3,
+                        borderColor: 'grey.800',
+                        color: 'text.primary',
+                        px: 3,
+                    }}
+                    onClick={() => handleSeeDetails(appointment)}
+                >
+                    See Details
+                </Button>
+            </Box>
+        </Box>
+    );
     return (
         <Box sx={{ p: 3, minHeight: '100vh', overflowX: 'hidden' }}>
             <Grid container spacing={3}>
@@ -162,7 +364,7 @@ const Dashboard = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="white" sx={{ fontWeight: 'bold' }}>
-                                            02
+                                            {Allappointments.length}
                                         </Typography>
                                         <Typography variant="body1" color="white" sx={{ mt: 1 }}>
                                             Appointments
@@ -191,281 +393,49 @@ const Dashboard = () => {
                             </StyledCard>
                         </Grid>
 
-
-
-                        {/* Emergency Request Stats */}
-                        <Grid item xs={12} md={6}>
-                            <StyledCard>
-                                <CardContent>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}>
-                                        <PieChartIcon fill='#FB7C37' stroke='' />
-                                        <Chip label="This Week" size="small" sx={{ bgcolor: 'rgba(175, 169, 169, 0.2)', color: 'text.secondary' }} />
-                                    </Box>
-                                    <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>14</Typography>
-                                        <Typography variant="body2" color="text.secondary">Accepted Emergency Requests</Typography>
-                                    </Box>
-                                </CardContent>
-                            </StyledCard>
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <StyledCard>
-                                <CardContent>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}>
-                                        <PieChartIcon fill='#FB7C37' stroke='' />
-                                        <Chip label="This Week" size="small" sx={{ bgcolor: 'rgba(175, 169, 169, 0.2)', color: 'text.secondary' }} />
-                                    </Box>
-                                    <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>05</Typography>
-                                        <Typography variant="body2" color="text.secondary">Rejected Emergency Requests</Typography>
-                                    </Box>
-                                </CardContent>
-                            </StyledCard>
-                        </Grid>
-
-                        {/* Emergency Assistance Request */}
-                        <Grid item xs={12}>
-                            <StyledCard>
-                                <CardContent>
-                                    {/* Header - Always visible */}
-                                    <Box sx={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        mb: isExpanded ? 2 : 0
-                                    }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <NotifIcon stroke='#000000' fill='#000000' />
-                                            <Typography variant="body1">
-                                                Emergency Assistance Request
-                                            </Typography>
-                                        </Box>
-                                        <IconButton
-                                            size="small"
-                                            onClick={handleToggle}
-                                            sx={{
-                                                transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                                                transition: 'transform 0.3s'
-                                            }}
-                                        >
-                                            <DropdownIcon />
-                                        </IconButton>
-                                    </Box>
-
-                                    {/* Collapsible Content */}
-                                    <Collapse in={isExpanded} timeout="auto">
-                                        {/* Main Content */}
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                                            {/* Left Section */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-                                                <Avatar
-                                                    sx={{
-                                                        width: 48,
-                                                        height: 48,
-                                                        bgcolor: '#1A1D1F',
-                                                        fontSize: '16px',
-                                                        fontWeight: 600,
-                                                        color: '#FF7A00',
-                                                        border: '2px solid #FF7A00',
-                                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
-
-                                                    }}
-                                                >
-                                                    SM
-                                                </Avatar>
-                                                <Box>
-                                                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                                                        Sarah Maye
-                                                    </Typography>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        Porsche Taycan Turbo S
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-
-                                            {/* Right Section */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                <StyledChip
-                                                    label="Break Failure"
-                                                    size="small"
-                                                />
-                                                <Typography variant="body2" color="text.secondary">
-                                                    7000 Frs
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    12km Away
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-
-                                        {/* Service Provider */}
-                                        <Box sx={{ mt: 0.5, ml: 8 }}>
-                                            <Typography variant="caption" color="text.secondary">
-                                                handled by{' '}
-                                                <Box component="span" sx={{ color: 'text.primary' }}>
-                                                    Dave's Garage
-                                                </Box>
-                                            </Typography>
-                                        </Box>
-                                    </Collapse>
-                                </CardContent>
-                            </StyledCard>
-                        </Grid>
-
                         {/* Recent Appointments Section */}
                         <Grid item xs={12} md={12}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <AppointmentIcon fill='#111111' stroke='' />
                                 <Typography variant="h6">Recent Appointments</Typography>
-
                             </Box>
                             <CardContent>
-                                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        sx={{ borderRadius: 8, padding: '5px 20px 5px 20px' }}
-                                    >
-                                        Not Started
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        size="small"
-                                        sx={{
-                                            padding: '5px 20px 5px 20px',
-                                            borderRadius: 8,
-                                            bgcolor: '#FF7A00',
-                                            '&:hover': { bgcolor: '#FF6B3D' }
-                                        }}
-                                    >
-                                        In Progress
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        sx={{ borderRadius: 8, padding: '5px 20px 5px 20px' }}
-                                    >
-                                        Completed
-                                    </Button>
-                                </Stack>
-
-                                <Box sx={{
-                                    p: 2,
-                                    bgcolor: 'background.paper',
-                                    borderRadius: 3,
-                                    border: '1px solid',
-                                    borderColor: 'grey.100',
-                                }}>
-                                    {/* Top row with avatars, names, and status */}
-                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                            {/* User Avatar and Name */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                <Avatar
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            {['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'].map((status) => (
+                                                <Button
+                                                    key={status}
+                                                    variant={activeStatus === status ? 'contained' : 'outlined'}
+                                                    size="small"
                                                     sx={{
-                                                        width: 48,
-                                                        height: 48,
-                                                        bgcolor: '#1A1D1F',
-                                                        fontSize: '16px',
-                                                        fontWeight: 600,
-                                                        color: '#FF7A00',
-                                                        border: '2px solid #FF7A00',
-                                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
-
+                                                        borderRadius: 8,
+                                                        padding: '5px 20px 5px 20px',
+                                                        bgcolor: activeStatus === status ? '#FB7C37' : "#FFEDE6",
+                                                        border: "none",
+                                                        color: activeStatus === status ? 'white' : "#111111"
                                                     }}
+                                                    onClick={() => setActiveStatus(status)}
                                                 >
-                                                    JM
-                                                </Avatar>
-                                                <Typography>James Mann</Typography>
-                                            </Box>
-
-                                            {/* Divider */}
-                                            <Box sx={{
-                                                height: '28px',
-                                                width: '1px',
-                                                bgcolor: 'grey.300',
-                                            }} />
-
-                                            {/* Garage Avatar and Info */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                <Avatar
-                                                    sx={{
-                                                        width: 48,
-                                                        height: 48,
-                                                        bgcolor: '#1A1D1F',
-                                                        fontSize: '16px',
-                                                        fontWeight: 600,
-                                                        color: '#FF7A00',
-                                                        border: '2px solid #FF7A00',
-                                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
-
-                                                    }}
-                                                >
-                                                    DG
-                                                </Avatar>
-                                                <Box>
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        Handled by
-                                                    </Typography>
-                                                    <Typography variant="body2">
-                                                        Dave's Garage
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
+                                                    {formatValue(status.replace('_', ' '))}
+                                                </Button>
+                                            ))}
                                         </Box>
-
-                                        <StyledChip label="In Progress" size="small" />
-                                    </Box>
-
-                                    {/* Appointment Details */}
-                                    <Box sx={{ mb: 2 }}>
-                                        <Typography sx={{ color: '#FF7A00', mb: 0.5 }}>
-                                            Body shop appointment
-                                        </Typography>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                                            Porsche Taycan Turbo S
-                                        </Typography>
-                                    </Box>
-
-                                    {/* Bottom row with date, location, and button */}
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <AppointmentIcon stroke="#797676" fill='' />
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Oct, 20, 2024 10am
-                                                </Typography>
-                                            </Box>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <LocationIcon stroke="#797676" fill='' />
-                                                <Typography variant="body2" color="text.secondary">
-                                                    At Home
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-
-                                        <Button
-                                            variant="outlined"
-                                            sx={{
-                                                borderRadius: 3,
-                                                borderColor: 'grey.800',
-                                                color: 'text.primary',
-                                                px: 3,
-                                            }}
-                                            onClick={() => setIsAppointmentDrawerOpen(true)}
-
-                                        >
-                                            See Details
-                                        </Button>
-                                    </Box>
+                                    </Stack>
                                 </Box>
-                            </CardContent>
 
+                                {errorMessage ? (
+                                    <Typography color="error">{errorMessage}</Typography>
+                                ) : (
+                                    <>
+                                        {appointments.length > 0 ? (
+                                            appointments.map((appointment) => renderAppointmentCard(appointment))
+                                        ) : (
+                                            <Typography>No appointments found.</Typography>
+                                        )}
+                                    </>
+                                )}
+                            </CardContent>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -522,7 +492,6 @@ const Dashboard = () => {
                         </Grid>
                         {/* Services Section */}
                         <Box>
-
                             {errorMessage && (
                                 <Alert
                                     severity="error"
@@ -541,24 +510,34 @@ const Dashboard = () => {
                                     {errorMessage}
                                 </Alert>
                             )}
-                            <Typography variant="h6" sx={{ mb: 2 }}>Services</Typography>
-                            <Stack spacing={2}>
-                                {serviceData.map((service, index) => (
-                                    <ServiceItem key={service.id}>
-                                        <Box>
-                                            <Typography variant="h6">
-                                                {service.title}
-                                            </Typography>
-                                        </Box>
-                                        <Box
-                                            component="img"
-                                            src={index === 0 ? Images.vehiclereport : Images.GPSLocator}
-                                            alt={service.title}
-                                            sx={{ width: 200, height: 120 }}
-                                        />
-                                    </ServiceItem>
-                                ))}
-                            </Stack>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                <Typography variant="h6">Services</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    Scroll to see all
+                                </Typography>
+                            </Box>
+
+                            {/* Scrollable container for services */}
+                            <ScrollableServicesContainer>
+                                <Stack spacing={2}>
+                                    {serviceData.map((service, index) => (
+                                        <ServiceItem key={service.id}>
+                                            <Box>
+                                                <Typography variant="h6">
+                                                    {formatValue(service.title)}
+                                                </Typography>
+                                            </Box>
+                                            <Box
+                                                component="img"
+                                                src={index % 2 === 0 ? Images.vehiclereport : Images.GPSLocator}
+                                                alt={service.title}
+                                                sx={{ width: 200, height: 120 }}
+                                            />
+                                        </ServiceItem>
+                                    ))}
+                                </Stack>
+                            </ScrollableServicesContainer>
+
                             <Button
                                 variant="outlined"
                                 sx={{
@@ -569,13 +548,10 @@ const Dashboard = () => {
                                     px: 3,
                                 }}
                                 onClick={() => setIsDrawerOpen(true)}
-
                             >
                                 New Service
                             </Button>
                         </Box>
-
-
 
                         {/* Orders Section */}
                         <Box>
@@ -659,10 +635,13 @@ const Dashboard = () => {
                 onClose={() => setIsAppointmentDrawerOpen(false)}
                 title="Appointment Details"
             >
-                <AppointmentDetails
-                    onMarkCompleted={() => handleNewService}
-                    onExpand={() => setIsAppointmentDrawerOpen(false)}
-                />
+                {selectedAppointment && (
+                    <AppointmentDetails
+                        appointment={selectedAppointment}
+                        onMarkCompleted={() => { }}
+                        onExpand={() => { }}
+                    />
+                )}
             </CustomDrawer>
         </Box>
     );

@@ -6,14 +6,11 @@ import {
     CardContent,
     Typography,
     Grid,
-    Avatar,
     Chip,
     Button,
-    Rating,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
-import LocationIcon from '../../components/Icones/LocationIcon';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import ShopIcon from '../../components/Icones/ShopIcon';
 import CalendarIcon from '../../components/Icones/calendarIcon';
@@ -84,7 +81,7 @@ const Statistics = () => {
             <Grid container spacing={3}>
                 {/* Main content - Left column (12 units) */}
                 <Grid item xs={12} md={12} sx={{ marginBottom: 3 }}>
-                    <Avatar
+                    {/* <Avatar
                         sx={{
                             width: 64,
                             height: 64,
@@ -98,8 +95,8 @@ const Statistics = () => {
                         }}
                     >
                         DG
-                    </Avatar>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                    </Avatar> */}
+                    {/* <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
 
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 
@@ -148,7 +145,7 @@ const Statistics = () => {
                         </Box>
 
 
-                    </Box>
+                    </Box> */}
 
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                         <Typography variant="h6">Overview</Typography>

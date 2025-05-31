@@ -193,6 +193,9 @@ const OrderHistory = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [orderData, setOrders] = useState<OrderInterface[]>([]);
+    const [ordersData, setOrdersData] = useState<OrderInterface>();
+
+    console.log("ordersData", ordersData);
 
 
     // const handleOrderClick = (order: OrderDetailsInterface) => {
@@ -239,8 +242,32 @@ const OrderHistory = () => {
         setLoading(false);
     };
 
+    const fetchOrders = async () => {
+        setLoading(true);
+        try {
+
+            const response = await JC_Services('JAPPCARE', `order/list`, 'GET', "", connectedUsers.accessToken);
+            console.log("fetchordersresp", response);
+            if (response && response.body.meta.statusCode === 200) {
+                // setSuccessMessage('Successful!');
+                setOrdersData(response.body.data); // slice to get only 4 orders
+            } else if (response && response.body.meta.statusCode === 401) {
+
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+
+        setLoading(false);
+    };
+
     useEffect(() => {
         fetchProductData();
+        fetchOrders();
     }, []);
 
     const handleCloseMessage = () => {
