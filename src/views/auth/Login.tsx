@@ -48,8 +48,8 @@ const Login = () => {
 
             console.log("res", response);
 
-            if (response && response.status === 200) {
-                const users: iUsersConnected = response.body;
+            if (response && response.body.meta.statusCode === 200) {
+                const users: iUsersConnected = response.body.data;
 
                 const action: iUsersAction = {
                     type: "LOGIN",
@@ -65,11 +65,11 @@ const Login = () => {
                     console.log("userInfoResponse", userInfoResponse);
                     console.log("token==========", token);
 
-                    if (userInfoResponse && userInfoResponse.status === 200) {
+                    if (userInfoResponse && userInfoResponse.body.meta.statusCode === 200) {
                         // Update the store with additional user info
                         const updatedUsers: iUsersConnected = {
                             ...users,
-                            ...userInfoResponse.body,
+                            ...userInfoResponse.body.data,
                             accessTokenExpiry: Number(response.body.accessTokenExpiry),
                             refreshTokenExpiry: Number(response.body.refreshTokenExpiry)
                         };
@@ -90,14 +90,14 @@ const Login = () => {
                 navigate('/dashboard');
                 setSuccessMessage('Login successful!');
                 setErrorMessage('');
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.meta.statusCode === 401) {
                 // Invalid credentials, handle error (display message, etc.)
                 setErrorMessage('Invalid email or password');
             } else {
                 // Login failed, handle error (display message, etc.)
-                setErrorMessage(response.body.details);
+                setErrorMessage(response.body.meta.message);
                 setSuccessMessage('');
-                console.error('Login failed:', response.body.message);
+                console.error('Login failed:', response.body.meta.message);
             }
         } catch (error) {
             setErrorMessage('An error occurred during login. Try again later.');

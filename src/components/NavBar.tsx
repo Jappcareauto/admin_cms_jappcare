@@ -14,11 +14,11 @@ import {
 // import { Emergency } from '@mui/icons-material';
 import PieChartIcon from './Icones/PieChartIcon';
 import DashBoardIcon from './Icones/DashBoardIcon';
-import ShopIcon from './Icones/ShopIcon';
+// import ShopIcon from './Icones/ShopIcon';
 import AppointmentIcon from './Icones/AppointmentIcon';
 import ChatsIcon from './Icones/ChatsIcon';
 // import InvoiceIcon from './Icones/InvoiceIcon';
-import UserIcon from './Icones/UserIcon';
+// import UserIcon from './Icones/UserIcon';
 import UsersIcon from './Icones/UsersIcon';
 import TipIcon from './Icones/TipsIcon';
 import WalletIcon from './Icones/WalletIcon';
@@ -41,13 +41,13 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
 
     const menuItems = [
         { text: 'Dashboard', icon: <DashBoardIcon stroke='#111111' fill='#111111' />, path: '/dashboard' },
-        { text: 'Shop', icon: <ShopIcon stroke='' fill='' />, path: '/shop' },
+        // { text: 'Shop', icon: <ShopIcon stroke='' fill='' />, path: '/shop' },
         { text: 'Appointments', icon: <AppointmentIcon stroke='#111111' fill='#111111' />, path: '/appointments' },
         // { text: 'Emergency Assistance', icon: <Emergency />, path: '/emergency' },
         { text: 'Chats', icon: <ChatsIcon stroke='#111111' fill='#111111' />, path: '/servicecenterchats' },
         { text: 'Statistics', icon: <PieChartIcon stroke="#111111" fill="#111111" />, path: '/statistics' },
         // { text: 'Invoices', icon: <InvoiceIcon stroke='#111111' fill='#111111' />, path: '/invoices' },
-        { text: 'Profile', icon: <UserIcon fill='#111111' />, path: '/profile' },
+        // { text: 'Profile', icon: <UserIcon fill='#111111' />, path: '/profile' },
         { text: 'Accounts', icon: <UsersIcon fill='#111111' />, path: '/accounts' },
         { text: 'Tips', icon: <TipIcon fill='#111111' />, path: '/tips' },
         { text: 'Payments', icon: <WalletIcon fill='#111111' />, path: '/payments' },

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { format, parseISO } from 'date-fns';
 import {
     Box,
     Typography,
@@ -8,6 +9,7 @@ import {
     Grid,
     CardContent,
     Card,
+    CircularProgress
 } from '@mui/material';
 import WalletIcon from '../../components/Icones/WalletIcon';
 import UpwardArrowIcon from '../../components/Icones/UpwardArrowIcon';
@@ -18,12 +20,17 @@ import { useSelector } from 'react-redux';
 
 // Interfaces
 interface Transaction {
+    id: string;
+    money: {
+        amount: number;
+        currency: string;
+    };
+    paymentDate: string;
+    paymentMethod: string;
+    paymentMethodName: string;
+    userFrom: string;
+    userTo: string;
     amount: string;
-    date: string;
-    method: 'Cash' | 'MTN Momo';
-    from?: string;
-    to: string;
-    type: 'Withdrawal' | 'Earnings';
 }
 
 interface StyledCardProps {
@@ -33,7 +40,6 @@ interface StyledCardProps {
 // Styled Components
 const StyledChip = styled(Chip)(({ }) => ({
     borderRadius: 28,
-    // width: 99,
     height: 38,
     padding: '20px 14px',
     '&.active': {
@@ -88,110 +94,113 @@ const Payments = () => {
     const [activeMethodFilter, setActiveMethodFilter] = useState('All');
     const [loading, setLoading] = useState(false);
     const [payments, setPayments] = useState<Transaction[]>([]);
-    // const [filteredPayments, setFilteredPayments] = useState<iPayments[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
-    // const navigate = useNavigate();
-    console.log("errorMessage", errorMessage);
-    console.log("loading", loading);
-    console.log("payments", payments);
-
 
     const connectedUsers: iUsersConnected = useSelector(
         (state: iUsersConnected) => state)
 
-    // console.log("userconnected", connectedUsers);
     const token = connectedUsers.accessToken
-
-    // Sample data
-    const transactions: Transaction[] = [
-        {
-            amount: '28,000 Frs',
-            date: 'Oct. 20, 2024',
-            method: 'Cash',
-            to: "Dave's Garage",
-            type: 'Withdrawal'
-        },
-        {
-            amount: '28,000 Frs',
-            date: 'Oct. 20, 2024',
-            method: 'MTN Momo',
-            from: 'Sara Maye',
-            to: "Dave's Garage",
-            type: 'Earnings'
-        },
-        {
-            amount: '15,500 Frs',
-            date: 'Oct. 19, 2024',
-            method: 'MTN Momo',
-            from: 'John Smith',
-            to: "Mike's Auto Shop",
-            type: 'Earnings'
-        },
-        {
-            amount: '42,000 Frs',
-            date: 'Oct. 18, 2024',
-            method: 'Cash',
-            to: "Elena's Motors",
-            type: 'Withdrawal'
-        },
-        {
-            amount: '33,750 Frs',
-            date: 'Oct. 18, 2024',
-            method: 'MTN Momo',
-            from: 'Robert Chen',
-            to: "Quick Fix Garage",
-            type: 'Earnings'
-        },
-        {
-            amount: '19,900 Frs',
-            date: 'Oct. 17, 2024',
-            method: 'Cash',
-            from: 'Maria Garcia',
-            to: "Pro Auto Care",
-            type: 'Earnings'
-        },
-        {
-            amount: '55,000 Frs',
-            date: 'Oct. 16, 2024',
-            method: 'MTN Momo',
-            to: "Alex's Workshop",
-            type: 'Withdrawal'
-        }
-    ];
 
     const fetchPayments = async () => {
         setLoading(true);
+        setErrorMessage('');
         try {
-            const response = await JC_Services('JAPPCARE', `payment/list`, 'GET', "", token);
-            console.log("fecthnotifresp", response);
-            if (response && response.status === 200) {
-                // setSuccessMessage('Successful!');
-                setPayments(response.body.data);
+             console.log("Fetching payments with token:", token);
+
+            const response = await JC_Services('JAPPCARE', `payment/list`, 'POST', {}, token);
+
+            console.log("Full API Response:", JSON.stringify(response, null, 2));
+
+            // Detailed logging of response structure
+            if (response) {
+                console.log("Response Body:", response.body);
+                console.log("Meta Status Code:", response.body?.meta?.statusCode);
+            }
+
+            if (response && response.body?.meta?.statusCode === 200) {
+                // Ensure data is an array
+                const paymentData = Array.isArray(response.body.data)
+                    ? response.body.data
+                    : [];
+
+                console.log("Processed Payment Data:", paymentData);
+                setPayments(paymentData);
             } else if (response && response.status === 401) {
+                // Handling 401 errors from previous logic
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
-                setErrorMessage('Error fetching payments');
+                // More specific error handling
+                const errorMsg = response?.body?.meta?.message
+                    || 'Failed to fetch payments'
+                    || 'Unknown error occurred';
 
+                setErrorMessage(errorMsg);
+                console.error("Payment Fetch Error:", errorMsg);
+          } 
+         NewApiUpdates
             }
         } catch (error) {
-            console.error("Error:", error);
-            setErrorMessage("Network Error Try Again Later!!!!");
+            console.error("Catch Block Error:", error);
+            setErrorMessage(error instanceof Error ? error.message : "Network Error. Try Again Later!");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     useEffect(() => {
         fetchPayments();
     }, []);
 
+    // Calculations with extensive error handling
+    const totalEarnings = payments
+        .filter(p => p.userFrom !== 'Manager')
+        .reduce((sum, payment) => sum + (payment.money?.amount || 0), 0);
+
+    const totalWithdrawals = payments
+        .filter(p => p.userTo === 'User')
+        .reduce((sum, payment) => sum + (payment.money?.amount || 0), 0);
+
+    // Filtering with error handling
+    const filteredTransactions = payments.filter(transaction => {
+        const typeMatch =
+            activeFilter === 'All' ||
+            (activeFilter === 'Withdrawals' && transaction.userFrom !== 'User') ||
+            (activeFilter === 'Earnings' && transaction.userTo === 'Manager');
+
+        const methodMatch =
+            activeMethodFilter === 'All' ||
+            transaction.paymentMethodName.replace(' ', '') === activeMethodFilter;
+
+        return typeMatch && methodMatch;
+    });
+
+    // Render loading state
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    // Render error state
+    if (errorMessage) {
+        return (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+                <Typography color="error" variant="h6">
+                    {errorMessage}
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                    Please try again or contact support.
+                </Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ p: 3 }}>
             {/* Header */}
             <Box sx={{ mb: 4 }}>
-
-                <Box></Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3, justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, }}>
                         <WalletIcon fill='#111111' />
@@ -199,8 +208,6 @@ const Payments = () => {
                             Transactions
                         </Typography>
                     </Box>
-
-
                 </Box>
 
                 <Grid container spacing={3} >
@@ -212,10 +219,9 @@ const Payments = () => {
                                 </Box>
                                 <Box sx={{ mt: 4 }}>
                                     <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                        890,000 Frs
+                                        {totalWithdrawals.toLocaleString()} Frs
                                     </Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}>
-
                                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                                             Withdrawals
                                         </Typography>
@@ -233,10 +239,9 @@ const Payments = () => {
                                 </Box>
                                 <Box sx={{ mt: 4 }}>
                                     <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                        1,283,000 Frs
+                                        {totalEarnings.toLocaleString()} Frs
                                     </Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}>
-
                                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                                             Earnings
                                         </Typography>
@@ -283,74 +288,97 @@ const Payments = () => {
             <Typography variant="h6" sx={{ mb: 2, color: '#111' }}>
                 Transactions
             </Typography>
-            {transactions.map((transaction, index) => (
-                <TransactionItem key={index}>
-                    <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle1" fontWeight={500}>
-                            {transaction.amount}
-                        </Typography>
-
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
-                            {transaction.date}
-                        </Typography>
-                    </Box>
-
-                    <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
-                            {transaction.method}
-                        </Typography>
-                    </Box>
-
-                    <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {transaction.from && (
-                            <>
-                                <CircleAvatar sx={{ bgcolor: '#000', color: '#FF7A00', }}>
-                                    {transaction.from.split(' ').map(n => n[0]).join('')}
-                                </CircleAvatar>
-                                <Box>
-                                    <Typography variant="body2" color="text.secondary">
-                                        From
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        {transaction.from}
-                                    </Typography>
-                                </Box>
-                            </>
-                        )}
-                    </Box>
-
-                    <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CircleAvatar sx={{ bgcolor: '#FF7A00', color: '#fff' }}>
-                            {transaction.to.split(' ').map(n => n[0]).join('')}
-                        </CircleAvatar>
-                        <Box>
-                            <Typography variant="body2" color="text.secondary">
-                                To
-                            </Typography>
-                            <Typography variant="body2">
-                                {transaction.to}
+            {filteredTransactions.length > 0 ? (
+                filteredTransactions.map((transaction) => (
+                    <TransactionItem key={transaction.id}>
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="subtitle1" fontWeight={500}>
+                                {transaction.amount}
                             </Typography>
                         </Box>
-                    </Box>
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="body2" color="text.secondary">
+                                {format(parseISO(transaction.paymentDate), 'MMM. dd, yyyy')}
+                            </Typography>
+                        </Box>
 
-                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2 }}>
-                        <TransactionStatus type={transaction.type}>
-                            {transaction.type}
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="body2" color="text.secondary">
+                                {transaction.paymentMethodName}
+                            </Typography>
+                        </Box>
 
-                        </TransactionStatus>
-                        <Box>
-                            {transaction.type === 'Withdrawal' ? (
-                                <UpwardArrowIcon />
-                            ) : (
-                                <DownwardArrowIcon />
+                        <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                            {transaction.userFrom !== 'User' && (
+                                <>
+                                    <CircleAvatar sx={{ bgcolor: '#000', color: '#FF7A00', }}>
+                                        {transaction.userFrom.split(' ').map(n => n[0]).join('')}
+                                    </CircleAvatar>
+                                    <Box>
+                                        <Typography variant="body2" color="text.secondary">
+                                            From
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            {transaction.userFrom}
+                                        </Typography>
+                                    </Box>
+                                </>
                             )}
                         </Box>
 
-                    </Box>
-                </TransactionItem>
-            ))}
+
+                        <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                            {transaction.userFrom && (
+                                <>
+                                    <CircleAvatar sx={{ bgcolor: '#000', color: '#FF7A00', }}>
+                                        {transaction.userFrom.split(' ').map(n => n[0]).join('')}
+                                    </CircleAvatar>
+                                    <Box>
+                                        <Typography variant="body2" color="text.secondary">
+                                            From
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            {transaction.userFrom}
+                                        </Typography>
+                                    </Box>
+                                </>
+                            )}
+                        </Box>
+
+                        <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CircleAvatar sx={{ bgcolor: '#FF7A00', color: '#fff' }}>
+                                {transaction.userTo.split(' ').map(n => n[0]).join('')}
+                            </CircleAvatar>
+                            <Box>
+                                <Typography variant="body2" color="text.secondary">
+                                    To
+                                </Typography>
+                                <Typography variant="body2">
+                                    {transaction.userTo}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2 }}>
+                            <TransactionStatus type={transaction.userTo === 'Manager' ? 'Earnings' : 'Withdrawal'}>
+                                {transaction.userTo === 'Manager' ? 'Earnings' : 'Withdrawal'}
+                            </TransactionStatus>
+                            <Box>
+                                {transaction.userTo === 'Manager' ? (
+                                    <DownwardArrowIcon />
+
+                                ) : (
+                                    <UpwardArrowIcon />
+                                )}
+                            </Box>
+                        </Box>
+                    </TransactionItem>
+                ))
+            ) : (
+                <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', mt: 4 }}>
+                    No transactions found
+                </Typography>
+            )}
         </Box>
     );
 };

@@ -9,35 +9,78 @@ import {
     Stack
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import Images from '../../assets/Images/Images';
+import { useEffect, useState } from 'react';
+import { format, parseISO } from 'date-fns';
+import { ImageViewer } from '../../components/ImageViewer/ImageViewer';
 import AppointmentIcon from '../../components/Icones/AppointmentIcon';
 import LocationIcon from '../../components/Icones/LocationIcon';
-import { useState } from 'react';
-import { ImageViewer } from '../../components/ImageViewer/ImageViewer';
+import { AppointmentInterface } from '../../interfaces/Interfaces';
+import { useLocation, useParams } from 'react-router-dom';
+import { formatValue } from '../../tools/formatValue';
 
 interface ExpandedAppointmentDetailsProps {
+    appointment: AppointmentInterface;
     onClose: () => void;
+    onMarkCompleted?: () => void;
 }
 
-const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps) => {
+const ExpandedAppointmentDetails = ({ appointment, onClose, onMarkCompleted }: ExpandedAppointmentDetailsProps) => {
     const [viewerOpen, setViewerOpen] = useState(false);
-
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | undefined>(undefined);
-    const images = [Images.car1, Images.car1, Images.car2, Images.car2, Images.Porsche, Images.test];
+    const location = useLocation();
+    const { id } = useParams();
+    const [initialValues, setInitialValues] = useState<AppointmentInterface>();
+
+    console.log("initialValues", initialValues);
+
+
+    console.log("appointment", appointment);
+
+    // Placeholder images array (replace with actual images from appointment)
+    const images = [
+        ...(appointment?.vehicle?.media.items?.map((item) => item.sourceUrl) || ['/api/placeholder/400/320']),
+        '/api/placeholder/400/320'
+    ];
 
     const handleImageClick = (index: number) => {
         setSelectedImageIndex(index);
         setViewerOpen(true);
     };
+
+    const vehicleName = appointment?.vehicle?.name || 'Unknown Vehicle';
+    const vehicleDetail = appointment?.vehicle?.detail || { make: 'Unknown', model: 'Model', year: 'Year', trim: '' };
+    const serviceTitle = appointment?.service?.title || 'No Service';
+    const appointmentDate = appointment?.date ? parseISO(appointment.date) : new Date();
+    const appointmentStatus = appointment?.status?.replace('_', ' ') || 'Pending';
+    const appointmentNote = appointment?.note || 'No additional notes provided.';
+    const appointmentLocationType = appointment?.locationType === 'HOME' ? 'At Home' : appointment?.locationType || 'Unknown Location';
+
+
+    useEffect(() => {
+        if (id && location.state && location.state.appointmentData) {
+            // Use the data passed from the previous component
+            setInitialValues(location.state.appointmentData);
+        }
+    }, [id, location.state]);
+
+    if (!appointment) {
+        return (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h6">No Appointment Details Available</Typography>
+                <Button onClick={onClose} sx={{ mt: 2 }}>Close</Button>
+            </Box>
+        );
+    }
+
+
     return (
-        <Box >
+        <Box>
             {/* Header */}
             <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 p: 2.5,
-                // borderBottom: '1px solid',
                 borderColor: 'grey.200'
             }}>
                 <Typography
@@ -74,17 +117,16 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                     fontWeight: 600,
                                     color: '#FF7A00',
                                     border: '2px solid #FF7A00',
-                                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
-
+                                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
                                 }}
                             >
-                                JM
+                                {vehicleName.substring(0, 2).toUpperCase()}
                             </Avatar>
-                            <Typography>James Mann</Typography>
+                            <Typography>{vehicleName}</Typography>
                         </Box>
 
                         <Chip
-                            label="In Progress"
+                            label={formatValue(appointmentStatus)}
                             size="small"
                             sx={{
                                 height: '24px',
@@ -108,20 +150,20 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                             color: '#1A1D1F',
                             mb: 1
                         }}>
-                            Porsche Taycan Turbo S
+                            {`${vehicleDetail.make} ${vehicleDetail.model}`}
                         </Typography>
                         <Typography sx={{
                             fontSize: '15px',
                             color: '#6F767E'
                         }}>
-                            2024, RWD
+                            {`${vehicleDetail.year}, ${vehicleDetail.trim}`}
                         </Typography>
                     </Box>
 
                     <Box
                         component="img"
-                        src={Images.Porsche}
-                        alt="Porsche Taycan"
+                        src={appointment.vehicle?.media.mainItemUrl || '/api/placeholder/400/320'}
+                        alt={`${vehicleDetail.make} ${vehicleDetail.model}`}
                         sx={{
                             width: '100%',
                             maxWidth: '400px',
@@ -137,20 +179,20 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                         color: '#FF6B00',
                         mb: 2
                     }}>
-                        Body shop appointment
+                        {serviceTitle}
                     </Typography>
 
                     <Stack direction="column" spacing={3} sx={{ mb: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <AppointmentIcon fill='' stroke='#6F767E' />
                             <Typography sx={{ fontSize: '15px', color: '#6F767E' }}>
-                                Oct. 20, 2024 • 10am
+                                {`${format(appointmentDate, 'MMM. dd, yyyy')} • ${format(appointmentDate, 'hh:mm a')}`}
                             </Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <LocationIcon fill='' stroke='#6F767E' />
                             <Typography sx={{ fontSize: '15px', color: '#6F767E' }}>
-                                At Home
+                                {appointmentLocationType}
                             </Typography>
                         </Box>
                     </Stack>
@@ -161,7 +203,7 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                         mb: 3,
                         lineHeight: '24px'
                     }}>
-                        There is a noticeable dent on the rear bumper of my Porsche Taycan, specifically located between the lower edge of the rear headlight and the rear wheel arch. It is closer to the wheel arch, situated near the car's side profile. The dent is below the horizontal line of the rear headlight and sits closer to the lower third of the rear bumper.
+                        {appointmentNote}
                     </Typography>
 
                     <Typography sx={{
@@ -182,9 +224,9 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                     alt={`Damage view ${index + 1}`}
                                     onClick={() => handleImageClick(index)}
                                     sx={{
-                                        width: '170px', // Fixed width
-                                        height: '100px', // Fixed height
-                                        objectFit: 'cover', // Ensures the image fills the box without distortion
+                                        width: '170px',
+                                        height: '100px',
+                                        objectFit: 'cover',
                                         borderRadius: '12px',
                                         cursor: 'pointer',
                                     }}
@@ -205,7 +247,6 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                 {/* Right Column */}
                 <Grid item xs={12} md={4} sx={{
                     borderLeft: '1px solid #E6E8EC',
-                    // bgcolor: '#FCFCFC',
                     p: 3
                 }}>
                     <Typography sx={{
@@ -277,7 +318,6 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                             <Typography sx={{ fontSize: '15px', color: '#1A1D1F' }}>
                                 Invoice
                             </Typography>
-
                         </Box>
 
                         <Box sx={{ mb: 3, border: '1px solid #E6E8EC', borderRadius: '12px', p: 3, }}>
@@ -297,20 +337,21 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                         fontWeight: 600,
                                         color: '#FF7A00',
                                         border: '2px solid #FF7A00',
-                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)', // Adjust thickness and color
-
+                                        boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
                                     }}>
-                                        SM
+                                        {appointment?.vehicle?.name.substring(0, 2).toUpperCase()}
                                     </Avatar>
                                     <Box>
                                         <Typography sx={{ fontSize: '15px', fontWeight: 500, color: '#1A1D1F' }}>
-                                            Sara Maye
+                                            {appointment?.vehicle?.name}
                                         </Typography>
+                                        {/* Add email if available in the API */}
                                         <Typography sx={{
                                             fontSize: '13px',
                                             color: '#6F767E'
                                         }}>
-                                            sarahmaye@gmail.com
+                                            {/* Placeholder for email */}
+                                            {appointment?.vehicle?.name.toLowerCase().replace(' ', '')}@example.com
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -322,7 +363,6 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                         bgcolor: '#FFEDE9',
                                         padding: '12px 10px',
                                         color: '#F1351B',
-                                        // border: '1px solid #FF6B00',
                                         borderRadius: '16px',
                                         '& .MuiChip-label': {
                                             px: 1.5,
@@ -336,7 +376,6 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                             <Grid container spacing={2} sx={{ mb: 3 }}>
                                 <Grid item xs={12}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
-
                                         <Typography sx={{
                                             fontSize: '15px',
                                             color: '#6F767E',
@@ -349,14 +388,12 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                             color: '#1A1D1F',
                                             fontWeight: 600
                                         }}>
-                                            Inspection Fee
+                                            {appointment.service.title}
                                         </Typography>
                                     </Box>
-
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
-
                                         <Typography sx={{
                                             fontSize: '15px',
                                             color: '#6F767E',
@@ -369,13 +406,13 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                             color: '#1A1D1F',
                                             fontWeight: 600
                                         }}>
-                                            JC84727F300
+                                            {/* Placeholder invoice number */}
+                                            JC{appointment.id.substring(0, 8).toUpperCase()}
                                         </Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
-
                                         <Typography sx={{
                                             fontSize: '15px',
                                             color: '#6F767E',
@@ -388,13 +425,12 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                             color: '#1A1D1F',
                                             fontWeight: 600
                                         }}>
-                                            Oct 20, 2024
+                                            {format(parseISO(appointment.date), 'MMM dd, yyyy')}
                                         </Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
-
                                         <Typography sx={{
                                             fontSize: '15px',
                                             color: '#6F767E',
@@ -407,7 +443,8 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                             color: '#FF6B00',
                                             fontWeight: 600
                                         }}>
-                                            7,000 Frs
+                                            {/* Placeholder amount */}
+                                            5,000 Frs
                                         </Typography>
                                     </Box>
                                 </Grid>
@@ -458,12 +495,12 @@ const ExpandedAppointmentDetails = ({ onClose }: ExpandedAppointmentDetailsProps
                                 Create Invoice
                             </Button>
                         </Box>
-
                     </Box>
 
                     <Button
                         fullWidth
                         variant="contained"
+                        onClick={onMarkCompleted}
                         sx={{
                             height: '48px',
                             bgcolor: '#1A1D1F',

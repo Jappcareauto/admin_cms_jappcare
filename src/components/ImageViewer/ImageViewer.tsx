@@ -44,7 +44,7 @@ export const ImageViewer = ({
         >
             <Box sx={{
                 width: '900px',
-                height: '600px',
+                height: '700px',
                 bgcolor: 'rgba(0, 0, 0, 0.7)',
                 borderRadius: 2,
                 outline: 'none',
