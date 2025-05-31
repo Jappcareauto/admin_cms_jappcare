@@ -24,6 +24,7 @@ const NewServiceForm = ({ onSubmit }: NewServiceFormProps) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const ServiceCenterRequestbody = {};
 
     console.log("onSubmit", onSubmit);
 
@@ -50,10 +51,12 @@ const NewServiceForm = ({ onSubmit }: NewServiceFormProps) => {
 
             if (response && response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201) {
                 setSuccessMessage("Service created successfully");
+
                 setFormData({
                     title: '',
                     description: '',
                 })
+
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.details || 'Unauthorized to perform action');
 
@@ -70,7 +73,6 @@ const NewServiceForm = ({ onSubmit }: NewServiceFormProps) => {
         }
         setLoading(false);
     }
-
 
     const handleCloseMessage = () => {
         setErrorMessage('');

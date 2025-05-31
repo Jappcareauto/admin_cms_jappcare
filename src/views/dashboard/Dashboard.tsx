@@ -11,15 +11,12 @@ import {
     Button,
     Stack,
     IconButton,
-    // Collapse,
     Alert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { XAxis, ResponsiveContainer, AreaChart, YAxis, Tooltip, Area } from 'recharts';
 import AppointmentIcon from '../../components/Icones/AppointmentIcon';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
-// import NotifIcon from '../../components/Icones/NotifIcon';
-// import DropdownIcon from '../../components/Icones/DropdownIcon';
 import LocationIcon from '../../components/Icones/LocationIcon';
 import CustomDrawer from '../../components/Drawer/CustomDrawer';
 import NewServiceForm from '../../components/Drawer/serviceForm/NewServiceForm';
@@ -148,11 +145,13 @@ const Dashboard = () => {
     const [isAppointmentDrawerOpen, setIsAppointmentDrawerOpen] = useState(false);
     const [serviceData, setServiceData] = useState<ServiceData[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
+
     const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(null);
     const serviceRequestbody = {}
     const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
     const [Allappointments, setAllAppointments] = useState<AppointmentInterface[]>([]);
     const [activeStatus, setActiveStatus] = useState('IN_PROGRESS');
+
 
 
 
@@ -171,6 +170,7 @@ const Dashboard = () => {
             console.log("service resp", response);
             if (response && response.body.meta.statusCode === 200) {
                 setServiceData(response.body.data); // Display all services instead of slicing
+
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
@@ -221,10 +221,6 @@ const Dashboard = () => {
     const handleCloseMessage = () => {
         setErrorMessage('');
     };
-
-    // const handleToggle = () => {
-    //     setIsExpanded(!isExpanded);
-    // };
 
     const handleSeeDetails = (appointment: AppointmentInterface) => {
         setSelectedAppointment(appointment);

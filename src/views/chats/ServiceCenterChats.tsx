@@ -62,8 +62,10 @@ const ServiceCenterChats = () => {
             console.log("fetchChatroomResponse", response);
             if (response && response.body.meta.statusCode === 200) {
                 // Make sure data is an array before setting state
+
                 const chatroomsData = response?.body.data;
                 setChatrooms(chatroomsData || []); // Set to empty array if undefined or null
+
 
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');

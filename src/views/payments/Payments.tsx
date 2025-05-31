@@ -128,6 +128,7 @@ const Payments = () => {
             } else if (response && response.status === 401) {
                 // Handling 401 errors from previous logic
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+
             } else {
                 // More specific error handling
                 const errorMsg = response?.body?.meta?.message

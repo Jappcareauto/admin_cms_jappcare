@@ -101,6 +101,22 @@ export interface Chatroom {
     updatedAt: string;
 }
 
+export interface Users {
+    id: number;
+    name: string;
+    email: string;
+    date: string;
+    status: 'Users' | 'Service Providers';
+    verified: boolean;
+}
+
+export interface Roles {
+    id: number;
+    definition: string;
+    expired: boolean;
+
+}
+
 
 
 export interface Roles {

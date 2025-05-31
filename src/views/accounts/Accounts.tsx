@@ -29,6 +29,7 @@ import { useSelector } from 'react-redux';
 import { Users } from '../../interfaces/Interfaces';
 import UserDetails from '../../components/Drawer/userDetails/UserDetails';
 
+
 // Styled Components
 const StyledCard = styled(Card)(() => ({
     borderRadius: 16,
@@ -46,15 +47,18 @@ const StyledChip = styled(Chip)(() => ({
 }));
 
 const Accounts = () => {
+
     const [activeTab, setActiveTab] = useState(() => {
         return localStorage.getItem('activeTab') || 'Users';
     });
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isUserDetailsDrawerOpen, setIsUserDetailsDrawerOpen] = useState(false);
     const [isServiceProviderDrawerOpen, setIsServiceProviderDrawerOpen] = useState(false);
     const [isServiceProviderFormDrawerOpen, setIsServiceProviderFormDrawerOpen] = useState(false);
     const [selectedServiceProviderId, setSelectedServiceProviderId] = useState<string | null>(null);
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
     const [userAccounts, setuserAccounts] = useState<Users[]>([]);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -64,8 +68,6 @@ const Accounts = () => {
         (state: iUsersConnected) => state)
 
     console.log("loading", loading);
-
-    // console.log("userconnected", connectedUsers);
     const token = connectedUsers.accessToken
 
     const handleTabChange = (status: string) => {
@@ -74,12 +76,16 @@ const Accounts = () => {
     };
 
 
+    // console.log("userconnected", connectedUsers);
+    const token = connectedUsers.accessToken
+
     const handleNewUser = async (data: any) => {
         console.log('New service data:', data);
         setIsDrawerOpen(false);
         await fetchAccounts();
         // Handle the new service data here
     };
+
 
     const handleServiceProviderClick = (providerId: string) => {
         setSelectedServiceProviderId(providerId);
@@ -100,6 +106,7 @@ const Accounts = () => {
             if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
                 setuserAccounts(response.body.data);
+
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.meta.message || 'Unauthorized to perform action');
             } else {
@@ -112,6 +119,7 @@ const Accounts = () => {
 
         setLoading(false);
     };
+
 
     const fetchServiceCenter = async () => {
         try {
@@ -138,6 +146,7 @@ const Accounts = () => {
         fetchAccounts();
         fetchServiceCenter();
     }, [connectedUsers.accessToken]);
+
 
     // Format date function
     const formatDate = (dateString: string) => {
@@ -192,6 +201,7 @@ const Accounts = () => {
                             label={status}
                             className={activeTab === status ? 'active' : ''}
                             onClick={() => handleTabChange(status)}
+
                             sx={{
                                 bgcolor: activeTab === status ? '#FB7C37' : '#fff',
                                 '&:hover': {
@@ -279,7 +289,9 @@ const Accounts = () => {
                             <Box sx={{ width: 300, display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <CalendarIcon stroke='#777777' fill='' />
                                 <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
+
                                     {formatDate(user.createdAt)}
+
                                 </Typography>
                             </Box>
 
@@ -305,10 +317,12 @@ const Accounts = () => {
                                 <IconButton size="small">
                                     <TrashIcon stroke='#141B34' fill='' />
                                 </IconButton>
+
                                 <IconButton
                                     size="small"
                                     sx={{ color: '#FB7C37' }}
                                     onClick={() => handleUserClick(user.id)}                                 >
+
                                     <ArrowForwardIcon />
                                 </IconButton>
                             </Box>
@@ -402,11 +416,13 @@ const Accounts = () => {
                                 <IconButton size="small">
                                     <TrashIcon stroke='#141B34' fill='' />
                                 </IconButton>
+
                                 <IconButton
                                     size="small"
                                     sx={{ color: '#FB7C37' }}
                                     onClick={() => handleServiceProviderClick(provider.id)}
                                 >
+
                                     <ArrowForwardIcon />
                                 </IconButton>
                             </Box>

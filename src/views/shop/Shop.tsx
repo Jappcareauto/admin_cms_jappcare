@@ -228,7 +228,7 @@ const Shop = () => {
             const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", token);
             console.log("fecthnotifresp", response);
             if (response && response.body.meta.statusCode === 200) {
-                // setSuccessMessage('Successful!');
+
                 setNotificationData(response.body.data[0]);
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
@@ -251,6 +251,7 @@ const Shop = () => {
             if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
                 setOrdersData(response.body.data.data.slice(0, 4)); // slice to get only 4 orders
+
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
@@ -640,10 +641,10 @@ const Shop = () => {
                     <ProductDetails
                         product={selectedProduct}
                         onEdit={() => {
-                            // Handle edit functionality
+                            
                             console.log('Editing product:', selectedProduct.id);
                         }}
-                    // onCancel={handleCloseDrawer}
+                    
                     />
                 )}
             </CustomDrawer>

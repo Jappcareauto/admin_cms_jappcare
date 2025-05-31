@@ -252,6 +252,7 @@ const OrderHistory = () => {
                 // setSuccessMessage('Successful!');
                 setOrdersData(response.body.data); // slice to get only 4 orders
             } else if (response && response.body.meta.statusCode === 401) {
+
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 setErrorMessage('');
