@@ -105,7 +105,7 @@ const Payments = () => {
         setLoading(true);
         setErrorMessage('');
         try {
-            console.log("Fetching payments with token:", token);
+             console.log("Fetching payments with token:", token);
 
             const response = await JC_Services('JAPPCARE', `payment/list`, 'POST', {}, token);
 
@@ -125,6 +125,9 @@ const Payments = () => {
 
                 console.log("Processed Payment Data:", paymentData);
                 setPayments(paymentData);
+            } else if (response && response.status === 401) {
+                // Handling 401 errors from previous logic
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 // More specific error handling
                 const errorMsg = response?.body?.meta?.message
@@ -133,6 +136,8 @@ const Payments = () => {
 
                 setErrorMessage(errorMsg);
                 console.error("Payment Fetch Error:", errorMsg);
+          } 
+         NewApiUpdates
             }
         } catch (error) {
             console.error("Catch Block Error:", error);
