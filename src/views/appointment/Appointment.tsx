@@ -248,7 +248,7 @@ const Appointment = () => {
                                 Handled by
                             </Typography>
                             <Typography variant="body2">
-                                Dave's Garage
+                                {appointment.serviceCenter.name}
                             </Typography>
                         </Box>
                     </Box>

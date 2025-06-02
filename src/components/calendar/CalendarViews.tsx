@@ -352,6 +352,7 @@ const CalendarViews: React.FC = () => {
                             flexDirection: "column",
                             justifyContent: "space-between",
                             padding: "24px",
+                            mb: 2,
                         }}
                     >
                         <Typography variant="h6" sx={{ fontWeight: "bold" }}>

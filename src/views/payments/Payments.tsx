@@ -109,13 +109,7 @@ const Payments = () => {
 
             const response = await JC_Services('JAPPCARE', `payment/list`, 'POST', {}, token);
 
-            console.log("Full API Response:", JSON.stringify(response, null, 2));
-
-            // Detailed logging of response structure
-            if (response) {
-                console.log("Response Body:", response.body);
-                console.log("Meta Status Code:", response.body?.meta?.statusCode);
-            }
+            // console.log("Full API Response:", JSON.stringify(response, null, 2));
 
             if (response && response.body?.meta?.statusCode === 200) {
                 // Ensure data is an array
@@ -127,9 +121,7 @@ const Payments = () => {
                 setPayments(paymentData);
             } else {
                 // More specific error handling
-                const errorMsg = response?.body?.meta?.message
-                    || 'Failed to fetch payments'
-                    || 'Unknown error occurred';
+                const errorMsg = response?.body?.meta?.message || 'Failed to fetch payments' || 'Unknown error occurred';
 
                 setErrorMessage(errorMsg);
                 console.error("Payment Fetch Error:", errorMsg);
@@ -137,9 +129,9 @@ const Payments = () => {
         } catch (error) {
             console.error("Catch Block Error:", error);
             setErrorMessage(error instanceof Error ? error.message : "Network Error. Try Again Later!");
-        } finally {
-            setLoading(false);
         }
+        setLoading(false);
+
     };
 
     useEffect(() => {

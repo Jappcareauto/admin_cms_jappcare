@@ -86,38 +86,7 @@ const ExportReport = ({ onSubmit }: ExportReportProps) => {
         <Box >
 
             {/* Profile Section */}
-            <Avatar
-                sx={{
-                    width: 64,
-                    height: 64,
-                    bgcolor: '#111111',
-                    color: '#FF7A00',
-                    fontSize: '22px',
-                    fontWeight: 600,
-                    border: '2px solid #FF7A00',
-                    boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
-                }}
-            >
-                DG
-            </Avatar>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
 
-                <Box >
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        Dave's Garage
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <LocationIcon fill="#FF7A00" stroke="#FF7A00" />
-                        <Typography variant="body2" color="text.secondary">
-                            Deido, Douala
-                        </Typography>
-                        <StarIcon sx={{ color: '#FF7A00', fontSize: 16 }} />
-                        <Typography variant="body2" color="text.secondary">
-                            4.75
-                        </Typography>
-                    </Box>
-                </Box>
-            </Box>
 
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
                 Select Data to Export
