@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
     Box,
     Typography,
-    Avatar,
+
     Switch,
     ToggleButtonGroup,
     ToggleButton,
@@ -10,8 +10,7 @@ import {
     TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import StarIcon from '@mui/icons-material/Star';
-import LocationIcon from '../../Icones/LocationIcon';
+
 
 interface ExportReportProps {
     onSubmit: (data: any) => void;
