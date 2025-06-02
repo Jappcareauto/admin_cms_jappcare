@@ -1,4 +1,4 @@
-name: Build and Deploy Admin Vite App Docker Image to AWS EC2
+name: Build and Deploy Admin Docker Image to AWS EC2
 
 on:
   pull_request:
