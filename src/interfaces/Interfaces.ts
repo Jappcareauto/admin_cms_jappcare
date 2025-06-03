@@ -101,17 +101,7 @@ export interface Chatroom {
     updatedAt: string;
 }
 
-export interface Users {
-    id: number;
-    name: string;
-    email: string;
-    date: string;
-    createdAt: string;
-    updatedAt: string;
-    status: 'Users' | 'Service Providers';
-    verified: boolean;
 
-}
 
 export interface Roles {
     id: number;
@@ -142,6 +132,31 @@ export interface AppointmentInterface {
         description: string | null;
         serviceCenterId: string | null;
         definition: string;
+    };
+
+    serviceCenter: {
+        id: string;
+        createdBy: string | null;
+        updatedBy: string | null;
+        createdAt: string;
+        updatedAt: string;
+        name: string;
+        ownerId: string | null;
+        location: {
+            id: string;
+            createdBy: string;
+            updatedBy: string;
+            createdAt: string;
+            updatedAt: string;
+            latitude: number;
+            longitude: number;
+            name: string;
+            description: string;
+        };
+        category: string;
+        imageId: string | null;
+        imageUrl: string | null;
+        available: boolean;
     };
 
     vehicle: {
@@ -202,4 +217,66 @@ export interface AppointmentInterface {
 }
 
 
+// User interface for the fetched accounts
+export interface Users {
+    id: string;
+    name: string;
+    email: string;
+    date: string;
+    createdAt: string;
+    updatedAt: string;
+    status: 'Users' | 'Service Providers';
+    verified: boolean;
+}
 
+// Service interface for API data
+export interface Service {
+    id: string;
+    title: string;
+    description?: string;
+    createdBy: string;
+    updatedBy: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+
+
+export interface ServiceCenterRequest {
+    name: string;
+    ownerId: string;
+    createdBy: string;
+    updatedBy: string;
+    location: {
+        id?: string;
+        latitude: number;
+        longitude: number;
+        name: string;
+        description: string;
+    };
+    category: string;
+    available: boolean;
+}
+
+export interface ServiceProviderData {
+    id?: string | number;
+    name: string;
+    description?: string;
+    location: {
+        id?: string;
+        latitude: number;
+        longitude: number;
+        name: string;
+        description: string;
+    };
+    category: string;
+    available: boolean;
+    owner?: {
+        id: string;
+        name: string;
+        email: string;
+    };
+    rating?: number;
+    images?: string[];
+    services?: string[];
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -8,31 +8,40 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ImageIcon from '../../Icones/ImageIcon';
-import { Grid, Snackbar, Alert } from '@mui/material';
+import { Grid, Snackbar, Alert, Chip, Switch, FormControlLabel } from '@mui/material';
 import Images from '../../../assets/Images/Images';
 import { JC_Services } from '../../../services';
 import { iUsersConnected } from '../../../interfaces/UsersInterface';
 import { useSelector } from 'react-redux';
 import { Autocomplete } from '@mui/material';
-
+import { formatValue } from '../../../tools/formatValue';
+import { Service, ServiceCenterRequest, Users } from '../../../interfaces/Interfaces';
+import ReusableGoogleMap from '../../googleMapIntegration/ReusableGoogleMap';
 
 interface NewServiceProviderFormProps {
     onSubmit?: (data: any) => void;
 }
 
-interface ServiceCenterRequest {
-    name: string;
-    ownerId: string;
-    location: {
-        id?: string;
-        latitude: number;
-        longitude: number;
-        name: string;
-        description: string;
-    };
-    category: 'GENERAL_MAINTENANCE' | 'BODY_SHOP' | 'DEEP_CLEANING';
-    // ownerIdAsUuid: string;
+interface LocationData {
+    lat: number;
+    lng: number;
+    address?: string;
+}
+
+interface ServiceCenterServiceLink {
+    id?: string;
+    createdBy: string;
+    updatedBy: string;
+    createdAt?: string;
+    updatedAt?: string;
+    serviceCenterId: string;
+    serviceId: string;
+    price: number;
+    durationMinutes: number;
+    available: boolean;
 }
 
 const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
@@ -44,29 +53,135 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
         homeAddress: '',
         phoneNumber: '',
         percentageCommission: '',
-        countryCode: '+237'
+        countryCode: '+237',
+        selectedUserId: '',
+        available: true
     });
 
-    const [selectedCategory, setSelectedCategory] = useState<'GENERAL_MAINTENANCE' | 'BODY_SHOP' | 'DEEP_CLEANING'>('GENERAL_MAINTENANCE');
-    const [location, setLocation] = useState({ lat: 4.0511, lng: 9.7679 }); // Default coordinates for Douala
+    const [selectedServices, setSelectedServices] = useState<Service[]>([]);
+    const [serviceData, setServiceData] = useState<Service[]>([]);
+    const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+    const [servicesPerPage] = useState(6);
+    const [location, setLocation] = useState<LocationData>({ lat: 4.0511, lng: 9.7679 });
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const mapRef = useRef<google.maps.Map | null>(null);
-    const markerRef = useRef<google.maps.Marker | null>(null);
+    const [userAccounts, setUserAccounts] = useState<Users[]>([]);
+    const [userAccountsLoading, setUserAccountsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     const connectedUsers: iUsersConnected = useSelector((state: iUsersConnected) => state);
     const userId = connectedUsers.id;
-    const [searchAddress, setSearchAddress] = useState('');
-    const [addressSuggestions, setAddressSuggestions] = useState<Array<{
-        place_id: string;
-        description: string;
-        structured_formatting: {
-            main_text: string;
-            secondary_text: string;
-        };
-    }>>([]);
-    const autocompleteServiceRef = useRef<google.maps.places.AutocompleteService | null>(null);
-    const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null);
+    const token = connectedUsers.accessToken;
+
+    // Service icon mapping - maps service titles to appropriate icons
+    const getServiceIcon = (serviceTitle: string): string => {
+        const title = serviceTitle.toLowerCase();
+
+        // Check for specific service types and return appropriate icons
+        if (title.includes('maintenance') || title.includes('repair') || title.includes('mechanic')) {
+            return Images.maintainanceicon || '/default-maintenance.png';
+        }
+        if (title.includes('body') || title.includes('paint') || title.includes('collision')) {
+            return Images.bodyshopicon || '/default-bodyshop.png';
+        }
+        if (title.includes('clean') || title.includes('wash') || title.includes('detail')) {
+            return Images.deepcleaningicon || '/default-cleaning.png';
+        }
+        if (title.includes('tire') || title.includes('wheel')) {
+            return '/default-tire.png';
+        }
+        if (title.includes('oil') || title.includes('change')) {
+            return '/default-oil.png';
+        }
+        if (title.includes('electric') || title.includes('battery')) {
+            return '/default-electric.png';
+        }
+        if (title.includes('brake')) {
+            return '/default-brake.png';
+        }
+        if (title.includes('engine')) {
+            return '/default-engine.png';
+        }
+        if (title.includes('transmission')) {
+            return '/default-transmission.png';
+        }
+        if (title.includes('diagnostic')) {
+            return '/default-diagnostic.png';
+        }
+
+        // Default fallback icons based on first letter or random selection
+        const defaultIcons = [
+            Images.maintainanceicon,
+            Images.bodyshopicon,
+            Images.deepcleaningicon
+        ].filter(Boolean); // Remove any undefined icons
+
+        if (defaultIcons.length > 0) {
+            // Use service ID or title to consistently select the same icon for the same service
+            const hash = serviceTitle.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+            return defaultIcons[Math.abs(hash) % defaultIcons.length];
+        }
+
+        // Ultimate fallback - return a placeholder
+        return '/default-service.png';
+    };
+
+    // Service request body for API call
+    const serviceRequestbody = {};
+
+    // Function to fetch services from API
+    const fetchService = async () => {
+        try {
+            const response = await JC_Services('JAPPCARE', `service/list`, 'POST', serviceRequestbody, connectedUsers.accessToken);
+            console.log("service resp", response);
+            if (response && response.body.meta.statusCode === 200) {
+                setServiceData(response.body.data);
+            } else if (response && response.body.meta.statusCode === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('No Data Found');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+    };
+
+    // Function to fetch user accounts
+    const fetchAccounts = async () => {
+        setUserAccountsLoading(true);
+        try {
+            const response = await JC_Services('JAPPCARE', `user/list`, 'POST', {}, token);
+            console.log("fecthaccountresp", response);
+            if (response && response.body.meta.statusCode === 200) {
+                setUserAccounts(
+                    response.body.data.filter((user: any) =>
+                        user?.authorities?.authoritiesClear?.ROLE?.some(
+                            (role: string) => role === "ROLE_ADMIN" || role === "ROLE_GARAGE_MANAGER" || role === "ROLE_SERVICE_MANAGER"
+                        )
+                    )
+                ); // Filter out users with ROLE_ADMIN or ROLE_MANAGER
+            } else if (response && response.body.meta.statusCode === 401) {
+                setErrorMessage(response.body.meta.message || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('Error fetching user accounts');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setErrorMessage("Network Error Try Again Later!!!!");
+        }
+        setUserAccountsLoading(false);
+    };
+
+    // Fetch accounts and services on component mount
+    useEffect(() => {
+        fetchAccounts();
+        fetchService();
+    }, []);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -76,51 +191,158 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
         }));
     };
 
-    const handleCategorySelect = (category: 'GENERAL_MAINTENANCE' | 'BODY_SHOP' | 'DEEP_CLEANING') => {
-        setSelectedCategory(category);
+    // Handle service selection (multiple selection)
+    const handleServiceSelect = (service: Service) => {
+        setSelectedServices(prev => {
+            const isSelected = prev.some(s => s.id === service.id);
+            if (isSelected) {
+                return prev.filter(s => s.id !== service.id);
+            } else {
+                return [...prev, service];
+            }
+        });
+    };
+
+    // Handle user selection
+    const handleUserSelect = (_event: React.SyntheticEvent, value: Users | null) => {
+        setFormData(prev => ({
+            ...prev,
+            selectedUserId: value ? value.id.toString() : ''
+        }));
+    };
+
+    // Navigation functions for services
+    const handlePrevServices = () => {
+        setCurrentServiceIndex(prev => Math.max(0, prev - servicesPerPage));
+    };
+
+    const handleNextServices = () => {
+        setCurrentServiceIndex(prev =>
+            Math.min(serviceData.length - servicesPerPage, prev + servicesPerPage)
+        );
+    };
+
+    // Get currently visible services
+    const visibleServices = serviceData.slice(currentServiceIndex, currentServiceIndex + servicesPerPage);
+
+    // Handle location change from map
+    const handleLocationChange = (newLocation: LocationData) => {
+        setLocation(newLocation);
+    };
+
+    // Handle address change from map
+    const handleAddressChange = (address: string) => {
+        setFormData(prev => ({
+            ...prev,
+            homeAddress: address
+        }));
+    };
+
+    // Function to link services to service center
+    const linkServicesToServiceCenter = async (serviceCenterId: string) => {
+        const linkPromises = selectedServices.map(async (service) => {
+            const serviceLinkData: ServiceCenterServiceLink = {
+                createdBy: userId,
+                updatedBy: userId,
+                serviceCenterId: serviceCenterId,
+                serviceId: service.id,
+                price: 0, // Default price - you might want to make this configurable
+                durationMinutes: 60, // Default duration - you might want to make this configurable
+                available: true
+            };
+
+            try {
+                const response = await JC_Services(
+                    'JAPPCARE',
+                    `service-centers/${serviceCenterId}/services`,
+                    'POST',
+                    serviceLinkData,
+                    connectedUsers.accessToken
+                );
+
+                console.log(`Service ${service.title} linked to service center:`, response);
+
+                if (response && (response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201)) {
+                    return { success: true, service: service.title };
+                } else {
+                    throw new Error(`Failed to link service ${service.title}: ${response.body.meta.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error(`Error linking service ${service.title}:`, error);
+                throw new Error(`Failed to link service ${service.title}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+        });
+
+        await Promise.all(linkPromises);
     };
 
     const createServiceCenter = async () => {
+        // Validate that a user is selected
+        if (!formData.selectedUserId) {
+            setError('Please select a user as the owner');
+            return;
+        }
+
+        // Validate that at least one service is selected
+        if (selectedServices.length === 0) {
+            setError('Please select at least one service');
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
         try {
-            // Generate a random UUID for the owner (in a real app, this would be a valid user ID)
-            // const ownerId = crypto.randomUUID ? crypto.randomUUID() : '3fa85f64-5717-4562-b3fc-2c963f66afa6';
-
+            // Create a single service center
             const serviceCenterRequest: ServiceCenterRequest = {
                 name: formData.name,
-                ownerId: userId, // Using name as ownerId
+                ownerId: formData.selectedUserId,
+                createdBy: userId,
+                updatedBy: userId,
                 location: {
                     latitude: location.lat,
                     longitude: location.lng,
                     name: formData.homeAddress,
                     description: `Service center located at ${formData.homeAddress}`
                 },
-                category: selectedCategory,
-                // ownerIdAsUuid: ownerId
+                // category: selectedServices.map(s => s.title).join(', '), // Combined categories
+                category: selectedServices.length > 0 ? selectedServices[0].title : 'General Service', // Use first service as primary category
+                available: formData.available,
             };
 
             console.log('Service Center Request:', serviceCenterRequest);
 
-            // Make the API call
-            // const response = await fetch('api/v1/service-center', { method: 'POST', headers: {  'Content-Type': 'application/json',},
-            //     body: JSON.stringify(serviceCenterRequest)
-            // });
             const response = await JC_Services('JAPPCARE', `service-center`, 'POST', serviceCenterRequest, connectedUsers.accessToken);
-            console.log("response", response);
+            console.log("Service center creation response:", response);
 
-            if (response && response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201) {
+            if (response && (response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201)) {
+                const serviceCenterId = response.body.data.id;
+                console.log('Created service center with ID:', serviceCenterId);
+
+                // Link all selected services to the created service center
+                await linkServicesToServiceCenter(serviceCenterId);
+
                 setSuccess(true);
-            }
-            else {
-                throw new Error(`Error: ${response.status}`);
+                // Reset form after successful creation
+                setFormData({
+                    companyName: '',
+                    name: '',
+                    email: '',
+                    password: '',
+                    homeAddress: '',
+                    phoneNumber: '',
+                    percentageCommission: '',
+                    countryCode: '+237',
+                    selectedUserId: '',
+                    available: true
+                });
+                setSelectedServices([]);
 
-            }
-
-            // If onSubmit prop is provided, call it with the form data
-            if (onSubmit) {
-                onSubmit(serviceCenterRequest);
+                if (onSubmit) {
+                    onSubmit({ selectedServices, formData, serviceCenterId });
+                }
+            } else {
+                throw new Error(`Error creating service center: ${response.body.meta.message || 'Unknown error'}`);
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -135,231 +357,12 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
         createServiceCenter();
     };
 
-    useEffect(() => {
-        const loadGoogleMapsScript = () => {
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBy9Mq91oGtmrw1jKiRrDvKWwGpQgtzt3I&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = initializeMap;
-            document.body.appendChild(script);
-        };
-
-        const initializeMap = () => {
-            const mapElement = document.getElementById('provider-map-container') as HTMLElement;
-            if (!mapElement) return;
-
-            const map = new google.maps.Map(mapElement, {
-                center: location,
-                zoom: 14,
-            });
-
-            mapRef.current = map;
-
-            // Initialize the Places services
-            autocompleteServiceRef.current = new google.maps.places.AutocompleteService();
-            placesServiceRef.current = new google.maps.places.PlacesService(map);
-
-            // Create a marker that can be dragged to set location
-            const marker = new google.maps.Marker({
-                position: location,
-                map,
-                title: formData.companyName || "New Service Center",
-                draggable: true
-            });
-
-            markerRef.current = marker;
-
-            // Update location state when marker is dragged
-            google.maps.event.addListener(marker, 'dragend', function () {
-                const position = marker.getPosition();
-                if (position) {
-                    setLocation({
-                        lat: position.lat(),
-                        lng: position.lng()
-                    });
-
-                    // Try to get address from coordinates (reverse geocoding)
-                    const geocoder = new google.maps.Geocoder();
-                    geocoder.geocode({ location: position }, (results, status) => {
-                        if (status === "OK" && results && results[0]) {
-                            setSearchAddress(results[0].formatted_address);
-
-                            // Update address field if user hasn't entered anything
-                            if (!formData.homeAddress) {
-                                setFormData(prev => ({
-                                    ...prev,
-                                    homeAddress: results[0].formatted_address
-                                }));
-                            }
-                        }
-                    });
-                }
-            });
-
-            // Also allow clicking on the map to set location
-            interface MapClickEvent {
-                latLng: google.maps.LatLng;
-            }
-
-            google.maps.event.addListener(map, 'click', function (event: MapClickEvent) {
-                marker.setPosition(event.latLng);
-                setLocation({
-                    lat: event.latLng.lat(),
-                    lng: event.latLng.lng()
-                });
-
-                // Try to get address from coordinates (reverse geocoding)
-                const geocoder: google.maps.Geocoder = new google.maps.Geocoder();
-                geocoder.geocode(
-                    { location: event.latLng },
-                    (results: google.maps.GeocoderResult[] | null, status: google.maps.GeocoderStatus) => {
-                        if (status === "OK" && results && results[0]) {
-                            setSearchAddress(results[0].formatted_address);
-
-                            // Update address field if user hasn't entered anything
-                            if (!formData.homeAddress) {
-                                setFormData(prev => ({
-                                    ...prev,
-                                    homeAddress: results[0].formatted_address
-                                }));
-                            }
-                        }
-                    }
-                );
-            });
-        };
-
-        if (!window.google) {
-            loadGoogleMapsScript();
-        } else {
-            initializeMap();
-        }
-    }, [formData.companyName]);
-
-
-
-
-    // Update marker title when company name changes
-    useEffect(() => {
-        if (markerRef.current && formData.companyName) {
-            markerRef.current.setTitle(formData.companyName);
-        }
-    }, [formData.companyName]);
-
-    const fetchSuggestions = (input: string) => {
-        if (!input || !autocompleteServiceRef.current) return;
-
-        // Set some bias toward Cameroon if that's your target region
-        const sessionToken = new google.maps.places.AutocompleteSessionToken();
-
-        autocompleteServiceRef.current.getPlacePredictions({
-            input,
-            sessionToken,
-            // You can uncomment and adjust these options to bias results to a region
-            // componentRestrictions: { country: 'cm' }, // Cameroon
-            // location: new google.maps.LatLng(4.0511, 9.7679), // Douala
-            // radius: 50000, // 50km radius
-        }, (predictions, status) => {
-            if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
-                setAddressSuggestions([]);
-                return;
-            }
-
-            setAddressSuggestions(predictions);
-        });
+    const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({
+            ...prev,
+            available: event.target.checked
+        }));
     };
-
-    // Add a debounce utility to prevent too many API calls
-    const useDebounce = (value: string, delay: number) => {
-        const [debouncedValue, setDebouncedValue] = useState(value);
-
-        useEffect(() => {
-            const handler = setTimeout(() => {
-                setDebouncedValue(value);
-            }, delay);
-
-            return () => {
-                clearTimeout(handler);
-            };
-        }, [value, delay]);
-
-        return debouncedValue;
-    };
-
-    // Use the debounced value for API calls
-    const debouncedSearchValue = useDebounce(searchAddress, 300);
-
-    // Effect to fetch suggestions when search changes
-    useEffect(() => {
-        if (debouncedSearchValue) {
-            fetchSuggestions(debouncedSearchValue);
-        } else {
-            setAddressSuggestions([]);
-        }
-    }, [debouncedSearchValue]);
-
-    // Handle selecting a suggestion
-    const handleSuggestionSelect = (_event: React.SyntheticEvent, value: any) => {
-        if (!value || !placesServiceRef.current || !mapRef.current || !markerRef.current) return;
-
-        // Get place details
-        placesServiceRef.current.getDetails({
-            placeId: value.place_id,
-            fields: ['geometry', 'formatted_address', 'name']
-        }, (place, status) => {
-            if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.geometry || !place.geometry.location) {
-                console.error('Error fetching place details');
-                return;
-            }
-
-            // Update marker position
-            markerRef.current?.setPosition(place.geometry.location);
-
-            // Update our location state
-            setLocation({
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng()
-            });
-
-            // Center map on the location
-            mapRef.current?.setCenter(place.geometry.location);
-            mapRef.current?.setZoom(16);
-
-            // Update address field
-            if (place.formatted_address) {
-                setSearchAddress(place.formatted_address);
-
-                // Update home address field if empty
-                if (!formData.homeAddress) {
-                    setFormData(prev => ({
-                        ...prev,
-                        homeAddress: place.formatted_address || ''
-                    }));
-                }
-            }
-        });
-    };
-
-
-
-    const services = [
-        {
-            name: 'General\nMaintenance',
-            icon: Images.maintainanceicon,
-            category: 'GENERAL_MAINTENANCE' as const
-        },
-        {
-            name: 'Body Shop',
-            icon: Images.bodyshopicon,
-            category: 'BODY_SHOP' as const
-        },
-        {
-            name: 'Deep\nCleaning',
-            icon: Images.deepcleaningicon,
-            category: 'DEEP_CLEANING' as const
-        },
-    ];
 
     return (
         <Box
@@ -368,7 +371,6 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
         >
             {/* User Details Header */}
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {/* Avatar Section with Edit Icon */}
                 <Box sx={{ position: 'relative', width: 'fit-content', mb: 4, display: "flex", alignItems: "center", }}>
                     <Avatar
                         sx={{
@@ -403,7 +405,64 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
             </Box>
 
             <Stack spacing={2.5}>
-
+                {/* User Selection Field */}
+                <Autocomplete
+                    options={userAccounts}
+                    getOptionLabel={(option) => option.name}
+                    loading={userAccountsLoading}
+                    onChange={handleUserSelect}
+                    value={userAccounts.find(user => user.id.toString() === formData.selectedUserId) || null}
+                    sx={{
+                        '& .MuiAutocomplete-popper': {
+                            backgroundColor: 'white'
+                        }
+                    }}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                backgroundColor: 'white',
+                                boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
+                                borderRadius: 1
+                            }
+                        },
+                        listbox: {
+                            sx: {
+                                backgroundColor: 'white',
+                                padding: 1
+                            }
+                        }
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            fullWidth
+                            label="Select Owner"
+                            placeholder="Choose a user as owner"
+                            variant="outlined"
+                            required
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <React.Fragment>
+                                        {userAccountsLoading ? <Typography variant="caption">Loading...</Typography> : null}
+                                        {params.InputProps.endAdornment}
+                                    </React.Fragment>
+                                ),
+                            }}
+                        />
+                    )}
+                    renderOption={(props, option) => (
+                        <li {...props}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography variant="body1">{option.name}</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    {option.email} • {option.status}
+                                </Typography>
+                            </Box>
+                        </li>
+                    )}
+                    noOptionsText="No users found"
+                />
 
                 {/* Name Field */}
                 <TextField
@@ -414,9 +473,8 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
                     value={formData.name}
                     onChange={handleChange}
                     variant="outlined"
+                    required
                 />
-
-
 
                 {/* Home Address Field */}
                 <TextField
@@ -427,13 +485,11 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
                     value={formData.homeAddress}
                     onChange={handleChange}
                     variant="outlined"
+                    required
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => setFormData(prev => ({ ...prev, homeAddress: '' }))}
-                                    edge="end"
-                                >
+                                <IconButton>
                                     <ImageIcon />
                                 </IconButton>
                             </InputAdornment>
@@ -441,217 +497,156 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
                     }}
                 />
 
-                {/* Phone Number Field */}
-                {/* <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-                    <TextField
-                        sx={{ width: 120 }}
-                        label="Country Code"
-                        name="countryCode"
-                        placeholder="+237"
-                        type="phoneNumber"
-                        value={formData.countryCode}
-                        onChange={handleChange}
-                        variant="outlined"
-                    />
-
-                    <TextField
-                        fullWidth
-                        label="Phone Number"
-                        name="phoneNumber"
-                        placeholder="Hint text"
-                        value={formData.phoneNumber}
-                        onChange={handleChange}
-                        variant="outlined"
-                    />
-                </Box> */}
-
-                {/* <TextField
-                    fullWidth
-                    label="Percentage Commission"
-                    name="percentageCommission"
-                    placeholder="Percentage Commission"
-                    value={formData.percentageCommission}
-                    onChange={handleChange}
-                    variant="outlined"
-                /> */}
-
-                {/* Services Section */}
-                <Typography sx={{ fontSize: '16px', fontWeight: 500, mb: 1.5 }}>
-                    Services
-                </Typography>
-                <Grid container spacing={1} sx={{ mb: 3 }}>
-                    {services.map((service, index) => (
-                        <Grid item xs={4} key={index}>
-                            <Box
-                                sx={{
-                                    bgcolor: selectedCategory === service.category ? '#FB7C37' : '#FFEDE6',
-                                    borderRadius: 1,
-                                    p: 2,
-                                    height: '100%',
-                                    width: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    cursor: 'pointer',
-                                    transition: 'background-color 0.3s'
-                                }}
-                                onClick={() => handleCategorySelect(service.category)}
-                            >
-                                <Typography
-                                    sx={{
-                                        fontSize: '12px',
-                                        textAlign: 'center',
-                                        whiteSpace: 'pre-line',
-                                        lineHeight: 1.2,
-                                        mb: 2,
-                                        color: selectedCategory === service.category ? 'white' : 'inherit'
-                                    }}
-                                >
-                                    {service.name}
-                                </Typography>
-                                <Box
-                                    sx={{
-                                        width: 132,
-                                        height: 57,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                >
-                                    <img
-                                        src={service.icon}
-                                        alt={service.name}
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'contain'
-                                        }}
-                                    />
-                                </Box>
-                            </Box>
-                        </Grid>
-                    ))}
-                </Grid>
-
-                {/* Home Location Section - With Google Maps */}
+                {/* Google Map Component */}
                 <Box sx={{ mb: 2 }}>
-                    <Typography
-                        sx={{
-                            mb: 1,
-                            fontSize: '14px',
-                            color: 'rgba(0, 0, 0, 0.87)'
-                        }}
-                    >
-                        Home Location
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                        Select Location
                     </Typography>
-
-                    {/* Autocomplete search bar for location */}
-                    <Autocomplete
-                        id="location-search-autocomplete"
-                        options={addressSuggestions}
-                        getOptionLabel={(option) => typeof option === 'string' ? option : option.description || ''}
-                        inputValue={searchAddress}
-                        onInputChange={(_event, newValue) => {
-                            setSearchAddress(newValue);
-                        }}
-                        onChange={handleSuggestionSelect}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                fullWidth
-                                placeholder="Search for a location"
-                                variant="outlined"
-                                margin="dense"
-                                InputProps={{
-                                    ...params.InputProps,
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-                                                <path d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#757575" />
-                                            </svg>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        )}
-                        renderOption={(props, option) => (
-                            <li {...props}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Typography variant="body1">{option.structured_formatting?.main_text || option.description}</Typography>
-                                    {option.structured_formatting?.secondary_text && (
-                                        <Typography variant="caption" color="text.secondary">
-                                            {option.structured_formatting.secondary_text}
-                                        </Typography>
-                                    )}
-                                </Box>
-                            </li>
-                        )}
-                        freeSolo
-                        filterOptions={(x) => x}
-                        sx={{
-                            mb: 1,
-                            '& .MuiAutocomplete-popper': {
-                                backgroundColor: 'white'
-                            }
-                        }}
-                        slotProps={{
-                            paper: {
-                                sx: {
-                                    backgroundColor: 'white',
-                                    boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
-                                    borderRadius: 1
-                                }
-                            },
-                            listbox: {
-                                sx: {
-                                    backgroundColor: 'white',
-                                    padding: 1
-                                }
-                            }
-                        }}
+                    <ReusableGoogleMap
+                        initialLocation={location}
+                        onLocationChange={handleLocationChange}
+                        onAddressChange={handleAddressChange}
+                        height="300px"
+                        apiKey="AIzaSyBy9Mq91oGtmrw1jKiRrDvKWwGpQgtzt3I&libraries=places"
+                        containerId="service-provider-map"
                     />
+                </Box>
 
-                    <Box
-                        sx={{
-                            width: '100%',
-                            height: 200,
-                            borderRadius: 1,
-                            overflow: 'hidden',
-                            position: 'relative',
-                            bgcolor: '#f5f5f5',
-                            border: '1px solid rgba(0, 0, 0, 0.12)'
-                        }}
-                    >
-                        <div id="provider-map-container" style={{ width: '100%', height: '100%', background: '#f5f5f5' }} />
 
-                        {/* Instructions overlay */}
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                bottom: 8,
-                                right: 8,
-                                bgcolor: 'rgba(255, 255, 255, 0.8)',
-                                padding: '4px 8px',
-                                borderRadius: 1,
-                                fontSize: '12px',
-                                boxShadow: 1
-                            }}
-                        >
-                            Click, drag marker, or search
-                        </Box>
-                    </Box>
+                {/* Available Switch */}
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={formData.available}
+                            onChange={handleSwitchChange}
+                            color="primary"
+                        />
+                    }
+                    label="Available"
+                    sx={{ alignSelf: 'flex-start' }}
+                />
 
-                    <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
-                        Selected coordinates: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                {/* Services Selection Section */}
+                {/* Services Selection Section */}
+                <Box sx={{ mt: 3 }}>
+                    <Typography sx={{ fontSize: '16px', fontWeight: 500, mb: 1.5 }}>
+                        Services
                     </Typography>
+
+                    {/* Selected Services Display - Show at top like reference */}
+                    {selectedServices.length > 0 && (
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                                Selected Services ({selectedServices.length}):
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                {selectedServices.map((service) => (
+                                    <Chip
+                                        key={service.id}
+                                        label={formatValue(service.title)}
+                                        onDelete={() => handleServiceSelect(service)}
+                                        color="primary"
+                                        size="small"
+                                    />
+                                ))}
+                            </Box>
+                        </Box>
+                    )}
+
+                    {/* Services Navigation - Only show if more than 6 services */}
+                    {serviceData.length > 6 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <IconButton
+                                onClick={handlePrevServices}
+                                disabled={currentServiceIndex === 0}
+                                size="small"
+                            >
+                                <ArrowBackIosIcon fontSize="small" />
+                            </IconButton>
+
+                            <Typography variant="caption" color="text.secondary">
+                                {currentServiceIndex + 1} - {Math.min(currentServiceIndex + servicesPerPage, serviceData.length)} of {serviceData.length}
+                            </Typography>
+
+                            <IconButton
+                                onClick={handleNextServices}
+                                disabled={currentServiceIndex + servicesPerPage >= serviceData.length}
+                                size="small"
+                            >
+                                <ArrowForwardIosIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
+                    )}
+
+                    {/* Services Grid - Using reference styling */}
+                    <Grid container spacing={1}>
+                        {visibleServices.map((service) => {
+                            const isSelected = selectedServices.some(s => s.id === service.id);
+                            const serviceIcon = getServiceIcon(service.title);
+
+                            return (
+                                <Grid item xs={4} key={service.id}>
+                                    <Box
+                                        sx={{
+                                            bgcolor: isSelected ? '#E56A2F' : '#FFEDE6',
+                                            borderRadius: 1,
+                                            p: 2,
+                                            height: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            cursor: 'pointer',
+                                            transition: 'background-color 0.3s',
+                                            border: isSelected ? '2px solid #E56A2F' : '2px solid transparent',
+                                            '&:hover': {
+                                                bgcolor: isSelected ? '#E56A2F' : '#FFE0D1'
+                                            }
+                                        }}
+                                        onClick={() => handleServiceSelect(service)}
+                                    >
+                                        <Typography
+                                            sx={{
+                                                fontSize: '12px',
+                                                textAlign: 'center',
+                                                lineHeight: 1.2,
+                                                mb: 2,
+                                                color: isSelected ? 'white' : 'inherit',
+                                                fontWeight: isSelected ? 600 : 400
+                                            }}
+                                        >
+                                            {formatValue(service.title)}
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                width: 40,
+                                                height: 40,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            <img
+                                                src={serviceIcon}
+                                                alt={service.title}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'contain'
+                                                }}
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
                 </Box>
 
                 {/* Submit Button */}
                 <Button
-                    fullWidth
-                    variant="contained"
                     type="submit"
+                    variant="contained"
+                    size="large"
                     disabled={loading}
                     sx={{
                         bgcolor: 'black',
@@ -662,37 +657,58 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
                         mt: 1,
                         '&:hover': {
                             bgcolor: '#333'
-                        },
-                        '&.Mui-disabled': {
-                            bgcolor: '#999',
-                            color: '#ddd'
                         }
                     }}
                 >
-                    {loading ? 'Creating...' : 'Create Service Provider'}
+                    {loading ? 'Creating Service Center...' : 'Create Service Center'}
                 </Button>
             </Stack>
 
-            {/* Success/Error Notifications */}
+            {/* Snackbar for Success Messages */}
             <Snackbar
                 open={success}
                 autoHideDuration={6000}
                 onClose={() => setSuccess(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-                <Alert onClose={() => setSuccess(false)} severity="success">
-                    Service center created successfully!
+                <Alert
+                    onClose={() => setSuccess(false)}
+                    severity="success"
+                    sx={{ width: '100%' }}
+                >
+                    Service center created and services linked successfully!
                 </Alert>
             </Snackbar>
 
+            {/* Snackbar for Error Messages */}
             <Snackbar
                 open={!!error}
                 autoHideDuration={6000}
                 onClose={() => setError(null)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-                <Alert onClose={() => setError(null)} severity="error">
+                <Alert
+                    onClose={() => setError(null)}
+                    severity="error"
+                    sx={{ width: '100%' }}
+                >
                     {error}
+                </Alert>
+            </Snackbar>
+
+            {/* Snackbar for General Error Messages */}
+            <Snackbar
+                open={!!errorMessage}
+                autoHideDuration={6000}
+                onClose={() => setErrorMessage(null)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setErrorMessage(null)}
+                    severity="error"
+                    sx={{ width: '100%' }}
+                >
+                    {errorMessage}
                 </Alert>
             </Snackbar>
         </Box>

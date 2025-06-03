@@ -18,18 +18,18 @@ import {
     AvatarGroup
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import SendIcon from '@mui/icons-material/Send';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+// import AttachFileIcon from '@mui/icons-material/AttachFile';
+// import SendIcon from '@mui/icons-material/Send';
+// import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import MicIcon from '@mui/icons-material/Mic';
-import StopIcon from '@mui/icons-material/Stop';
+// import MicIcon from '@mui/icons-material/Mic';
+// import StopIcon from '@mui/icons-material/Stop';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
-import { AudioMessage, ChatroomParticipant, Message, TimerRef } from './types';
+import { ChatroomParticipant, Message } from './types';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowBack } from '@mui/icons-material';
 import { Chatroom } from '../../interfaces/Interfaces';
@@ -57,15 +57,15 @@ const ServiceItem = styled(ListItem)(() => ({
     }
 }));
 
-const MessageInput = styled(InputBase)(() => ({
-    backgroundColor: '#FFEDE6',
-    borderRadius: 28,
-    padding: '8px 16px',
-    width: '100%',
-    '& input': {
-        padding: '8px',
-    }
-}));
+// const MessageInput = styled(InputBase)(() => ({
+//     backgroundColor: '#FFEDE6',
+//     borderRadius: 28,
+//     padding: '8px 16px',
+//     width: '100%',
+//     '& input': {
+//         padding: '8px',
+//     }
+// }));
 
 const StyledChip = styled(Chip)(() => ({
     borderRadius: 28,
@@ -77,27 +77,26 @@ const StyledChip = styled(Chip)(() => ({
 }));
 
 const Chats = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
+    // const [messages, setMessages] = useState<Message[]>([]);
     const [messageInput, setMessageInput] = useState('');
-    const [isRecording, setIsRecording] = useState(false);
-    const [audioURL, setAudioURL] = useState<string | null>(null);
+    // const [isRecording, setIsRecording] = useState(false);
+    // const [audioURL, setAudioURL] = useState<string | null>(null);
     const [isPlaying, setIsPlaying] = useState<{ [key: string]: boolean }>({});
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    // const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    // const audioChunksRef = useRef<Blob[]>([]);
+    // const fileInputRef = useRef<HTMLInputElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const [recordingTime, setRecordingTime] = useState(0);
+    // const [recordingTime, setRecordingTime] = useState(0);
     const [audioProgress, setAudioProgress] = useState<{ [key: string]: number }>({});
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const recordingTimerRef = useRef<TimerRef>();
+    // const recordingTimerRef = useRef<TimerRef>();
     const audioElementsRef = useRef<{ [key: string]: HTMLAudioElement }>({});
     const socketRef = useRef<WebSocket | null>(null);
     const location = useLocation();
     const { id } = useParams();
     const navigate = useNavigate();
 
-    console.log("audioURL", audioURL);
-
+    console.log("messageInput", messageInput);
 
 
     // WebSocket URL
@@ -419,39 +418,39 @@ const Chats = () => {
     };
 
     // Send message via WebSocket
-    const sendMessage = async (message: Message) => {
+    // const sendMessage = async (message: Message) => {
 
-        try {
-            // Format the message for the server
-            const formattedMessage = {
-                senderId: message.senderId,
-                content: message.content,
-                chatRoomId: message.chatRoomId,
-                timestamp: new Date().toISOString(),
-                type: message.type,
-                // appointmentId: null,
-                // chatRoomIdAsUuid: message.chatRoomId,
-                // senderIdAsUuid: message.senderId,
-                // url: message.url,
-                // duration: message.duration
-            };
+    //     try {
+    //         // Format the message for the server
+    //         const formattedMessage = {
+    //             senderId: message.senderId,
+    //             content: message.content,
+    //             chatRoomId: message.chatRoomId,
+    //             timestamp: new Date().toISOString(),
+    //             type: message.type,
+    //             // appointmentId: null,
+    //             // chatRoomIdAsUuid: message.chatRoomId,
+    //             // senderIdAsUuid: message.senderId,
+    //             // url: message.url,
+    //             // duration: message.duration
+    //         };
 
-            const response = await JC_Services('JAPPCARE', `chat-message`, 'POST', formattedMessage, token);
-            console.log('Message sent :', formattedMessage);
+    //         const response = await JC_Services('JAPPCARE', `chat-message`, 'POST', formattedMessage, token);
+    //         console.log('Message sent :', formattedMessage);
 
-            if (response && response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201) {
-                console.log('Message response:', response);
-                return true;
-            } else {
-                console.error('Failed to send message:', response.body.meta.message);
-                return false;
-            }
+    //         if (response && response.body.meta.statusCode === 200 || response.body.meta.statusCode === 201) {
+    //             console.log('Message response:', response);
+    //             return true;
+    //         } else {
+    //             console.error('Failed to send message:', response.body.meta.message);
+    //             return false;
+    //         }
 
-        } catch (error) {
-            console.error('Error sending message via WebSocket:', error);
-            return false;
-        }
-    };
+    //     } catch (error) {
+    //         console.error('Error sending message via WebSocket:', error);
+    //         return false;
+    //     }
+    // };
 
     useEffect(() => {
         // Fetch participants when component mounts
@@ -464,89 +463,89 @@ const Chats = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    const handleSendMessage = async () => {
-        if (messageInput.trim()) {
-            const messageId = `client-${userId}-${Date.now()}`;
+    // const handleSendMessage = async () => {
+    //     if (messageInput.trim()) {
+    //         const messageId = `client-${userId}-${Date.now()}`;
 
-            const newUIMessage: Message = {
-                id: messageId,
-                senderId: userParticipantId,
-                senderName: userMap[userId]?.name || 'You',
-                content: messageInput,
-                chatRoomId: id || '',
-                timestamp: new Date(),
-                type: 'TEXT_SIMPLE',
-            };
+    //         const newUIMessage: Message = {
+    //             id: messageId,
+    //             senderId: userParticipantId,
+    //             senderName: userMap[userId]?.name || 'You',
+    //             content: messageInput,
+    //             chatRoomId: id || '',
+    //             timestamp: new Date(),
+    //             type: 'TEXT_SIMPLE',
+    //         };
 
-            // Add message to UI immediately using our deduplication function
-            updateMessages(newUIMessage);
-            setMessageInput('');
+    //         // Add message to UI immediately using our deduplication function
+    //         updateMessages(newUIMessage);
+    //         setMessageInput('');
 
-            if (isConnected) {
-                // For API - create a separate object with userId
-                const apiMessage: Message = {
-                    id: newUIMessage.id,
-                    senderId: userId, // Use user ID for API
-                    senderName: newUIMessage.senderName,
-                    content: newUIMessage.content,
-                    chatRoomId: newUIMessage.chatRoomId,
-                    timestamp: newUIMessage.timestamp,
-                    type: newUIMessage.type,
-                };
+    //         if (isConnected) {
+    //             // For API - create a separate object with userId
+    //             const apiMessage: Message = {
+    //                 id: newUIMessage.id,
+    //                 senderId: userId, // Use user ID for API
+    //                 senderName: newUIMessage.senderName,
+    //                 content: newUIMessage.content,
+    //                 chatRoomId: newUIMessage.chatRoomId,
+    //                 timestamp: newUIMessage.timestamp,
+    //                 type: newUIMessage.type,
+    //             };
 
-                sendMessage(apiMessage);
-            } else {
-                console.error('WebSocket not connected. Message will only be displayed locally.');
-            }
-        }
-    };
+    //             sendMessage(apiMessage);
+    //         } else {
+    //             console.error('WebSocket not connected. Message will only be displayed locally.');
+    //         }
+    //     }
+    // };
 
-    const handleKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            handleSendMessage();
-        }
-    };
+    // const handleKeyPress = (event: React.KeyboardEvent) => {
+    //     if (event.key === 'Enter' && !event.shiftKey) {
+    //         event.preventDefault();
+    //         handleSendMessage();
+    //     }
+    // };
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const newMessage: Message = {
-                    id: Date.now().toString(),
-                    senderId: userId,
-                    senderName: userMap[userId]?.name || 'You',
-                    content: file.name,
-                    chatRoomId: id || '',
-                    timestamp: new Date(),
-                    type: 'image',
-                    url: e.target?.result as string,
-                };
+    // const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = event.target.files?.[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onload = async (e) => {
+    //             const newMessage: Message = {
+    //                 id: Date.now().toString(),
+    //                 senderId: userId,
+    //                 senderName: userMap[userId]?.name || 'You',
+    //                 content: file.name,
+    //                 chatRoomId: id || '',
+    //                 timestamp: new Date(),
+    //                 type: 'image',
+    //                 url: e.target?.result as string,
+    //             };
 
-                // Add to UI
-                setMessages([...messages, newMessage]);
-                scrollToBottom();
+    //             // Add to UI
+    //             setMessages([...messages, newMessage]);
+    //             scrollToBottom();
 
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
 
-    useEffect(() => {
-        if (isRecording) {
-            recordingTimerRef.current = setInterval(() => {
-                setRecordingTime((prev) => prev + 1);
-            }, 1000);
-        } else {
-            clearInterval(recordingTimerRef.current);
-            setRecordingTime(0);
-        }
+    // useEffect(() => {
+    //     if (isRecording) {
+    //         recordingTimerRef.current = setInterval(() => {
+    //             setRecordingTime((prev) => prev + 1);
+    //         }, 1000);
+    //     } else {
+    //         clearInterval(recordingTimerRef.current);
+    //         setRecordingTime(0);
+    //     }
 
-        return () => {
-            clearInterval(recordingTimerRef.current);
-        };
-    }, [isRecording]);
+    //     return () => {
+    //         clearInterval(recordingTimerRef.current);
+    //     };
+    // }, [isRecording]);
 
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
@@ -554,9 +553,9 @@ const Chats = () => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const handleEmojiClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
+    // const handleEmojiClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //     setAnchorEl(event.currentTarget);
+    // };
 
     const handleEmojiClose = () => {
         setAnchorEl(null);
@@ -567,52 +566,52 @@ const Chats = () => {
         handleEmojiClose();
     };
 
-    const startRecording = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
-            mediaRecorderRef.current = mediaRecorder;
-            audioChunksRef.current = [];
+    // const startRecording = async () => {
+    //     try {
+    //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    //         const mediaRecorder = new MediaRecorder(stream);
+    //         mediaRecorderRef.current = mediaRecorder;
+    //         audioChunksRef.current = [];
 
-            mediaRecorder.ondataavailable = (event) => {
-                audioChunksRef.current.push(event.data);
-            };
+    //         mediaRecorder.ondataavailable = (event) => {
+    //             audioChunksRef.current.push(event.data);
+    //         };
 
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-                const audioUrl = URL.createObjectURL(audioBlob);
+    //         mediaRecorder.onstop = async () => {
+    //             const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+    //             const audioUrl = URL.createObjectURL(audioBlob);
 
-                const newMessage: AudioMessage = {
-                    id: Date.now().toString(),
-                    senderId: userId,
-                    senderName: userMap[userId]?.name || 'You',
-                    content: 'Audio message',
-                    chatRoomId: id || '',
-                    timestamp: new Date(),
-                    type: 'audio',
-                    url: audioUrl,
-                    duration: recordingTime,
-                };
+    //             const newMessage: AudioMessage = {
+    //                 id: Date.now().toString(),
+    //                 senderId: userId,
+    //                 senderName: userMap[userId]?.name || 'You',
+    //                 content: 'Audio message',
+    //                 chatRoomId: id || '',
+    //                 timestamp: new Date(),
+    //                 type: 'audio',
+    //                 url: audioUrl,
+    //                 duration: recordingTime,
+    //             };
 
-                // Add to UI
-                setMessages([...messages, newMessage]);
-                setAudioURL(null);
-                scrollToBottom();
+    //             // Add to UI
+    //             setMessages([...messages, newMessage]);
+    //             setAudioURL(null);
+    //             scrollToBottom();
 
-                if (isConnected) {
-                    sendMessage(newMessage);
-                } else {
-                    console.error('WebSocket not connected. Message will only be displayed locally.');
-                }
-            };
+    //             if (isConnected) {
+    //                 sendMessage(newMessage);
+    //             } else {
+    //                 console.error('WebSocket not connected. Message will only be displayed locally.');
+    //             }
+    //         };
 
-            mediaRecorder.start();
-            setIsRecording(true);
-            setRecordingTime(0);
-        } catch (error) {
-            console.error('Error accessing microphone:', error);
-        }
-    };
+    //         mediaRecorder.start();
+    //         setIsRecording(true);
+    //         setRecordingTime(0);
+    //     } catch (error) {
+    //         console.error('Error accessing microphone:', error);
+    //     }
+    // };
 
     const toggleAudioPlay = async (messageId: string, audioUrl: string) => {
         let audio = audioElementsRef.current[messageId];
@@ -651,13 +650,13 @@ const Chats = () => {
         }
     };
 
-    const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-        }
-    };
+    // const stopRecording = () => {
+    //     if (mediaRecorderRef.current && isRecording) {
+    //         mediaRecorderRef.current.stop();
+    //         setIsRecording(false);
+    //         mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    //     }
+    // };
 
     const renderAudioMessage = (message: Message) => {
         if (message.type !== 'AUDIO' && message.type !== 'audio') return null;
@@ -1058,7 +1057,7 @@ const Chats = () => {
                 </Box>
 
                 {/* Input Area */}
-                <Box sx={{ p: 2, borderTop: '1px solid #F0F0F0', bgcolor: '#FFFFFF' }}>
+                {/* <Box sx={{ p: 2, borderTop: '1px solid #F0F0F0', bgcolor: '#FFFFFF' }}>
                     {isRecording ? (
                         <Box sx={{
                             display: 'flex',
@@ -1123,7 +1122,7 @@ const Chats = () => {
                             </IconButton>
                         </Box>
                     )}
-                </Box>
+                </Box> */}
             </Box>
 
             {/* Emoji Picker Popover */}
