@@ -1,4 +1,4 @@
-name: Build and Deploy Vite App Docker Image to AWS EC2
+name: Build and Deploy Admin Docker Image to AWS EC2
 
 on:
   pull_request:
@@ -59,6 +59,7 @@ jobs:
         run: |
           docker build \
             --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            --build-arg VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }} \
             -t ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev .
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -78,47 +79,15 @@ jobs:
         run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
 
       - name: Delete Old Docker Container
-        run: sudo docker rm -f vite-app || true
+        run: sudo docker rm -f admin-cms || true
 
       - name: Run Docker Container
         run: |
           sudo docker run -d \
             -e VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            -p 5173:5173 --name vite-app \
+            -e VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }} \
+            -p 5174:5173 --name admin-cms \
             ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
-
-
-# name: CI/CD Pipeline
-
-# on:
-#   push:
-#     branches:
-#       - master
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-    
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v3
-        
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '20'
-        
-#       - name: Install dependencies
-#         run: |
-#           if [ -f yarn.lock ]; then
-#             yarn --frozen-lockfile
-#           elif [ -f package-lock.json ]; then
-#             npm ci --unsafe-perm
-#           elif [ -f pnpm-lock.yaml ]; then
-#             npm install -g pnpm && pnpm install --frozen-lockfile
-#           else
-#             npm install --unsafe-perm
-#           fi
 
       - name: Print npm debug log
         run: |
@@ -127,10 +96,3 @@ jobs:
           else
             echo "No npm debug log found."
           fi
-
-#       - name: Upload npm debug log as artifact
-#         if: failure()  # Only upload if the previous steps fail
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: npm-debug-log
-#           path: /home/viteuser/.npm/_logs/*.log
