@@ -105,7 +105,7 @@ const Payments = () => {
         setLoading(true);
         setErrorMessage('');
         try {
-            console.log("Fetching payments with token:", token);
+             console.log("Fetching payments with token:", token);
 
             const response = await JC_Services('JAPPCARE', `payment/list`, 'POST', {}, token);
 
@@ -119,12 +119,15 @@ const Payments = () => {
 
             if (response && response.body?.meta?.statusCode === 200) {
                 // Ensure data is an array
-                const paymentData = Array.isArray(response.body.data.data)
-                    ? response.body.data.data
+                const paymentData = Array.isArray(response.body.data)
+                    ? response.body.data
                     : [];
 
                 console.log("Processed Payment Data:", paymentData);
                 setPayments(paymentData);
+            } else if (response && response.status === 401) {
+                // Handling 401 errors from previous logic
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
                 // More specific error handling
                 const errorMsg = response?.body?.meta?.message
@@ -133,6 +136,8 @@ const Payments = () => {
 
                 setErrorMessage(errorMsg);
                 console.error("Payment Fetch Error:", errorMsg);
+          } 
+         NewApiUpdates
             }
         } catch (error) {
             console.error("Catch Block Error:", error);
@@ -148,19 +153,19 @@ const Payments = () => {
 
     // Calculations with extensive error handling
     const totalEarnings = payments
-        .filter(p => p.userFrom !== 'User')
+        .filter(p => p.userFrom !== 'Manager')
         .reduce((sum, payment) => sum + (payment.money?.amount || 0), 0);
 
     const totalWithdrawals = payments
-        .filter(p => p.userTo === 'Manager')
+        .filter(p => p.userTo === 'User')
         .reduce((sum, payment) => sum + (payment.money?.amount || 0), 0);
 
     // Filtering with error handling
     const filteredTransactions = payments.filter(transaction => {
         const typeMatch =
             activeFilter === 'All' ||
-            (activeFilter === 'Earnings' && transaction.userFrom !== 'User') ||
-            (activeFilter === 'Withdrawals' && transaction.userTo === 'Manager');
+            (activeFilter === 'Withdrawals' && transaction.userFrom !== 'User') ||
+            (activeFilter === 'Earnings' && transaction.userTo === 'Manager');
 
         const methodMatch =
             activeMethodFilter === 'All' ||
@@ -355,14 +360,15 @@ const Payments = () => {
                         </Box>
 
                         <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2 }}>
-                            <TransactionStatus type={transaction.userTo === 'Manager' ? 'Withdrawal' : 'Earnings'}>
-                                {transaction.userTo === 'Manager' ? 'Withdrawal' : 'Earnings'}
+                            <TransactionStatus type={transaction.userTo === 'Manager' ? 'Earnings' : 'Withdrawal'}>
+                                {transaction.userTo === 'Manager' ? 'Earnings' : 'Withdrawal'}
                             </TransactionStatus>
                             <Box>
                                 {transaction.userTo === 'Manager' ? (
-                                    <UpwardArrowIcon />
-                                ) : (
                                     <DownwardArrowIcon />
+
+                                ) : (
+                                    <UpwardArrowIcon />
                                 )}
                             </Box>
                         </Box>

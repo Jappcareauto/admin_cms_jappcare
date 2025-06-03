@@ -152,7 +152,7 @@ const CalendarViews: React.FC = () => {
                     const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 }); // Monday
                     const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 }); // Sunday
 
-                    filteredAppointments = response.body.data.data.filter(
+                    filteredAppointments = response.body.data.filter(
                         (appointment: AppointmentInterface) => {
                             const appointmentDate = parseISO(appointment.date);
                             return isWithinInterval(appointmentDate, { start: weekStart, end: weekEnd });
@@ -163,7 +163,7 @@ const CalendarViews: React.FC = () => {
                     const monthStart = startOfMonth(selectedDate);
                     const monthEnd = endOfMonth(selectedDate);
 
-                    filteredAppointments = response.body.data.data.filter(
+                    filteredAppointments = response.body.data.filter(
                         (appointment: AppointmentInterface) => {
                             const appointmentDate = parseISO(appointment.date);
                             return isWithinInterval(appointmentDate, { start: monthStart, end: monthEnd });

@@ -82,8 +82,8 @@ const AppointmentListView = () => {
 
             if (response && response.body.meta.statusCode === 200) {
                 // Filter appointments by status if needed
-                setAllAppointmentsData(response.body.data.data);
-                const filteredAppointments = response.body.data.data.filter(
+                setAllAppointmentsData(response.body.data);
+                const filteredAppointments = response.body.data.filter(
                     (appointment: AppointmentInterface) => appointment.status === activeStatus
                 );
 
