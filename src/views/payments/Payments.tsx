@@ -130,7 +130,7 @@ const Payments = () => {
                 setErrorMessage(errorMsg);
                 console.error("Payment Fetch Error:", errorMsg);
           } 
-         NewApiUpdates
+            
             }
         } catch (error) {
             console.error("Catch Block Error:", error);
