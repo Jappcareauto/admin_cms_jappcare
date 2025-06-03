@@ -41,6 +41,8 @@ EXPOSE 5173
 # Environment variables for Vite (used at runtime)
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_GOOGLE_API_KEY
+ENV VITE_GOOGLE_API_KEY=$VITE_GOOGLE_API_KEY
 
 # Command to run the development server
 CMD ["npm", "run", "dev", "--", "--host"]
