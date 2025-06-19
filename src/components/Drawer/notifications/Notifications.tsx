@@ -97,6 +97,7 @@ const Notifications = ({ onClose }: NotificationsProps) => {
         setLoading(true);
         try {
             const response = await JC_Services('JAPPCARE', `notification/user/${connectedUsers.id}`, 'GET', "", connectedUsers.accessToken);
+            console.log("response======", response);
 
             if (response && response.body.meta.statusCode === 200) {
                 const unreadNotifications = response.body.data.filter(

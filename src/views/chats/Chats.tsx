@@ -152,7 +152,7 @@ const Chats = () => {
 
         try {
             // Fetch existing messages from API
-            const response = await JC_Services('CHAT_WEBSOCKET', `chat/message/chatroom/${id}`, 'GET', '', token);
+            const response = await JC_Services('JAPPCARE', `chat/message/chatroom/${id}`, 'GET', '', token);
             console.log("fetchChatroomMessagesResponse", response);
 
             if (response && response.body.meta.statusCode === 200) {

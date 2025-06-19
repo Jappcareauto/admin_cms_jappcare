@@ -241,7 +241,7 @@ const Appointment = () => {
                                 boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
                             }}
                         >
-                            DG
+                            {appointment.serviceCenter.name.substring(0, 2).toUpperCase()}
                         </Avatar>
                         <Box>
                             <Typography variant="caption" color="text.secondary">
@@ -437,7 +437,17 @@ const Appointment = () => {
                                                 )}
                                             </>
                                         ) : (
-                                            <Typography>No appointments found.</Typography>
+                                            <Box sx={{
+                                                p: 4,
+                                                textAlign: 'center',
+                                                border: '1px dashed #ccc',
+                                                borderRadius: 2,
+                                                bgcolor: '#f9f9f9'
+                                            }}>
+                                                <Typography color="text.secondary">
+                                                    No Appointments Found
+                                                </Typography>
+                                            </Box>
                                         )}
                                     </>
                                 )}

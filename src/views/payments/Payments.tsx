@@ -361,9 +361,17 @@ const Payments = () => {
                     </TransactionItem>
                 ))
             ) : (
-                <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', mt: 4 }}>
-                    No transactions found
-                </Typography>
+                <Box sx={{
+                    p: 4,
+                    textAlign: 'center',
+                    border: '1px dashed #ccc',
+                    borderRadius: 2,
+                    bgcolor: '#f9f9f9'
+                }}>
+                    <Typography color="text.secondary">
+                        No Transactions Found
+                    </Typography>
+                </Box>
             )}
         </Box>
     );

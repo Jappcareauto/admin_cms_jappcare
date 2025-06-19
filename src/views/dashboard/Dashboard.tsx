@@ -154,6 +154,8 @@ const Dashboard = () => {
     const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
     const [Allappointments, setAllAppointments] = useState<AppointmentInterface[]>([]);
     const [activeStatus, setActiveStatus] = useState('NOT_STARTED');
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
 
@@ -185,6 +187,7 @@ const Dashboard = () => {
     };
 
     const fetchAppointments = async () => {
+        setLoading(true);
         try {
             const response = await JC_Services('JAPPCARE', `appointment/list`, 'POST', {}, connectedUsers.accessToken);
             console.log("appointment resp", response);
@@ -211,6 +214,7 @@ const Dashboard = () => {
             console.error("Error:", error);
             setErrorMessage("Network Error Try Again Later!!!!");
         }
+        setLoading(false);
     };
 
 
@@ -433,17 +437,36 @@ const Dashboard = () => {
                                     </Stack>
                                 </Box>
 
-                                {errorMessage ? (
-                                    <Typography color="error">{errorMessage}</Typography>
-                                ) : (
-                                    <>
-                                        {appointments.length > 0 ? (
-                                            appointments.map((appointment) => renderAppointmentCard(appointment))
-                                        ) : (
-                                            <Typography>No appointments found.</Typography>
-                                        )}
-                                    </>
-                                )}
+
+                                {loading ? (
+                                    <Box sx={{ display: 'flex', mt: 2 }}>
+                                        <Typography>Loading...</Typography>
+                                    </Box>
+                                ) : <>
+                                    {errorMessage ? (
+                                        <Typography color="error">{errorMessage}</Typography>
+                                    ) : (
+                                        <>
+                                            {appointments.length > 0 ? (
+                                                appointments.map((appointment) => renderAppointmentCard(appointment))
+                                            ) : (
+                                                <Box sx={{
+                                                    p: 4,
+                                                    textAlign: 'center',
+                                                    border: '1px dashed #ccc',
+                                                    borderRadius: 2,
+                                                    bgcolor: '#f9f9f9'
+                                                }}>
+                                                    <Typography color="text.secondary">
+                                                        No Appointments Found
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                        </>
+                                    )}
+                                </>}
+
+
                             </CardContent>
                         </Grid>
                     </Grid>
