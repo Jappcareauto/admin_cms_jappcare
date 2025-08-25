@@ -63,12 +63,6 @@ jobs:
             --build-arg VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }} \
             -t jappcareautotech/admin-cms:dev .
 
-      - name: Build Service Center Docker Image
-        run: |
-          docker build \
-            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            --build-arg VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }} \
-            -t jappcareautotech/service-center:dev ./service-center
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -79,8 +73,6 @@ jobs:
       - name: Push Admin Docker Image
         run: docker push jappcareautotech/admin-cms:dev
 
-      - name: Push Service Center Docker Image
-        run: docker push jappcareautotech/service-center:dev
 
   deploy:
     needs: build
@@ -89,9 +81,6 @@ jobs:
     steps:
       - name: Pull latest Admin Image
         run: sudo docker pull jappcareautotech/admin-cms:dev
-
-      - name: Pull latest Service Center Image
-        run: sudo docker pull jappcareautotech/service-center:dev
 
       - name: Update environment file
         run: |
