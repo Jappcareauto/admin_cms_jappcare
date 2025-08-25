@@ -94,7 +94,7 @@ jobs:
           # Pull only admin image
           sudo docker-compose pull admin-panel
           # Start only admin container
-          sudo docker-compose up -d admin-panel
+          sudo docker-compose up -d --force-recreate admin-panel
           
       - name: Verify Admin Container
         run: |
