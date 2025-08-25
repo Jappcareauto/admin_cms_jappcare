@@ -98,7 +98,7 @@ jobs:
           
       - name: Verify Admin Container
         run: |
-          sudo docker ps | grep admin-panel
+          sudo docker ps | grep admin-cms
 
       - name: Verify Containers
         run: |
