@@ -1,4 +1,4 @@
-name: Build and Deploy Admin Docker Image to AWS EC2
+name: Build and Deploy Docker Images to AWS EC2
 
 on:
   pull_request:
@@ -29,7 +29,7 @@ jobs:
           else
             echo "Unable to determine package manager"
             exit 1
-          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -46,7 +46,7 @@ jobs:
           else
             npm run build
           fi
-          
+
       - name: Print npm debug log
         run: |
           if [ -f /home/viteuser/.npm/_logs/*.log ]; then
@@ -54,45 +54,56 @@ jobs:
           else
             echo "No npm debug log found."
           fi
-          
-      - name: Build Docker Image
+
+      - name: Build Admin Docker Image
         run: |
           docker build \
             --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
             --build-arg VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }} \
-            -t ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev .
+            -t jappcareautotech/admin-cms:dev .
+
+      - name: Build Service Center Docker Image
+        run: |
+          docker build \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            --build-arg VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }} \
+            -t jappcareautotech/service-center:dev ./service-center
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Docker Image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
+      - name: Push Admin Docker Image
+        run: docker push jappcareautotech/admin-cms:dev
+
+      - name: Push Service Center Docker Image
+        run: docker push jappcareautotech/service-center:dev
 
   deploy:
     needs: build
     runs-on: self-hosted
 
     steps:
-      - name: Pull Docker Image
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
+      - name: Pull latest Admin Image
+        run: sudo docker pull jappcareautotech/admin-cms:dev
 
-      - name: Delete Old Docker Container
-        run: sudo docker rm -f admin-cms || true
+      - name: Pull latest Service Center Image
+        run: sudo docker pull jappcareautotech/service-center:dev
 
-      - name: Run Docker Container
+      - name: Update environment file
         run: |
-          sudo docker run -d \
-            -e VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            -e VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }} \
-            -p 5174:5173 --name admin-cms \
-            ${{ secrets.DOCKER_USERNAME }}/admin-cms:dev
+          cd ~/jappcare
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" | sudo tee .env > /dev/null
+          echo "VITE_GOOGLE_API_KEY=${{ secrets.VITE_GOOGLE_API_KEY }}" | sudo tee -a .env > /dev/null
 
-      - name: Print npm debug log
+      - name: Deploy with Docker Compose
         run: |
-          if [ -f /home/viteuser/.npm/_logs/*.log ]; then
-            cat /home/viteuser/.npm/_logs/*.log
-          else
-            echo "No npm debug log found."
-          fi
+          cd ~/jappcare
+          sudo docker-compose pull
+          sudo docker-compose up -d
+
+      - name: Verify Containers
+        run: |
+          sudo docker ps
