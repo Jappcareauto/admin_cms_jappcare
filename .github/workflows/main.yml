@@ -91,8 +91,14 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           cd ~/jappcare
-          sudo docker-compose pull
-          sudo docker-compose up -d
+          # Pull only admin image
+          sudo docker-compose pull admin-panel
+          # Start only admin container
+          sudo docker-compose up -d admin-panel
+          
+      - name: Verify Admin Container
+        run: |
+          sudo docker ps | grep admin-panel
 
       - name: Verify Containers
         run: |
