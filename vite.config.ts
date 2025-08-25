@@ -1,15 +1,14 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react' // or your framework
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true, // allow external access
-    port: 5173, // match your container port
+    host: '0.0.0.0',       // allow connections from any IP
+    port: 5173,
     strictPort: true,
     hmr: {
-      host: 'admin.jappcare.com',
+      host: 'admin.jappcare.com',  // allow HMR over your domain
     },
-    allowedHosts: ['admin.jappcare.com'], // <-- ADD THIS LINE
   },
 })
