@@ -5,9 +5,6 @@ FROM node:20-alpine AS base
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies if needed
-RUN apk add --no-cache libc6-compat
-
 # Create a non-root user for security
 RUN addgroup -S vitegroup && adduser -S viteuser -G vitegroup
 
