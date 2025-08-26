@@ -29,18 +29,18 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   define: {
-    global: 'window', // needed for some dependencies
+    global: 'window', // required for some packages
   },
   server: {
-    host: '0.0.0.0',          // allow external connections
+    host: '0.0.0.0',       // allow external connections
     port: 5173,
     strictPort: true,
-    allowedHosts: ['admin.jappcare.com', '3.133.54.12'], // ✅ allow domain + EC2 IP
     hmr: {
-      host: 'admin.jappcare.com', // HMR over your domain
       protocol: 'ws',
+      host: 'admin.jappcare.com', // HMR over your domain
       port: 5173,
     },
   },
 })
+
 
