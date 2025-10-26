@@ -38,12 +38,12 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 
 // Sample data for the revenue chart
 const revenueData = [
-    { name: 'Mon', revenue: 1500 },
-    { name: 'Tues', revenue: 12000 },
-    { name: 'Wed', revenue: 22000 },
-    { name: 'Thurs', revenue: 20000 },
-    { name: 'Fri', revenue: 25000 },
-    { name: 'Sat', revenue: 28000 },
+    { name: 'Mon', revenue: 0 },
+    { name: 'Tues', revenue: 0 },
+    { name: 'Wed', revenue: 0 },
+    { name: 'Thurs', revenue: 0 },
+    { name: 'Fri', revenue: 0 },
+    { name: 'Sat', revenue: 0 },
 ];
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -396,7 +396,7 @@ const Dashboard = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            28,000 Frs
+                                            0 Frs
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                                             Revenue

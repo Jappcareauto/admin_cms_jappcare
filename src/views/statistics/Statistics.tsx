@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Card,
@@ -8,6 +8,7 @@ import {
     Grid,
     Chip,
     Button,
+    // CircularProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import PieChartIcon from '../../components/Icones/PieChartIcon';
@@ -17,6 +18,7 @@ import CalendarIcon from '../../components/Icones/calendarIcon';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import ExportReport from '../../components/Drawer/exportReports/ExportReport';
+import { JC_Services } from '../../services';
 
 
 // Sample data for the revenue chart
@@ -25,17 +27,51 @@ import ExportReport from '../../components/Drawer/exportReports/ExportReport';
 interface StyledCardProps {
     bgcolor?: string;
 }
-const revenueData = [
-    { year: '2017', revenue: 15000 },
-    { year: '2018', revenue: 5000 },
-    { year: '2019', revenue: 80000 },
-    { year: '2020', revenue: 10000 },
-    { year: '2021', revenue: 50000 },
-    { year: '2022', revenue: 18000 },
-    { year: '2023', revenue: 22000 },
-    { year: '2024', revenue: 100000 },
+// const revenueData = [
+//     { year: '2017', revenue: 15000 },
+//     { year: '2018', revenue: 5000 },
+//     { year: '2019', revenue: 80000 },
+//     { year: '2020', revenue: 10000 },
+//     { year: '2021', revenue: 50000 },
+//     { year: '2022', revenue: 18000 },
+//     { year: '2023', revenue: 22000 },
+//     { year: '2024', revenue: 100000 },
 
-];
+// ];
+
+interface StatisticsData {
+    overview: {
+        appointments: number;
+        orders: number;
+        weeklyRevenue: number;
+        vinRequests: number;
+        totalUsers: number;
+        emergencyRequests: number;
+    };
+    revenueChart: Array<{ year: string; revenue: number }>;
+    appointmentStats: {
+        totalRevenue: number;
+        totalAppointments: number;
+        completedAppointments: number;
+        canceledAppointments: number;
+    };
+    emergencyStats: {
+        totalRevenue: number;
+        totalRequests: number;
+        acceptedRequests: number;
+        rejectedRequests: number;
+    };
+    vinStats: {
+        totalRevenue: number;
+        totalRequests: number;
+        fromUsers: number;
+        fromServiceProviders: number;
+        successfulRequests: number;
+        unsuccessfulRequests: number;
+    };
+}
+
+
 
 const StyledCard = styled(Card)<StyledCardProps>(({ theme, bgcolor }) => ({
     height: '100%',
@@ -68,6 +104,41 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 const Statistics = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    // const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
+const [statisticsData, setStatisticsData] = useState<StatisticsData>({
+        overview: {
+            appointments: 0,
+            orders: 0,
+            weeklyRevenue: 0,
+            vinRequests: 0,
+            totalUsers: 0,
+            emergencyRequests: 0,
+        },
+        revenueChart: [],
+        appointmentStats: {
+            totalRevenue: 0,
+            totalAppointments: 0,
+            completedAppointments: 0,
+            canceledAppointments: 0,
+        },
+        emergencyStats: {
+            totalRevenue: 0,
+            totalRequests: 0,
+            acceptedRequests: 0,
+            rejectedRequests: 0,
+        },
+        vinStats: {
+            totalRevenue: 0,
+            totalRequests: 0,
+            fromUsers: 0,
+            fromServiceProviders: 0,
+            successfulRequests: 0,
+            unsuccessfulRequests: 0,
+        },
+    });
+
+
     const navigate = useNavigate();
     // Add these handlers inside the Dashboard component:
     const handleNewService = (data: any) => {
@@ -75,77 +146,223 @@ const Statistics = () => {
         setIsDrawerOpen(false);
         // Handle the new service data here
     };
+        const connectedUsers = JSON.parse(localStorage.getItem('connectedUsers') || '{}');
+
+         // Fetch Overview Statistics
+    const fetchOverviewStats = async () => {
+        try {
+            const response = await JC_Services(
+                'JAPPCARE',
+                'statistics/overview',
+                'POST',
+                { period: 'week' }, // Adjust request body as needed
+                connectedUsers.accessToken
+            );
+
+            if (response && response.body.meta.statusCode === 200) {
+                const data = response.body.data;
+                setStatisticsData(prev => ({
+                    ...prev,
+                    overview: {
+                        appointments: data.appointments || 0,
+                        orders: data.orders || 0,
+                        weeklyRevenue: data.weeklyRevenue || 0,
+                        vinRequests: data.vinRequests || 0,
+                        totalUsers: data.totalUsers || 0,
+                        emergencyRequests: data.emergencyRequests || 0,
+                    },
+                }));
+            } else if (response && response.body.meta.statusCode === 401) {
+                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            } else {
+                setErrorMessage('No Data Found');
+            }
+        } catch (error) {
+            console.error('Error fetching overview stats:', error);
+            setErrorMessage('Network Error Try Again Later!!!!');
+        }
+    };
+
+    // Fetch Revenue Chart Data
+    const fetchRevenueChart = async () => {
+        try {
+            const response = await JC_Services(
+                'JAPPCARE',
+                'statistics/revenue-chart',
+                'POST',
+                { years: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'] },
+                connectedUsers.accessToken
+            );
+
+            if (response && response.body.meta.statusCode === 200) {
+                const data = response.body.data;
+                setStatisticsData(prev => ({
+                    ...prev,
+                    revenueChart: Array.isArray(data) ? data : [],
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching revenue chart:', error);
+        }
+    };
+
+    // Fetch Appointment Statistics
+    const fetchAppointmentStats = async () => {
+        try {
+            const response = await JC_Services(
+                'JAPPCARE',
+                'statistics/appointments',
+                'POST',
+                { period: 'week' },
+                connectedUsers.accessToken
+            );
+
+            if (response && response.body.meta.statusCode === 200) {
+                const data = response.body.data;
+                setStatisticsData(prev => ({
+                    ...prev,
+                    appointmentStats: {
+                        totalRevenue: data.totalRevenue || 0,
+                        totalAppointments: data.totalAppointments || 0,
+                        completedAppointments: data.completedAppointments || 0,
+                        canceledAppointments: data.canceledAppointments || 0,
+                    },
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching appointment stats:', error);
+        }
+    };
+
+    // Fetch Emergency Statistics
+    const fetchEmergencyStats = async () => {
+        try {
+            const response = await JC_Services(
+                'JAPPCARE',
+                'statistics/emergency',
+                'POST',
+                { period: 'week' },
+                connectedUsers.accessToken
+            );
+
+            if (response && response.body.meta.statusCode === 200) {
+                const data = response.body.data;
+                setStatisticsData(prev => ({
+                    ...prev,
+                    emergencyStats: {
+                        totalRevenue: data.totalRevenue || 0,
+                        totalRequests: data.totalRequests || 0,
+                        acceptedRequests: data.acceptedRequests || 0,
+                        rejectedRequests: data.rejectedRequests || 0,
+                    },
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching emergency stats:', error);
+        }
+    };
+
+    // Fetch VIN Statistics
+    const fetchVinStats = async () => {
+        try {
+            const response = await JC_Services(
+                'JAPPCARE',
+                'statistics/vin-requests',
+                'POST',
+                { period: 'week' },
+                connectedUsers.accessToken
+            );
+
+            if (response && response.body.meta.statusCode === 200) {
+                const data = response.body.data;
+                setStatisticsData(prev => ({
+                    ...prev,
+                    vinStats: {
+                        totalRevenue: data.totalRevenue || 0,
+                        totalRequests: data.totalRequests || 0,
+                        fromUsers: data.fromUsers || 0,
+                        fromServiceProviders: data.fromServiceProviders || 0,
+                        successfulRequests: data.successfulRequests || 0,
+                        unsuccessfulRequests: data.unsuccessfulRequests || 0,
+                    },
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching VIN stats:', error);
+        }
+    };
+
+    // Fetch all statistics
+    const fetchAllStatistics = async () => {
+        // setLoading(true);
+        setErrorMessage('');
+        
+        try {
+            await Promise.all([
+                fetchOverviewStats(),
+                fetchRevenueChart(),
+                fetchAppointmentStats(),
+                fetchEmergencyStats(),
+                fetchVinStats(),
+            ]);
+        } catch (error) {
+            console.error('Error fetching statistics:', error);
+        } finally {
+            // setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (connectedUsers.accessToken) {
+            fetchAllStatistics();
+        }
+    }, [connectedUsers.accessToken]);
+
+   
+
+    // if (loading) {
+    //     return (
+    //         <Box sx={{ 
+    //             display: 'flex', 
+    //             justifyContent: 'center', 
+    //             alignItems: 'center', 
+    //             minHeight: '100vh' 
+    //         }}>
+    //             <CircularProgress sx={{ color: '#FB7C37' }} />
+    //         </Box>
+    //     );
+    // }
+
+    if (errorMessage) {
+        return (
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '100vh',
+                flexDirection: 'column',
+                gap: 2
+            }}>
+                <Typography color="error">{errorMessage}</Typography>
+                <Button 
+                    variant="contained" 
+                    onClick={fetchAllStatistics}
+                    sx={{ bgcolor: '#FB7C37' }}
+                >
+                    Retry
+                </Button>
+            </Box>
+        );
+    }
+
+
 
     return (
         <Box sx={{ p: 3, minHeight: '100vh', overflowX: 'hidden' }}>
             <Grid container spacing={3}>
                 {/* Main content - Left column (12 units) */}
                 <Grid item xs={12} md={12} sx={{ marginBottom: 3 }}>
-                    {/* <Avatar
-                        sx={{
-                            width: 64,
-                            height: 64,
-                            bgcolor: '#111111',
-                            color: '#FF7A00',
-                            fontSize: '22px',
-                            fontWeight: 600,
-                            border: '2px solid #FF7A00',
-                            boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
-
-                        }}
-                    >
-                        DG
-                    </Avatar> */}
-                    {/* <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-
-                            <Box>
-                                <Typography sx={{
-                                    fontSize: '20px',
-                                    fontWeight: 600,
-                                    color: '#1A1D1F'
-                                }}>
-                                    Dave's Garage
-                                </Typography>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                    <LocationIcon fill='#FF7A00' stroke='#FF7A00' />
-                                    <Typography sx={{
-                                        fontSize: '15px',
-                                        color: '#6F767E'
-                                    }}>
-                                        Deido, Douala
-                                    </Typography>
-                                </Box>
-
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Rating value={4.5} readOnly precision={0.5} sx={{ color: '#FF7A00' }} />
-                                    <Typography sx={{ color: '#FF7A00', fontSize: '15px' }}>
-                                        4.5/5
-                                    </Typography>
-                                </Box>
-                            </Box>
-                            <Button
-                                variant="outlined"
-                                sx={{
-                                    // bgcolor: '#fff',
-                                    border: '1px solid #6F767E',
-                                    color: '#111111',
-                                    height: 40,
-                                    width: 113,
-                                    padding: '20px 16px',
-                                    '&:hover': {
-                                        bgcolor: '#f5f5f5'
-                                    }
-                                }}
-                                onClick={() => { navigate('/profile') }}
-                            >
-                                View Profile
-                            </Button>
-                        </Box>
-
-
-                    </Box> */}
+                   
 
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                         <Typography variant="h6">Overview</Typography>
@@ -200,7 +417,8 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            02
+                                                 {statisticsData.overview.appointments.toLocaleString()}
+
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Appointments
@@ -218,7 +436,8 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            35
+                                                  {statisticsData.overview.orders.toLocaleString()}
+
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Orders
@@ -239,7 +458,7 @@ const Statistics = () => {
                                         <Chip label="This Week" size="small" sx={{ bgcolor: 'rgba(175, 169, 169, 0.2)', color: 'text.secondary', padding: '15px 8px 15px 8px' }} />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>128,000 Frs</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}> {statisticsData.vinStats.totalRevenue.toLocaleString()} Frs</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Revenue</Typography>
                                     </Box>
                                 </CardContent>
@@ -254,7 +473,7 @@ const Statistics = () => {
                                         <Chip label="This Week" size="small" sx={{ bgcolor: 'rgba(175, 169, 169, 0.2)', color: 'text.secondary', padding: '15px 8px 15px 8px' }} />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>182</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.vinStats.totalRequests.toLocaleString()}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>VIN Request Made</Typography>
                                     </Box>
                                 </CardContent>
@@ -270,7 +489,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            5637
+                                           {statisticsData.vinStats.fromUsers.toLocaleString()}
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Total Users
@@ -289,7 +508,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            26
+                                            {statisticsData.emergencyStats.totalRequests.toLocaleString()}
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Emergency Request
@@ -306,18 +525,16 @@ const Statistics = () => {
                 <Grid item xs={12}>
                     <StyledCard>
                         <CardContent>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                <Box>
+                             <Box>
                                     <Typography color="text.secondary" variant="body2">
                                         Total Revenue
                                     </Typography>
                                     <Typography variant="h5" fontWeight="bold">
-                                        28,000 Frs
+                                        {statisticsData.revenueChart.reduce((acc, item) => acc + item.revenue, 0).toLocaleString()} Frs
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        {/* <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#FF7A00' }} /> */}
                                         <Chip
                                             label="Revenue"
                                             size="small"
@@ -326,7 +543,6 @@ const Statistics = () => {
                                                 color: '#FB7C37',
                                                 padding: '15px 8px 15px 8px',
                                                 fontWeight: 'bold',
-
                                             }}
                                         />
                                     </Box>
@@ -340,11 +556,47 @@ const Statistics = () => {
                                         }}
                                     />
                                 </Box>
-                            </Box>
-                            <Box sx={{ height: 300, width: '100%' }}>
+                            
+                            {/* <Box sx={{ height: 300, width: '100%' }}>
                                 <ResponsiveContainer>
                                     <AreaChart
                                         data={revenueData}
+                                        margin={{
+                                            top: 10,
+                                            right: 0,
+                                            left: 0,
+                                            bottom: 0,
+                                        }}
+                                    >
+                                        <defs>
+                                            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#FF7A00" stopOpacity={0.2} />
+                                                <stop offset="100%" stopColor="#FF7A00" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <XAxis
+                                            dataKey="year"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: '#6F767E', fontSize: 12 }}
+                                        />
+                                        <YAxis hide />
+                                        <Tooltip content={<CustomTooltip />} />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="revenue"
+                                            stroke="#FF7A00"
+                                            strokeWidth={2}
+                                            fill="url(#colorRevenue)"
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </Box> */}
+
+                             <Box sx={{ height: 300, width: '100%' }}>
+                                <ResponsiveContainer>
+                                    <AreaChart
+                                        data={statisticsData.revenueChart.length > 0 ? statisticsData.revenueChart : [{ year: '2024', revenue: 0 }]}
                                         margin={{
                                             top: 10,
                                             right: 0,
@@ -411,7 +663,8 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            65,000 Frs
+                                            {statisticsData.appointmentStats.totalRevenue.toLocaleString()} Frs
+
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Total Revenue
@@ -429,7 +682,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            128
+                                           {statisticsData.appointmentStats.totalAppointments.toLocaleString()}
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Total Appointments
@@ -447,7 +700,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>123</Typography>
-                                        <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Completed Appointments</Typography>
+                                        <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>{statisticsData.appointmentStats.completedAppointments.toLocaleString()}</Typography>
                                     </Box>
                                 </CardContent>
                             </StyledCard>
@@ -460,7 +713,7 @@ const Statistics = () => {
                                         <CalendarIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>05</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.appointmentStats.canceledAppointments.toLocaleString()}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Canceled Appointments</Typography>
                                     </Box>
                                 </CardContent>
@@ -489,7 +742,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            265,000 Frs
+                                           {statisticsData.emergencyStats.totalRevenue.toLocaleString()} Frs
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Total Revenue
@@ -507,7 +760,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            28
+                                            {statisticsData.emergencyStats.totalRequests.toLocaleString()}
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Emergency Request
@@ -524,7 +777,7 @@ const Statistics = () => {
                                         <PieChartIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>26</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}> {statisticsData.emergencyStats.acceptedRequests.toLocaleString()}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Accepted Request</Typography>
                                     </Box>
                                 </CardContent>
@@ -538,7 +791,7 @@ const Statistics = () => {
                                         <PieChartIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>182</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.emergencyStats.rejectedRequests.toLocaleString()}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Rejected Request</Typography>
                                     </Box>
                                 </CardContent>
@@ -567,7 +820,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            265,000 Frs
+                                            {statisticsData.vinStats.totalRevenue.toLocaleString()}
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             Total Revenue
@@ -584,7 +837,7 @@ const Statistics = () => {
                                         <PieChartIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>167</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.vinStats.totalRequests}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Total Request</Typography>
                                     </Box>
                                 </CardContent>
@@ -598,7 +851,7 @@ const Statistics = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            158
+                                            {statisticsData.vinStats.fromUsers.toLocaleString()}
                                         </Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>
                                             From Users
@@ -617,7 +870,7 @@ const Statistics = () => {
                                         <PieChartIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>28</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.vinStats.fromServiceProviders.toLocaleString()}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>From Service Providers</Typography>
                                     </Box>
                                 </CardContent>
@@ -631,7 +884,7 @@ const Statistics = () => {
                                         <PieChartIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>182</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.vinStats.successfulRequests.toLocaleString()}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Successful VIN Request </Typography>
                                     </Box>
                                 </CardContent>
@@ -644,7 +897,7 @@ const Statistics = () => {
                                         <PieChartIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>03</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.vinStats.unsuccessfulRequests.toLocaleString()}</Typography>
                                         <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Unsucessful VIN Request </Typography>
                                     </Box>
                                 </CardContent>
