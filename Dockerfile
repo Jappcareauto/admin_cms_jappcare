@@ -38,8 +38,10 @@ COPY --chown=viteuser:vitegroup . .
 # Build production assets
 RUN npm run build
 
-# Install static server
+# Install static server (needs root)
+USER root
 RUN npm install -g serve
+USER viteuser
 
 # Expose port
 EXPOSE 5173
