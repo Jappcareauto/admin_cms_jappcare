@@ -32,15 +32,21 @@ RUN \
     npm install --unsafe-perm || { echo "Fallback npm installation failed"; exit 1; }; \
   fi
 
-# Copy the rest of the application files (source code and assets)
+# Copy app source
 COPY --chown=viteuser:vitegroup . .
 
-# Expose the port for the development server
+# Build production assets
+RUN npm run build
+
+# Install static server
+RUN npm install -g serve
+
+# Expose port
 EXPOSE 5173
 
-# Environment variables for Vite (used at runtime)
+# Env vars
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
-# Command to run the development server
-CMD ["npm", "run", "dev", "--", "--host"]
+# Run production server
+CMD ["serve", "-s", "dist", "-l", "5173"]
