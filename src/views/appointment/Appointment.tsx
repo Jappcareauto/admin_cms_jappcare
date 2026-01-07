@@ -105,7 +105,7 @@ const Appointment = () => {
     const fetchAppointments = async () => {
         setLoading(true);
         try {
-            const response = await JC_Services('JAPPCARE', `appointment/list`, 'POST', {}, token);
+            const response = await JC_Services('JAPPCARE', `appointment/list`, 'GET', {}, token);
             console.log("response", response);
 
             if (response && response.body.meta.statusCode === 200) {
@@ -216,7 +216,7 @@ const Appointment = () => {
                             {appointment.vehicle.name.substring(0, 2).toUpperCase()}
                         </Avatar>
                         <Typography>
-                            {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                            {`${appointment.vehicle.make} ${appointment.vehicle.model}`}
                         </Typography>
                     </Box>
 
@@ -267,7 +267,7 @@ const Appointment = () => {
                     {formatValue(appointment.service.title)}
                 </Typography>
                 <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                    {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                    {`${appointment.vehicle.make} ${appointment.vehicle.model}`}
                 </Typography>
             </Box>
 

@@ -699,8 +699,8 @@ const [statisticsData, setStatisticsData] = useState<StatisticsData>({
                                         <CalendarIcon fill='#FB7C37' stroke='' />
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>123</Typography>
-                                        <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>{statisticsData.appointmentStats.completedAppointments.toLocaleString()}</Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{statisticsData.appointmentStats.completedAppointments.toLocaleString()}</Typography>
+                                        <Typography variant="body2" color="#FB7C37" sx={{ mt: 1 }}>Completed Appointments</Typography>
                                     </Box>
                                 </CardContent>
                             </StyledCard>

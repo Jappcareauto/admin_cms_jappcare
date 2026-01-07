@@ -62,17 +62,17 @@ const AppointmentDetails = ({
                     mb: 1
                 }}
             >
-                {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                {`${appointment.vehicle.make} ${appointment.vehicle.model}`}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                {`${appointment.vehicle.detail.year}, ${appointment.vehicle.detail.trim}`}
+                {`${appointment.vehicle.year}, ${appointment.vehicle.registrationNumber}`}
             </Typography>
 
             {/* Car Image */}
             <Box
                 component="img"
-                src={appointment.vehicle.media?.mainItemUrl || '/api/placeholder/400/320'}
-                alt={`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                src={appointment.vehicle.imageUrl || '/api/placeholder/400/320'}
+                alt={`${appointment.vehicle.make} ${appointment.vehicle.model}`}
                 sx={{
                     width: '100%',
                     height: 'auto',

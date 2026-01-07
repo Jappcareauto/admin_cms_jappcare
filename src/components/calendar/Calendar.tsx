@@ -129,7 +129,7 @@ const Calendar: React.FC = () => {
     const fetchAppointments = async () => {
         setLoading(true);
         try {
-            const response = await JC_Services('JAPPCARE', `appointment/list`, 'POST', {}, token);
+            const response = await JC_Services('JAPPCARE', `appointment/list`, 'GET', {}, token);
 
             if (response && response.body.meta.statusCode === 200) {
                 // Filter appointments for the current week
@@ -310,7 +310,7 @@ const Calendar: React.FC = () => {
                                         {appointment.vehicle.name.substring(0, 2).toUpperCase()}
                                     </Avatar>
                                     <Typography sx={{ fontWeight: 500, fontSize: "13px" }}>
-                                        {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                                        {`${appointment.vehicle.make} ${appointment.vehicle.model}`}
                                     </Typography>
                                 </Box>
 

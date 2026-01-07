@@ -59,7 +59,7 @@ const ServiceCenterChats = () => {
     const fetchChatrooms = async () => {
         setLoading(true);
         try {
-            const response = await JC_Services('JAPPCARE', `chatroom/list`, 'POST', {}, token);
+            const response = await JC_Services('JAPPCARE', `chatroom/list`, 'GET', {}, token);
             console.log("fetchChatroomResponse", response);
             if (response && response.body.meta.statusCode === 200) {
                 // Make sure data is an array before setting state
@@ -169,11 +169,16 @@ const ServiceCenterChats = () => {
     };
 
     // Filter chatrooms based on search term
-    const filteredChatrooms = chatrooms && Array.isArray(chatrooms)
-        ? chatrooms.filter(chatroom =>
-            chatroom.name && chatroom.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        : [];
+   const filteredChatrooms =
+  chatrooms && Array.isArray(chatrooms)
+    ? chatrooms.filter(chatroom => {
+        const name = (chatroom.name ?? "Service Center").toLowerCase();
+        return name.includes(searchTerm.toLowerCase());
+      })
+    : [];
+
+
+        
 
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -225,7 +230,7 @@ const ServiceCenterChats = () => {
                                         </Avatar>
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary={formatValue(chatroom.name) || 'Unnamed Service Center'}
+                                        primary={(chatroom.name) || 'Unnamed Service Center'}
                                         secondary={chatroom.updatedAt ? new Date(chatroom.updatedAt).toLocaleDateString() : 'No date'}
                                     />
                                 </ServiceItem>
