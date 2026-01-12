@@ -91,14 +91,56 @@ export interface ServiceData {
     id: string;
 }
 
+// export interface Chatroom {
+//     id: string;
+//     name: string;
+//     participantIds: string[];
+//     createdBy: string | null;
+//     updatedBy: string | null;
+//     createdAt: string;
+//     updatedAt: string;
+// }
+
 export interface Chatroom {
-    id: string;
-    name: string;
-    participantIds: string[];
-    createdBy: string | null;
-    updatedBy: string | null;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  createdBy: string | null;
+  updatedBy: string | null;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  name: string | null;
+  appointmentDTO: AppointmentDTO;
+  participantIds: string[];
+}
+
+export interface AppointmentDTO {
+  id: string;
+  createdBy: string;
+  updatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+  date: string;
+  locationType: "SERVICE_CENTER" | string;
+  note: string;
+  location: Location;
+  serviceId: string;
+  serviceCenterId: string;
+  diagnosesToMake: string[] | null;
+  diagnosesMade: string[] | null;
+  vehicleId: string;
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | string;
+  fileIds: string[] | null;
+}
+
+export interface Location {
+  id: string;
+  createdBy: string;
+  updatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+  latitude: number;
+  longitude: number;
+  name: string;
+  description: string;
 }
 
 
@@ -171,6 +213,10 @@ export interface AppointmentInterface {
         vin: string;
         registrationNumber: string | null;
         imageUrl: string | null;
+        make: string | null ;
+        model: string | null ;
+        trim: string | null;
+        year: string | null ;
 
         detail: {
             id: string;

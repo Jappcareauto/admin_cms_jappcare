@@ -142,7 +142,7 @@ const CalendarViews: React.FC = () => {
     const fetchAppointments = async () => {
         setLoading(true);
         try {
-            const response = await JC_Services('JAPPCARE', `appointment/list`, 'POST', {}, token);
+            const response = await JC_Services('JAPPCARE', `appointment/list`, 'GET', {}, token);
 
             if (response && response.body.meta.statusCode === 200) {
                 let filteredAppointments: AppointmentInterface[] = [];
@@ -490,7 +490,7 @@ const CalendarViews: React.FC = () => {
                                                 {appointment.service.title}
                                             </AppointmentTitle>
                                             <VehicleInfo>
-                                                {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                                                {`${appointment.vehicle.make} ${appointment.vehicle.model}`}
                                             </VehicleInfo>
                                         </AppointmentBox>
                                     ))}

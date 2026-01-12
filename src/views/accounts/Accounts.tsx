@@ -95,7 +95,7 @@ const Accounts = () => {
         try {
             // const params = new URLSearchParams({}).toString();
 
-            const response = await JC_Services('JAPPCARE', `user/list`, 'POST', {}, token);
+            const response = await JC_Services('JAPPCARE', `user/list`, 'GET', {}, token);
             console.log("fecthaccountresp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // setSuccessMessage('Successful!');
@@ -115,7 +115,7 @@ const Accounts = () => {
 
     const fetchServiceCenter = async () => {
         try {
-            const response = await JC_Services('JAPPCARE', `service-center/list`, 'POST', ServiceCenterRequestbody, connectedUsers.accessToken);
+            const response = await JC_Services('JAPPCARE', `service-center/list`, 'GET', ServiceCenterRequestbody, connectedUsers.accessToken);
             console.log("resp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // Make sure we're storing an array of properly formatted objects

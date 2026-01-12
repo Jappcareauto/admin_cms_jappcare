@@ -38,12 +38,12 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 
 // Sample data for the revenue chart
 const revenueData = [
-    { name: 'Mon', revenue: 1500 },
-    { name: 'Tues', revenue: 12000 },
-    { name: 'Wed', revenue: 22000 },
-    { name: 'Thurs', revenue: 20000 },
-    { name: 'Fri', revenue: 25000 },
-    { name: 'Sat', revenue: 28000 },
+    { name: 'Mon', revenue: 0 },
+    { name: 'Tues', revenue: 0 },
+    { name: 'Wed', revenue: 0 },
+    { name: 'Thurs', revenue: 0 },
+    { name: 'Fri', revenue: 0 },
+    { name: 'Sat', revenue: 0 },
 ];
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -189,7 +189,7 @@ const Dashboard = () => {
     const fetchAppointments = async () => {
         setLoading(true);
         try {
-            const response = await JC_Services('JAPPCARE', `appointment/list`, 'POST', {}, connectedUsers.accessToken);
+            const response = await JC_Services('JAPPCARE', `appointment/list`, 'GET', {}, connectedUsers.accessToken);
             console.log("appointment resp", response);
 
             if (response && response.body.meta.statusCode === 200) {
@@ -240,7 +240,14 @@ const Dashboard = () => {
         navigate(`/appointments/details/expanded/${appointment.id}`, { state: { appointmentData: appointment } });
     };
 
-    const renderAppointmentCard = (appointment: AppointmentInterface) => (
+   const renderAppointmentCard = (appointment: AppointmentInterface) => {
+    // Add safety checks at the top
+    const vehicleMake = appointment.vehicle?.make || 'Unknown';
+    const vehicleModel = appointment.vehicle?.model || 'Vehicle';
+    const serviceCenterName = appointment.serviceCenter?.name || 'Service Center';
+    const serviceTitle = appointment.service?.title || 'Service';
+
+    return (
         <Box sx={{
             p: 2,
             bgcolor: 'background.paper',
@@ -266,10 +273,10 @@ const Dashboard = () => {
                                 boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
                             }}
                         >
-                            {appointment.vehicle.detail.make.substring(0, 2).toUpperCase()}
+                            {vehicleMake.substring(0, 2).toUpperCase()}
                         </Avatar>
                         <Typography>
-                            {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                            {`${vehicleMake} ${vehicleModel}`}
                         </Typography>
                     </Box>
 
@@ -294,22 +301,21 @@ const Dashboard = () => {
                                 boxShadow: 'inset 0 0 0 2px rgb(247, 249, 250)',
                             }}
                         >
-                            {appointment.serviceCenter.name.substring(0, 2).toUpperCase()}
-
+                            {serviceCenterName.substring(0, 2).toUpperCase()}
                         </Avatar>
                         <Box>
                             <Typography variant="caption" color="text.secondary">
                                 Handled by
                             </Typography>
                             <Typography variant="body2">
-                                {appointment.serviceCenter.name}
+                                {serviceCenterName}
                             </Typography>
                         </Box>
                     </Box>
                 </Box>
 
                 <StyledChip
-                    label={formatValue(appointment.status.replace('_', ' '))}
+                    label={formatValue(appointment.status?.replace('_', ' ') || 'Unknown')}
                     size="small"
                     status={appointment.status}
                 />
@@ -318,10 +324,10 @@ const Dashboard = () => {
             {/* Appointment Details */}
             <Box sx={{ mb: 2 }}>
                 <Typography sx={{ color: '#FF7A00', mb: 0.5 }}>
-                    {formatValue(appointment.service.title)}
+                    {formatValue(serviceTitle)}
                 </Typography>
                 <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                    {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                    {`${vehicleMake} ${vehicleModel}`}
                 </Typography>
             </Box>
 
@@ -335,13 +341,13 @@ const Dashboard = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <AppointmentIcon stroke="#797676" fill='' />
                         <Typography variant="body2" color="text.secondary">
-                            {format(parseISO(appointment.date), 'MMM dd, yyyy hh:mm a')}
+                            {appointment.date ? format(parseISO(appointment.date), 'MMM dd, yyyy hh:mm a') : 'Date TBD'}
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <LocationIcon stroke="#797676" fill='' />
                         <Typography variant="body2" color="text.secondary">
-                            {formatValue(appointment.locationType === 'CUSTOM' ? 'At Home' : appointment.locationType)}
+                            {formatValue(appointment.locationType === 'CUSTOM' ? 'At Home' : appointment.locationType || 'Location TBD')}
                         </Typography>
                     </Box>
                 </Box>
@@ -361,6 +367,7 @@ const Dashboard = () => {
             </Box>
         </Box>
     );
+};
     return (
         <Box sx={{ p: 3, minHeight: '100vh', overflowX: 'hidden' }}>
             <Grid container spacing={3}>
@@ -396,7 +403,7 @@ const Dashboard = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            28,000 Frs
+                                            0 Frs
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                                             Revenue

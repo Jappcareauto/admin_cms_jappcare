@@ -38,7 +38,7 @@ const ExpandedAppointmentDetails = ({ appointment, onClose, onMarkCompleted }: E
 
     // Placeholder images array (replace with actual images from appointment)
     const images = [
-        ...(appointment?.vehicle?.media.items?.map((item) => item.sourceUrl) || ['/api/placeholder/400/320']),
+        ...(appointment?.vehicle?.media?.items?.map((item) => item.sourceUrl) || ['/api/placeholder/400/320']),
         '/api/placeholder/400/320'
     ];
 
@@ -48,7 +48,7 @@ const ExpandedAppointmentDetails = ({ appointment, onClose, onMarkCompleted }: E
     };
 
     const vehicleName = appointment?.vehicle?.name || 'Unknown Vehicle';
-    const vehicleDetail = appointment?.vehicle?.detail || { make: 'Unknown', model: 'Model', year: 'Year', trim: '' };
+    const vehicleDetail = appointment?.vehicle || { make: 'Unknown', model: 'Model', year: 'Year', trim: '' };
     const serviceTitle = appointment?.service?.title || 'No Service';
     const appointmentDate = appointment?.date ? parseISO(appointment.date) : new Date();
     const appointmentStatus = appointment?.status?.replace('_', ' ') || 'Pending';
@@ -156,13 +156,13 @@ const ExpandedAppointmentDetails = ({ appointment, onClose, onMarkCompleted }: E
                             fontSize: '15px',
                             color: '#6F767E'
                         }}>
-                            {`${vehicleDetail.year}, ${vehicleDetail.trim}`}
+                            {`${vehicleDetail.year}, ${vehicleDetail.registrationNumber}`}
                         </Typography>
                     </Box>
 
                     <Box
                         component="img"
-                        src={appointment.vehicle?.media.mainItemUrl || '/api/placeholder/400/320'}
+                        src={appointment.vehicle?.imageUrl || '/api/placeholder/400/320'}
                         alt={`${vehicleDetail.make} ${vehicleDetail.model}`}
                         sx={{
                             width: '100%',
