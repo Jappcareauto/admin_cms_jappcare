@@ -18,7 +18,7 @@ import { iUsersConnected } from '../../interfaces/UsersInterface';
 import { useSelector } from 'react-redux';
 import { Chatroom } from '../../interfaces/Interfaces';
 import { ChatroomParticipant } from './types';
-import { formatValue } from '../../tools/formatValue';
+// import { formatValue } from '../../tools/formatValue';
 
 // Styled Components
 const SearchInput = styled(InputBase)(() => ({
