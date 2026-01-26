@@ -171,7 +171,7 @@ const Chats = () => {
                     const formattedMessage = {
                         id: messageId,
                         senderId: senderId,
-                        senderName: userMap[senderId]?.name || messageData.sender || 'Unknown User',
+                        senderName: messageData.senderName || 'Unknown User',
                         content: messageData.content,
                         chatRoomId: messageData.chatRoomId || messageData.chatRoomIdAsUuid || id,
                         timestamp: messageData.timestamp ? new Date(messageData.timestamp) : new Date(),
