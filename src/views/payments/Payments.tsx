@@ -107,7 +107,7 @@ const Payments = () => {
         try {
             console.log("Fetching payments with token:", token);
 
-            const response = await JC_Services('JAPPCARE', `payment/list`, 'POST', {}, token);
+            const response = await JC_Services('JAPPCARE', `payment`, 'GET', {}, token);
             // console.log("Full API Response:", JSON.stringify(response, null, 2));
 
             if (response && response.body?.meta?.statusCode === 200) {
@@ -313,7 +313,7 @@ const Payments = () => {
                         </Box>
 
 
-                        <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {/* <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                             {transaction.userFrom && (
                                 <>
                                     <CircleAvatar sx={{ bgcolor: '#000', color: '#FF7A00', }}>
@@ -329,7 +329,7 @@ const Payments = () => {
                                     </Box>
                                 </>
                             )}
-                        </Box>
+                        </Box> */}
 
                         <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                             <CircleAvatar sx={{ bgcolor: '#FF7A00', color: '#fff' }}>

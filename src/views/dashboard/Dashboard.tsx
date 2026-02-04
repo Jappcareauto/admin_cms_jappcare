@@ -170,7 +170,7 @@ const Dashboard = () => {
     const fetchService = async () => {
         try {
 
-            const response = await JC_Services('JAPPCARE', `service/list`, 'POST', serviceRequestbody, connectedUsers.accessToken);
+            const response = await JC_Services('JAPPCARE', `service/list`, 'GET', serviceRequestbody, connectedUsers.accessToken);
             console.log("service resp", response);
             if (response && response.body.meta.statusCode === 200) {
                 setServiceData(response.body.data); // Display all services instead of slicing
@@ -198,6 +198,7 @@ const Dashboard = () => {
                     (appointment: AppointmentInterface) => appointment.status === activeStatus
                 );
 
+
                 // Sort appointments by date
                 const sortedAppointments = filteredAppointments.sort((a: { date: string | number | Date; }, b: { date: string | number | Date; }) =>
                     new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -205,6 +206,10 @@ const Dashboard = () => {
 
                 setAppointments(sortedAppointments.slice(0, 2)); // Limit to 2 appointments
                 setAllAppointments(response.body.data); // Store all appointments for potential future use
+
+                console.log("filteredAppointments====", sortedAppointments);
+                
+
             } else if (response && response.body.meta.statusCode === 401) {
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             } else {
