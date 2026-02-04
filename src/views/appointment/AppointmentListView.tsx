@@ -224,7 +224,7 @@ const AppointmentListView = () => {
                                                     {appointment.vehicle.name.substring(0, 2).toUpperCase()}
                                                 </Avatar>
                                                 <Typography sx={{ fontWeight: 500 }}>
-                                                    {`${appointment.vehicle.detail.make} ${appointment.vehicle.detail.model}`}
+                                                    {`${appointment.vehicle.make} ${appointment.vehicle.model}`}
                                                 </Typography>
                                             </Box>
 

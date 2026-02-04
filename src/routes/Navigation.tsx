@@ -18,6 +18,7 @@ import Chats from '../views/chats/Chats';
 import Tips from '../views/tips/Tips';
 import Payments from '../views/payments/Payments';
 import ProtectedComponent from '../tools/ProtectedComponent';
+import ServicesList from '../views/serviceslist/SevicesList';
 
 const Navigation = createBrowserRouter(
     createRoutesFromElements(
@@ -42,6 +43,7 @@ const Navigation = createBrowserRouter(
                 <Route path="/accounts" element={<AppLayout><Accounts /></AppLayout>} />
                 <Route path="/tips" element={<AppLayout><Tips /></AppLayout>} />
                 <Route path="/payments" element={<AppLayout><Payments /></AppLayout>} />
+                <Route path="/services" element={<AppLayout><ServicesList /></AppLayout>} />
 
 
             </Route>

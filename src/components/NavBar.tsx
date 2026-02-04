@@ -27,6 +27,7 @@ import { iUsersAction, iUsersConnected } from '../interfaces/UsersInterface';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { useSelector } from 'react-redux';
+import SettingIcon from './Icones/SettingIcon';
 
 interface NavBarProps {
     isSidebarCollapsed: boolean;
@@ -43,7 +44,7 @@ const NavBar = ({ isSidebarCollapsed }: NavBarProps) => {
         { text: 'Dashboard', icon: <DashBoardIcon stroke='#111111' fill='#111111' />, path: '/dashboard' },
         // { text: 'Shop', icon: <ShopIcon stroke='' fill='' />, path: '/shop' },
         { text: 'Appointments', icon: <AppointmentIcon stroke='#111111' fill='#111111' />, path: '/appointments' },
-        // { text: 'Emergency Assistance', icon: <Emergency />, path: '/emergency' },
+        { text: 'Services', icon: <SettingIcon />, path: '/services' },
         { text: 'Chats', icon: <ChatsIcon stroke='#111111' fill='#111111' />, path: '/servicecenterchats' },
         { text: 'Statistics', icon: <PieChartIcon stroke="#111111" fill="#111111" />, path: '/statistics' },
         // { text: 'Invoices', icon: <InvoiceIcon stroke='#111111' fill='#111111' />, path: '/invoices' },
