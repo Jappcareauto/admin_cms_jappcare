@@ -76,6 +76,7 @@ const Appointment = () => {
     const [selectedAppointment, setSelectedAppointment] = useState<AppointmentInterface | null>(null);
     const [activeStatus, setActiveStatus] = useState('NOT_STARTED');
     const [appointments, setAppointments] = useState<AppointmentInterface[]>([]);
+    const [Allappointments, setAllAppointments] = useState<AppointmentInterface[]>([]);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [weeklyData, setWeeklyData] = useState([
@@ -131,7 +132,12 @@ const Appointment = () => {
                     ? upcomingAppointments
                     : sortedAppointments.slice(-1);
 
-                setAppointments(finalAppointments);
+                // setAppointments(finalAppointments);
+                console.log("Final Appointments:", finalAppointments);
+
+                setAppointments(filteredAppointments);
+                setAllAppointments(response.body.data);
+
 
                 // Calculate weekly data based on appointments
                 const weekStart = startOfWeek(today);
@@ -332,7 +338,7 @@ const Appointment = () => {
                                     </Box>
                                     <Box sx={{ mt: 6 }}>
                                         <Typography variant="h4" color="#000000" sx={{ fontWeight: 'bold' }}>
-                                            {appointments.length}
+                                            {Allappointments.length}
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                                             Appointments

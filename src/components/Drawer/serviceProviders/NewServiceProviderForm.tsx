@@ -136,7 +136,7 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
     // Function to fetch services from API
     const fetchService = async () => {
         try {
-            const response = await JC_Services('JAPPCARE', `service/list`, 'POST', serviceRequestbody, connectedUsers.accessToken);
+            const response = await JC_Services('JAPPCARE', `service/list`, 'GET', serviceRequestbody, connectedUsers.accessToken);
             console.log("service resp", response);
             if (response && response.body.meta.statusCode === 200) {
                 setServiceData(response.body.data);
@@ -155,7 +155,7 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
     const fetchAccounts = async () => {
         setUserAccountsLoading(true);
         try {
-            const response = await JC_Services('JAPPCARE', `user/list`, 'POST', {}, token);
+            const response = await JC_Services('JAPPCARE', `user/list`, 'GET', {}, token);
             console.log("fecthaccountresp", response);
             if (response && response.body.meta.statusCode === 200) {
                 // setUserAccounts(
@@ -306,11 +306,13 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
                     latitude: location.lat,
                     longitude: location.lng,
                     name: formData.homeAddress,
-                    description: `Service center located at ${formData.homeAddress}`
+                    description: `Service center located at ${formData.homeAddress}`,
+                    id: userId // Using user ID as location ID for simplicity, adjust as needed
                 },
                 // category: selectedServices.map(s => s.title).join(', '), // Combined categories
                 category: selectedServices.length > 0 ? selectedServices[0].title : 'General Service', // Use first service as primary category
                 available: formData.available,
+                description: `Service center offering ${selectedServices.map(s => s.title).join(', ')} services.`
             };
 
             console.log('Service Center Request:', serviceCenterRequest);
@@ -415,6 +417,8 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
                     loading={userAccountsLoading}
                     onChange={handleUserSelect}
                     value={userAccounts.find(user => user.id.toString() === formData.selectedUserId) || null}
+                // value={userAccounts.find(user => user.id.toString() === formData.selectedUserId) || null}
+
                     sx={{
                         '& .MuiAutocomplete-popper': {
                             backgroundColor: 'white'
