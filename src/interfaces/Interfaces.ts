@@ -302,6 +302,7 @@ export interface ServiceCenterRequest {
     };
     category: string;
     available: boolean;
+    description: string;
 }
 
 export interface ServiceProviderData {
