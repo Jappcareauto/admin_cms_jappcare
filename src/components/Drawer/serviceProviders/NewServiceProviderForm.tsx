@@ -300,14 +300,14 @@ const NewServiceProviderForm = ({ onSubmit }: NewServiceProviderFormProps) => {
             const serviceCenterRequest: ServiceCenterRequest = {
                 name: formData.name,
                 ownerId: formData.selectedUserId,
-                createdBy: userId,
-                updatedBy: userId,
-                location: {
+                 location: {
                     latitude: location.lat,
                     longitude: location.lng,
                     name: formData.homeAddress,
                     description: `Service center located at ${formData.homeAddress}`,
-                    id: userId // Using user ID as location ID for simplicity, adjust as needed
+                    id: userId, // Using user ID as location ID for simplicity, adjust as needed
+                    createdBy: userId,
+                updatedBy: userId,
                 },
                 // category: selectedServices.map(s => s.title).join(', '), // Combined categories
                 category: selectedServices.length > 0 ? selectedServices[0].title : 'General Service', // Use first service as primary category

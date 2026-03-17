@@ -291,14 +291,15 @@ export interface Service {
 export interface ServiceCenterRequest {
     name: string;
     ownerId: string;
-    createdBy: string;
-    updatedBy: string;
+    
     location: {
         id?: string;
         latitude: number;
         longitude: number;
         name: string;
         description: string;
+        createdBy: string;
+    updatedBy: string;
     };
     category: string;
     available: boolean;
